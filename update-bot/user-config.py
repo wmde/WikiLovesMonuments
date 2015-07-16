@@ -1,8 +1,11 @@
 # -*- coding: utf-8  -*-
 
-# This is a sample file. You should use generate_user_files.py
-# to create your user-config.py file.
-
 mylang = 'de'
 family = 'wikipedia'
-usernames['wikipedia']['de'] = 'Enter your username'
+#family = 'local'
+#usernames['wikipedia']['de'] = 'WLM Update Bot'
+#usernames['local']['de'] = u'admin'
+
+# For local testing
+register_family_file('local', '/Users/gabi/src/wlm/update-bot/local_family.py')
+family_files['local'] = '/Users/gabi/src/wlm/update-bot/local_family.py' # register_family_file is buggy, we have to assign this again
