@@ -1,0 +1,59 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# This script generates a list of page names that can be used for
+# exporting the relevant articles or getting an overview
+#
+# Available command line options are:
+#
+# -out=file Write output of all categories into a single file
+# -out=categories Write output of each category into a single file
+# -fmt=wiki Output as Wiki links
+# -fmt=url Output as URLs to the articles
+
+from __future__ import unicode_literals
+
+import pywikibot
+from os.path import join
+from pywikibot import config
+from pywikibot.exceptions import SiteDefinitionError
+import codecs
+import sys
+
+from pagelist import Pagelist
+
+def export_to_file(outfile, items, formatstring=u"{}\n"):
+    """ Write article to file
+
+        items: array or generator for
+    """
+    for article in items:
+        outfile.write(formatstring.format(article.title()))
+
+def main(*args):
+    UTF8Writer = codecs.getwriter('utf8')
+    single_categories = False
+    output_destination = UTF8Writer(sys.stdout)
+    formatstring = "{}\n"
+    for arg in pywikibot.handle_args(args):
+        if arg == "-out=catfile":
+            single_categories = True
+        elif arg == "-out=file":
+            output_destination = codecs.open("Denkmallistenliste.txt", "w", 'utf-8')
+        elif arg == "-fmt=wiki":
+            formatstring = "[[{}]]\n"
+        elif arg == "-fmt=url":
+            formatstring = "https://de.wikipedia.org/wiki/{}\n"
+
+    site = pywikibot.Site()
+    pl = Pagelist(site)
+
+    if single_categories:
+        for category in pl.get_county_categories():
+            with codecs.open(category.title() + u".txt", "w", 'utf-8') as outfile:
+                export_to_file(outfile, category.articles(), formatstring)
+    else:
+        export_to_file(output_destination, pl.get_list_articles(), formatstring)
+
+if __name__ == "__main__":
+    main()
