@@ -1,0 +1,5 @@
+update-bot/apicache
+update-bot/logs
+*.pyc
+update-bot/throttle.ctrl
+update-bot/Denkmallistenliste.txt
