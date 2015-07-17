@@ -8,7 +8,7 @@ class Pagelist(object):
 
     def get_county_categories(self):
         """ Get all subcategories of Liste (Kulturdenkmale in Deutschland) """
-        return pywikibot.Category(self.site, "Liste (Kulturdenkmale in Deutschland)").subcategories()
+        return pywikibot.Category(self.site, "Liste (Kulturdenkmale in Deutschland)").subcategories(True)
 
     def get_list_articles(self):
         """ Return all the pages for all the categories"""
