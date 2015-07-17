@@ -26,6 +26,10 @@ class TemplateCounter(object):
         'Rechtshinweis',
         'All Coordinates',
         'Anker',
+        'SortKey',
+        'commonscat',
+        'Commonscat',
+        '0',
         '"'
     ]
 
