@@ -60,6 +60,7 @@ def main(*args):
     UTF8Writer = codecs.getwriter('utf8')
     output_destination = UTF8Writer(sys.stdout)
     verbosity = logging.ERROR
+    limit = 0
     for argument in pywikibot.handle_args(args):
         if argument == "-v":
             verbosity = logging.WARNING
@@ -67,15 +68,16 @@ def main(*args):
             verbosity = logging.INFO
         elif argument == "-vvv":
             verbosity = logging.DEBUG
+        elif argument.find("-limit=") == 0:
+            limit = int(argument[7:])
     logging.basicConfig(level=verbosity, stream=output_destination)
     site = pywikibot.Site()
-    limit = 100
     counter = 0
     # TODO use pagelist class and iterate over categories
     for article in pywikibot.Category(site, u"Liste_(Kulturdenkmale_in_Baden-Württemberg)").articles():
         add_placeholders(article)
         counter += 1
-        if counter > limit:
+        if limit and counter > limit:
             break
 
 if __name__ == "__main__":
