@@ -1,28 +1,31 @@
 __author__ = 'Andrew Pekarek-Kostka'
+# -*- coding: utf-8 -*-
 
+import os
 import pywikibot
 from collections import Counter
 
 site = pywikibot.Site()
-page_names = [
-                'Liste der Kulturdenkmale in Witterda',
-                'Liste der Kulturdenkmale in Wohlsborn',
-                'Liste der Kulturdenkmale in Wiegendorf',
-                'Liste der Kulturdenkmale in Wundersleben',
-                'Liste der Kulturdenkmale in Ostramondra',
-                'Liste der Kulturdenkmale in Tellingstedt',
-                'Liste der Baudenkmale in Neubrandenburg'
-              ]
 
 
 def main():
+    for file in os.listdir('lists/'):
+        page_names = []
+        datafile = open('lists/' + file)
+        for line in datafile.readlines():
+            page_names.append(line)
+        parser(page_names, file)
+
+
+def parser(page_names, file):
     progress = 0
+    print('Analyzing page: ' + file)
     print('Total Pages: ' + str(len(page_names)))
 
     results = []
 
     for page in page_names:
-        page_content = pywikibot.Page(site, page).text
+        page_content = pywikibot.Page(site, page.decode('utf-8')).text
         location_start = []
         location_end = []
 
@@ -37,10 +40,10 @@ def main():
 
         get_string(location_start, location_end, page_content, results)
 
-    print('\nOriginal Array:')
-    print(results)
-    print('\nFrequency in Array:')
-    counter(results)
+    frequency = counter(results)
+
+    print('\nFrequency in Array: \n' + str(frequency))
+    writing_file(frequency, file)
 
 
 def finder_start(page_content, location_start, search_start):
@@ -78,9 +81,13 @@ def get_string(location_start, location_end, page_content, results):
 
 
 def counter(results):
-    frequency = Counter(results)
-    print(frequency)
+    return Counter(results).most_common()
 
+
+def writing_file(frequency, file):
+    file = open('formats/' + file, 'w')
+    file.write(str(frequency))
+    file.close()
 
 if __name__ == '__main__':
     main()
