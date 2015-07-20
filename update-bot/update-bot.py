@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# This bot checks which templates are used on the wlm pages
+# This bot inserts placeholders to Wikimedia Commons on all the monument pages
 
 from __future__ import unicode_literals
 
