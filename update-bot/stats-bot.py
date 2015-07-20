@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# This bot checks which templates and table-headings are used on the wlm pages
+# This bot checks which templates are used on the wlm pages
 
 from __future__ import unicode_literals
 
@@ -60,7 +60,7 @@ class StatsOutput(object):
     def add_article(self, article):
         self.sample_articles.append(article)
 
-    def output_result(self, county_name, template_counts, table_heading_counts, num_articles):
+    def output_result(self, county_name, template_counts, num_articles):
         sample_size = len(self.sample_articles)
         heading = "{} (sampled {} of {} articles)".format(county_name, sample_size, num_articles)
         self.out.write(heading)
@@ -72,7 +72,6 @@ class StatsOutput(object):
             self.out.write("\n".join(self.sample_articles))
             self.out.write("\n")
         self.output_count_dict(template_counts, self.cutoff)
-        self.output_count_dict(table_heading_counts, self.cutoff)
         self.out.write("\n")
 
     def output_count_dict(self, out_dict, cutoff=0):
@@ -97,8 +96,7 @@ def sample_county(county, sample_size, output_destination, output_sample_article
             continue
         output.add_article(article.title())
         counter_tpl.count_templates(article.get())
-        # TODO: count table headings
-    output.output_result(county.title(), counter_tpl.templates, {}, len(articles)) # empty table headings dict
+    output.output_result(county.title(), counter_tpl.templates, len(articles)) # empty table headings dict
 
 
 def main(*args):
