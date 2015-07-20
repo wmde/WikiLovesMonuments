@@ -49,7 +49,7 @@ def replace_in_templates(text, commonscat, output_destination, verbose_output=Fa
             if verbose_output:
                 output_destination.write("   ... inserting placeholder in {} \n".format(template))
             replacer.set_value('Bild', placeholder)
-            text = text.replace(t, unicode(replacer))
+            text = text.replace(unicode(template), unicode(replacer))
     return text
 
 def replace_in_tables(text, commonscat, output_destination, verbose_output=False):
@@ -64,6 +64,7 @@ def main(*args):
     site = pywikibot.Site()
     limit = 100
     counter = 0
+    # TODO use pagelist class and iterate over categories
     for article in pywikibot.Category(site, u"Liste_(Kulturdenkmale_in_Baden-Württemberg)").articles():
         add_placeholders(article, output_destination, True)
         counter += 1

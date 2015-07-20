@@ -27,7 +27,7 @@ class TemplateReplacer(object):
         return self.params_dict[name].strip() == ""
 
     def __unicode__(self):
-        template = u"{{" + self.template.name
+        template = u"{{" + unicode(self.template.name)
         for param in self.params_index:
             template += u"|" + param["name"] + u"=" + self.params_dict[param["name_key"]]
         template += u"}}"
