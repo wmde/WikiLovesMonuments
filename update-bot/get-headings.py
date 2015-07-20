@@ -1,20 +1,25 @@
 __author__ = 'Andrew Pekarek-Kostka'
 # -*- coding: utf-8 -*-
 
+import os
 import pywikibot
 from collections import Counter
 
 site = pywikibot.Site()
-datafile = open('Denkmallistenliste.txt')
-
-page_names = []
-
-for line in datafile.readlines():
-    page_names.append(line)
 
 
 def main():
+    for file in os.listdir('lists/'):
+        page_names = []
+        datafile = open('lists/' + file)
+        for line in datafile.readlines():
+            page_names.append(line)
+        parser(page_names, file)
+
+
+def parser(page_names, file):
     progress = 0
+    print('Analyzing page: ' + file)
     print('Total Pages: ' + str(len(page_names)))
 
     results = []
@@ -35,8 +40,10 @@ def main():
 
         get_string(location_start, location_end, page_content, results)
 
-    print('\nFrequency in Array:')
-    counter(results)
+    frequency = counter(results)
+
+    print('\nFrequency in Array: \n' + str(frequency))
+    writing_file(frequency, file)
 
 
 def finder_start(page_content, location_start, search_start):
@@ -74,13 +81,11 @@ def get_string(location_start, location_end, page_content, results):
 
 
 def counter(results):
-    frequency = Counter(results).most_common()
-    print(frequency)
-    writing_file(frequency)
+    return Counter(results).most_common()
 
 
-def writing_file(frequency):
-    file = open('results.txt', 'w')
+def writing_file(frequency, file):
+    file = open('formats/' + file, 'w')
     file.write(str(frequency))
     file.close()
 
