@@ -14,11 +14,17 @@ class TemplateReplacer(object):
         return self.params_dict[name]
 
     def set_value(self, name, value):
-        whitespace = re.match(r"(\s*).*?(\s*)$", self.params_dict[name], re.UNICODE)
-        if whitespace:
-            self.params_dict[name] = whitespace.group(1) + unicode(value) + whitespace.group(2)
-        else:
+        whitespace = re.match(r"(\s*)(.*?)(\s*)$", self.params_dict[name], re.UNICODE)
+        if not whitespace:
             self.params_dict[name] = unicode(value)
+        elif whitespace.group(2) == "" and whitespace.group(3) == "":
+            line_end = re.search("(.*?)(\r?\n)$", whitespace.group(1))
+            if line_end:
+                self.params_dict[name] = line_end.group(1) + unicode(value) + line_end.group(2)
+            else:
+                self.params_dict[name] = whitespace.group(1) + unicode(value)
+        else:
+            self.params_dict[name] = whitespace.group(1) + unicode(value) + whitespace.group(3)
 
     def get_available_params(self):
         return [p["name_key"] for p in self.params_index]

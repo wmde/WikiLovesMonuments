@@ -46,6 +46,20 @@ class TestStringMethods(unittest.TestCase):
         replacer.set_value("b", "Maximum")
         self.assertEqual(unicode(replacer), u"{{myTest|a=99\n|b =  Maximum  }}")
 
+    def test_set_value_puts_newlines_at_end_of_value(self):
+        fixture = TemplateForTesting("myTest", [u"a=\n", u"b =\r\n"])
+        replacer = template_replacer.TemplateReplacer(fixture)
+        replacer.set_value("a", "99")
+        replacer.set_value("b", "Maximum")
+        self.assertEqual(unicode(replacer), u"{{myTest|a=99\n|b =Maximum\r\n}}")
+
+    def test_set_value_puts_newlines_at_end_of_value_while_preserving_leading_whitespace(self):
+        fixture = TemplateForTesting("myTest", [u"a= \n", u"b =\t\r\n"])
+        replacer = template_replacer.TemplateReplacer(fixture)
+        replacer.set_value("a", "99")
+        replacer.set_value("b", "Maximum")
+        self.assertEqual(unicode(replacer), u"{{myTest|a= 99\n|b =\tMaximum\r\n}}")
+
     def test_get_available_params(self):
         fixture = TemplateForTesting("", [u"a        =5", u"b\t\t=Übertrag"])
         replacer = template_replacer.TemplateReplacer(fixture)
