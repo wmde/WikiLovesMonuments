@@ -11,6 +11,7 @@ import sys
 import mwparserfromhell
 import random
 import operator
+import collections
 
 from pagelist import Pagelist
 
@@ -34,7 +35,7 @@ class TemplateCounter(object):
     ]
 
     def __init__(self):
-        self.templates = {}
+        self.templates = collections.Counter()
 
     def count_templates(self, pagetext):
         """ Count templates on a single page """
@@ -43,10 +44,7 @@ class TemplateCounter(object):
             tpl_name = unicode(template.name).strip()
             if tpl_name in self.ignored_categories:
                 continue
-            if tpl_name in self.templates:
-                self.templates[tpl_name] += 1
-            else:
-                self.templates[tpl_name] = 1
+            self.templates[tpl_name] += 1
 
 class StatsOutput(object):
     """ Output statistics on templates and table headings """
@@ -71,14 +69,10 @@ class StatsOutput(object):
             self.out.write("Sampled article names:\n")
             self.out.write("\n".join(self.sample_articles))
             self.out.write("\n")
-        self.output_count_dict(template_counts, self.cutoff)
-        self.out.write("\n")
-
-    def output_count_dict(self, out_dict, cutoff=0):
-        """ Output a dictionary with value => count pairs, sorted and filtered. """
-        for item, count in sorted(out_dict.items(), key=operator.itemgetter(1), reverse=True):
-            if count > cutoff:
+        for item, count in template_counts.most_common():
+            if count > self.cutoff:
                 self.out.write("{}: {}\n".format(item, count))
+        self.out.write("\n")
 
 
 def sample_county(county, sample_size, output_destination, output_sample_article_titles=False):
@@ -96,7 +90,7 @@ def sample_county(county, sample_size, output_destination, output_sample_article
             continue
         output.add_article(article.title())
         counter_tpl.count_templates(article.get())
-    output.output_result(county.title(), counter_tpl.templates, len(articles)) # empty table headings dict
+    output.output_result(county.title(), counter_tpl.templates, len(articles))
 
 
 def main(*args):
