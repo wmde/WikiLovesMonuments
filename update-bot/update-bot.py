@@ -66,7 +66,9 @@ def replace_in_templates(text, commonscat):
     return text
 
 def replace_in_tables(text, commonscat):
-    # TODO: Use table parser to replace table rows
+    # TODO Find table starts on page {|-
+    # TODO parse table headings of each table to get a dictionary of heading => column_index
+    # TODO find beginning of each table row, and use table_replacer to check/change image column of each row
     return text
 
 def main(*args):
