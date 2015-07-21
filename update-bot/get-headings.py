@@ -85,11 +85,10 @@ def counter(results):
     return collections.Counter(results).most_common()
 
 
-def writing_file(frequency, file):
-    file = codecs.open('formats/' + file, 'w', 'utf-8')
-    for f, count in frequency:
-        file.write('{}: {}\n'.format(f, count))
-    file.close()
+def writing_file(frequency, file_name):
+    with open('formats/' + file_name, 'w') as file:
+        for f, count in frequency:
+            file.write('{}: {}\n'.format(f.encode('utf-8'), count))
 
 if __name__ == '__main__':
     main()
