@@ -2,7 +2,6 @@ __author__ = 'Andrew Pekarek-Kostka'
 # -*- coding: utf-8 -*-
 
 import os
-import codecs
 import pywikibot
 import collections
 
@@ -43,7 +42,7 @@ def parser(page_names, file):
 
     frequency = counter(results)
 
-    # print('\nFrequency in Array: \n' + str(frequency))
+    print('\nFrequency in Array: \n' + str(frequency))
     writing_file(frequency, file)
 
 
@@ -67,16 +66,13 @@ def get_string(location_start, location_end, page_content, results):
     while x < len(location_start):
         content = page_content[location_start[x]:location_end[x]]
 
-        try:
-            if location_start[x] - 1 == location_end[x - 1]:
-                string = string + content.split('|', 1)[-1] + '|'
-            elif location_start[x + 1] == location_end[x] + 1:
-                string = string + content.split('|', 1)[-1] + '|'
-            if location_start[x + 1] != location_end[x] + 1:
-                results.append(string)
-                string = '|'
-        except Exception:
-            pass
+        if x == len(location_start) - 1 or location_start[x + 1] == location_end[x] + 1:
+            string = string + content.split('|', 1)[-1] + '|'
+        elif x == len(location_start) - 1 or location_start[x] - 1 == location_end[x - 1]:
+            string = string + content.split('|', 1)[-1] + '|'
+        if x == len(location_start) - 1 or location_start[x + 1] != location_end[x] + 1:
+            results.append(string)
+            string = '|'
 
         x += 1
 
