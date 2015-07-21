@@ -2,8 +2,9 @@ __author__ = 'Andrew Pekarek-Kostka'
 # -*- coding: utf-8 -*-
 
 import os
+import codecs
 import pywikibot
-from collections import Counter
+import collections
 
 site = pywikibot.Site()
 
@@ -42,7 +43,7 @@ def parser(page_names, file):
 
     frequency = counter(results)
 
-    print('\nFrequency in Array: \n' + str(frequency))
+    # print('\nFrequency in Array: \n' + str(frequency))
     writing_file(frequency, file)
 
 
@@ -81,12 +82,13 @@ def get_string(location_start, location_end, page_content, results):
 
 
 def counter(results):
-    return Counter(results).most_common()
+    return collections.Counter(results).most_common()
 
 
 def writing_file(frequency, file):
-    file = open('formats/' + file, 'w')
-    file.write(str(frequency))
+    file = codecs.open('formats/' + file, 'w', 'utf-8')
+    for f, count in frequency:
+        file.write('{}: {}\n'.format(f, count))
     file.close()
 
 if __name__ == '__main__':
