@@ -3,7 +3,7 @@ __author__ = 'Andrew Pekarek-Kostka'
 
 import os
 import pywikibot
-from collections import Counter
+import collections
 
 site = pywikibot.Site()
 
@@ -66,28 +66,25 @@ def get_string(location_start, location_end, page_content, results):
     while x < len(location_start):
         content = page_content[location_start[x]:location_end[x]]
 
-        try:
-            if location_start[x] - 1 == location_end[x - 1]:
-                string = string + content.split('|', 1)[-1] + '|'
-            elif location_start[x + 1] == location_end[x] + 1:
-                string = string + content.split('|', 1)[-1] + '|'
-            if location_start[x + 1] != location_end[x] + 1:
-                results.append(string)
-                string = '|'
-        except Exception:
-            pass
+        if x == len(location_start) - 1 or location_start[x + 1] == location_end[x] + 1:
+            string = string + content.split('|', 1)[-1] + '|'
+        elif x == len(location_start) - 1 or location_start[x] - 1 == location_end[x - 1]:
+            string = string + content.split('|', 1)[-1] + '|'
+        if x == len(location_start) - 1 or location_start[x + 1] != location_end[x] + 1:
+            results.append(string)
+            string = '|'
 
         x += 1
 
 
 def counter(results):
-    return Counter(results).most_common()
+    return collections.Counter(results).most_common()
 
 
-def writing_file(frequency, file):
-    file = open('formats/' + file, 'w')
-    file.write(str(frequency))
-    file.close()
+def writing_file(frequency, file_name):
+    with open('formats/' + file_name, 'w') as file:
+        for f, count in frequency:
+            file.write('{}: {}\n'.format(f.encode('utf-8'), count))
 
 if __name__ == '__main__':
     main()
