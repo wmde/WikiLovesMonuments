@@ -25,11 +25,11 @@ export PYTHONPATH
 ### listbot.py
 Creates lists of the pages in the subcategories of "[Liste (Kulturdenkmale in Deutschland)][wlm_liste]". Can output plain page names (for pasting in the export form), wiki links (for creating a wiki page) and URLs to the articles.
 
-Usage:
+Usage information:
 
 ```
 cd WikiLovesMonuments/update-bot
-python listbot.py
+python listbot.py -help
 ```
 
 ### stats-bot.py

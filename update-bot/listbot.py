@@ -1,15 +1,21 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+"""
+This script generates a list of page names that can be used for exporting the
+relevant articles or getting an overview.
 
-# This script generates a list of page names that can be used for
-# exporting the relevant articles or getting an overview
-#
-# Available command line options are:
-#
-# -out=file Write output of all categories into a single file
-# -out=categories Write output of each category into a single file
-# -fmt=wiki Output as Wiki links
-# -fmt=url Output as URLs to the articles
+Available command line options are:
+
+-out:file         Write output of all categories into a single file called
+                  "Denkmallistenliste.txt".
+
+-out:categories   Write output of each category into a single file, named after
+                  the category.
+
+-fmt:wiki         Output page name as Wiki links
+
+-fmt:url          Output page names as URLs to the articles
+"""
 
 from __future__ import unicode_literals
 
@@ -36,13 +42,13 @@ def main(*args):
     output_destination = UTF8Writer(sys.stdout)
     formatstring = "{}\n"
     for arg in pywikibot.handle_args(args):
-        if arg == "-out=catfile":
+        if arg == "-out:catfile":
             single_categories = True
-        elif arg == "-out=file":
+        elif arg == "-out:file":
             output_destination = codecs.open("Denkmallistenliste.txt", "w", 'utf-8')
-        elif arg == "-fmt=wiki":
+        elif arg == "-fmt:wiki":
             formatstring = "[[{}]]\n"
-        elif arg == "-fmt=url":
+        elif arg == "-fmt:url":
             formatstring = "https://de.wikipedia.org/wiki/{}\n"
 
     site = pywikibot.Site()
