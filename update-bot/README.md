@@ -49,4 +49,9 @@ Demonstrates the usage of a bot that accesses a local wiki instead of Wikipedia.
 If running this bot fails, check your `user-config.py` and `local_family.py` files.
 
 
+## Running Tests
+The test for the `CommonscatMapper` and `TemplateReplacer` classes are standard `unittest.TestCase` classes. They can be run from the command line:
+
+    python -m unittest test_commonscat_mapper test_template_replacer
+
 [wlm_liste]: https://de.wikipedia.org/wiki/Kategorie:Liste_(Kulturdenkmale_in_Deutschland)
