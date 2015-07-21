@@ -14,19 +14,20 @@ import operator
 import logging
 import re
 
+from commonscat_mapper import CommonscatMapper
 from template_replacer import TemplateReplacer
 # TODO: import TableReplacer
 
-WLM_PLACEHOLDER = '<-- link to commons placeholder #commonscat# -->' # TODO proper placeholder
+WLM_PLACEHOLDER = '<-- link to commons placeholder "#commonscat#" -->' # TODO proper placeholder
 
 def add_placeholders(article):
     logging.info("{}".format(article.title()))
     if article.isRedirectPage():
         return
     text = article.get()
-    commonscat = get_commonscat_from_weblinks(text)
+    commonscat = CommonscatMapper().get_commonscat_from_links(text)
     if not commonscat:
-        logging.error("  {} has no commonscat template in weblinks section".format(article.title()))
+        logging.error("  {} has no mapped category link.".format(article.title()))
         return
     text_with_placeholders_in_templates = replace_in_templates(text, commonscat)
     text_with_placeholders_in_tables = replace_in_tables(text_with_placeholders_in_templates, commonscat)
@@ -34,17 +35,6 @@ def add_placeholders(article):
         # TODO store new text
         logging.info("  Updated article with placeholders")
         logging.debug(text_with_placeholders_in_tables)
-
-def get_commonscat_from_weblinks(text):
-    header_pos = re.search(r'=+\s+Weblinks', text, re.IGNORECASE)
-    if not header_pos:
-        return ""
-    weblink_text = text[header_pos.start(0):]
-    for template in mwparserfromhell.parse(weblink_text).filter_templates():
-        if template.name.matches("Commonscat"):
-            return unicode(template.params[0])
-    return ""
-
 
 def replace_in_templates(text, commonscat):
     global WLM_PLACEHOLDER
