@@ -6,9 +6,9 @@ class Pagelist(object):
     def __init__(self, site):
         self.site = site
 
-    def get_county_categories(self):
+    def get_county_categories(self, recursive=True):
         """ Get all subcategories of Liste (Kulturdenkmale in Deutschland) """
-        return pywikibot.Category(self.site, "Liste (Kulturdenkmale in Deutschland)").subcategories(True)
+        return pywikibot.Category(self.site, "Liste (Kulturdenkmale in Deutschland)").subcategories(recursive)
 
     def get_list_articles(self):
         """ Return all the pages for all the categories"""

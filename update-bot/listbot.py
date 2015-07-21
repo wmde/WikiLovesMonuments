@@ -15,6 +15,9 @@ Available command line options are:
 -fmt:wiki         Output page name as Wiki links
 
 -fmt:url          Output page names as URLs to the articles
+
+-list-cat-only    Output only the names of the main categories, not the page names.
+                  Cannot be used together with -out:categories
 """
 
 from __future__ import unicode_literals
@@ -31,7 +34,7 @@ from pagelist import Pagelist
 def export_to_file(outfile, items, formatstring=u"{}\n"):
     """ Write article to file
 
-        items: array or generator for
+        items: array or generator with objects that support the title method.
     """
     for article in items:
         outfile.write(formatstring.format(article.title()))
@@ -41,8 +44,9 @@ def main(*args):
     single_categories = False
     output_destination = UTF8Writer(sys.stdout)
     formatstring = "{}\n"
+    categories_only = False
     for arg in pywikibot.handle_args(args):
-        if arg == "-out:catfile":
+        if arg == "-out:categories":
             single_categories = True
         elif arg == "-out:file":
             output_destination = codecs.open("Denkmallistenliste.txt", "w", 'utf-8')
@@ -50,9 +54,15 @@ def main(*args):
             formatstring = "[[{}]]\n"
         elif arg == "-fmt:url":
             formatstring = "https://de.wikipedia.org/wiki/{}\n"
+        elif arg == "-list-cat-only":
+            categories_only = True
 
     site = pywikibot.Site()
     pl = Pagelist(site)
+
+    if categories_only and not single_categories:
+        export_to_file(output_destination, pl.get_county_categories(False), formatstring)
+        return
 
     if single_categories:
         for category in pl.get_county_categories():
