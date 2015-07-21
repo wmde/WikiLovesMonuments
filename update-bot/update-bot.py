@@ -12,6 +12,7 @@ import mwparserfromhell
 import random
 import operator
 import logging
+import re
 
 from template_replacer import TemplateReplacer
 # TODO: import TableReplacer
@@ -23,14 +24,27 @@ def add_placeholders(article):
     if article.isRedirectPage():
         return
     text = article.get()
-    # TODO check text from page for general commons category, if none is found, return with error msg
-    commonscat = "Foo"
+    commonscat = get_commonscat_from_weblinks(text)
+    if not commonscat:
+        logging.error("  {} has no commonscat template in weblinks section".format(article.title()))
+        return
     text_with_placeholders_in_templates = replace_in_templates(text, commonscat)
     text_with_placeholders_in_tables = replace_in_tables(text_with_placeholders_in_templates, commonscat)
     if text != text_with_placeholders_in_tables:
         # TODO store new text
         logging.info("  Updated article with placeholders")
         logging.debug(text_with_placeholders_in_tables)
+
+def get_commonscat_from_weblinks(text):
+    header_pos = re.search(r'=+\s+Weblinks', text, re.IGNORECASE)
+    if not header_pos:
+        return ""
+    weblink_text = text[header_pos.start(0):]
+    for template in mwparserfromhell.parse(weblink_text).filter_templates():
+        if template.name.matches("Commonscat"):
+            return unicode(template.params[0])
+    return ""
+
 
 def replace_in_templates(text, commonscat):
     global WLM_PLACEHOLDER
@@ -44,10 +58,9 @@ def replace_in_templates(text, commonscat):
             continue
         replacer = TemplateReplacer(template)
         if replacer.param_is_empty("Bild"):
-            # TODO check template for commonscat and assign it to row_commonscat
+            # TODO ask Kai if row commonscat can/should override page commoncat
             row_commonscat = commonscat
             placeholder = WLM_PLACEHOLDER.replace("#commonscat#", row_commonscat)
-            logging.debug("   ... inserting placeholder in {}".format(template))
             replacer.set_value('Bild', placeholder)
             text = text.replace(unicode(template), unicode(replacer))
     return text
