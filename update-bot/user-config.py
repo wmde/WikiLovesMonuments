@@ -1,10 +1,10 @@
 # -*- coding: utf-8  -*-
 
 mylang = 'de'
-family = 'wikipedia'
-#family = 'local'
+#family = 'wikipedia'
+family = 'local'
 #usernames['wikipedia']['de'] = 'WLM Update Bot'
-#usernames['local']['de'] = u'admin'
+usernames['local']['de'] = u'admin'
 
 # For local testing
 register_family_file('local', '/Users/gabi/src/wlm/update-bot/local_family.py')

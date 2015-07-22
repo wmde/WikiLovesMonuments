@@ -21,16 +21,24 @@ PYTHONPATH=$PYTHONPATH:~/src/pywikibot
 export PYTHONPATH
 ```
 
+## General usage information
+
+You can get information on each bot by calling it with the `-help` parameter like this:
+```
+python listbot.py -help
+```
+
+The default `user-config.py` points to your local Mediawiki installation. If you want to run a bot against the German Wikipedia, call it like this:
+
+```
+python listbot.py -family:wikipedia -lang:de -user:"WMDE Update Bot"
+```
+
 ## Available Bots
 ### listbot.py
 Creates lists of the pages in the subcategories of "[Liste (Kulturdenkmale in Deutschland)][wlm_liste]". Can output plain page names (for pasting in the export form), wiki links (for creating a wiki page) and URLs to the articles.
 
-Usage information:
 
-```
-cd WikiLovesMonuments/update-bot
-python listbot.py -help
-```
 
 ### stats-bot.py
 Shows the template count of pages in the each of the WLM categories. This is the preparation for writing the update bot: When it's clear which templates are used for table lines, the update bot can search/replace accordingly.
@@ -40,7 +48,6 @@ The bot ignores commonly used templates and templates that occur less than 10 ti
 Usage:
 
 ```
-cd WikiLovesMonuments/update-bot
 python stats-bot.py
 ```
 
