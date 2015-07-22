@@ -25,33 +25,27 @@ export PYTHONPATH
 
 You can get information on each bot by calling it with the `-help` parameter like this:
 ```
-python listbot.py -help
+python list_bot.py -help
 ```
 
 The default `user-config.py` points to your local Mediawiki installation. If you want to run a bot against the German Wikipedia, call it like this:
 
 ```
-python listbot.py -family:wikipedia -lang:de -user:"WMDE Update Bot"
+python list_bot.py -family:wikipedia -lang:de -user:"WMDE Update Bot"
 ```
 
 ## Available Bots
-### listbot.py
+### list_bot.py
 Creates lists of the pages in the subcategories of "[Liste (Kulturdenkmale in Deutschland)][wlm_liste]". Can output plain page names (for pasting in the export form), wiki links (for creating a wiki page) and URLs to the articles.
 
 
-
-### stats-bot.py
+### stats_bot.py
 Shows the template count of pages in the each of the WLM categories. This is the preparation for writing the update bot: When it's clear which templates are used for table lines, the update bot can search/replace accordingly.
 
 The bot ignores commonly used templates and templates that occur less than 10 times. Only 100 pages in each category are sampled.
 
-Usage:
 
-```
-python stats-bot.py
-```
-
-### local-demo-bot.py
+### local_demo_bot.py
 Demonstrates the usage of a bot that accesses a local wiki instead of Wikipedia.
 If running this bot fails, check your `user-config.py` and `local_family.py` files.
 
