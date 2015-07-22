@@ -4,8 +4,12 @@ python:
   - "2.7"
 
 install:
+  - git clone --branch 2.0 --recursive https://gerrit.wikimedia.org/r/pywikibot/core.git ~/src/pywikibot
+  - PYTHONPATH=$PYTHONPATH:~/src/pywikibot
+  - export PYTHONPATH
   - cd update-bot
   - pip install -r requirements.txt
+  - pip install -r dev-requirements.txt
 
 script:
   - python -m unittest discover .
