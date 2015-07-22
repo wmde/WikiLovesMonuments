@@ -1,7 +1,9 @@
 import re
 
 class TemplateReplacer(object):
-
+    """ Replaces parameter values in a mwparserfromhell.Template node while
+        preserving its whitespace.
+    """
     def __init__(self, template):
         self.template = template
         self.params_dict = {}
