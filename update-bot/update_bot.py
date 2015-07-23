@@ -25,31 +25,31 @@ def add_placeholders(article):
     if article.isRedirectPage():
         return
     text = article.get()
-    commonscat = CommonscatMapper().get_commonscat_from_links(text)
+    commonscat = CommonscatMapper().get_commonscat_from_category_links(text)
     if not commonscat:
         logging.error("  {} has no mapped category link.".format(article.title()))
         return
-    text_with_placeholders_in_templates = replace_in_templates(text, commonscat)
+    text_with_placeholders_in_templates = replace_in_templates(text)
     text_with_placeholders_in_tables = replace_in_tables(text_with_placeholders_in_templates, commonscat)
     if text != text_with_placeholders_in_tables:
         # TODO store new text
         logging.info("  Updated article with placeholders")
         logging.debug(text_with_placeholders_in_tables)
 
-def replace_in_templates(text, commonscat):
+def replace_in_templates(text):
     global WLM_PLACEHOLDER
     # fail fast
     if text.find("Tabellenzeile") == -1:
         logging.info("   no templates found.")
         return text
+    mapper = CommonscatMapper()
     code = mwparserfromhell.parse(text)
     for template in code.filter_templates():
         if template.name.find("Tabellenzeile") == -1:
             continue
         replacer = TemplateReplacer(template)
         if replacer.param_is_empty("Bild"):
-            # TODO ask Kai if row commonscat can/should override page commoncat
-            row_commonscat = commonscat
+            row_commonscat = mapper.get_commonscat(text, template)
             placeholder = WLM_PLACEHOLDER.replace("#commonscat#", row_commonscat)
             replacer.set_value('Bild', placeholder)
             text = text.replace(unicode(template), unicode(replacer))
