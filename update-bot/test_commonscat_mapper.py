@@ -11,7 +11,7 @@ class TestStringMethods(unittest.TestCase):
 
     def test_category_link_mapping(self):
         commonscat = self.mapper.get_commonscat_from_category_links(u"Foo [[Kategorie:Liste (Kulturdenkmäler in Berlin)|Liste der Kulturdenkmäler in Berlin]] Bar")
-        self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Berlin‏‎")
+        self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Berlin")
 
     def test_weblinks_commonscat_template_returns_comonscat_if_exists(self):
         commonscat = self.mapper.get_commonscat_from_weblinks_template(u"Foo\n== Weblinks ==\n {{Commonscat|Cultural heritage monuments in Bad Cannstatt|Kulturdenkmale in Bad Cannstatt}}\n Bar")
@@ -35,17 +35,17 @@ class TestStringMethods(unittest.TestCase):
 
     def test_commonscat_from_table_row_template_returns_commonscat_if_it_is_not_empty(self):
         template = Mock()
-        template.get.return_value = u"Commonscat=Cultural heritage monuments in Berlin‏‎"
+        template.get.return_value = u"Commonscat=Cultural heritage monuments in Berlin"
         commonscat = self.mapper.get_commonscat_from_table_row_template(template)
         template.get.assert_called_once_with("Commonscat")
-        self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Berlin‏‎")
+        self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Berlin")
 
     def test_commonscat_from_table_row_template_strips_whitespace_from_commonscat(self):
         template = Mock()
-        template.get.return_value = u"Commonscat = Cultural heritage monuments in Berlin‏‎    \n"
+        template.get.return_value = u"Commonscat = Cultural heritage monuments in Berlin   \n"
         commonscat = self.mapper.get_commonscat_from_table_row_template(template)
         template.get.assert_called_once_with("Commonscat")
-        self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Berlin‏‎")
+        self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Berlin")
 
     def test_commonscat_from_table_row_template_returns_empty_string_if_it_is_empty(self):
         template = Mock()

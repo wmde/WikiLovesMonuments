@@ -5,10 +5,10 @@ import re
 class CommonscatMapper(object):
 
     mapping = {
-        u"Kategorie:Liste (Kulturdenkmale in Baden-Württemberg)": u"Category:Cultural heritage monuments in Baden-Württemberg‏‎",
+        u"Kategorie:Liste (Kulturdenkmale in Baden-Württemberg)": u"Category:Cultural heritage monuments in Baden-Württemberg",
         u"Kategorie:Liste (Baudenkmäler in Bayern)": u"Category:Cultural heritage monuments in Bavaria",
         u"Kategorie:Liste (Bodendenkmäler in Bayern)": u"Category:Cultural heritage monuments in Bavaria",
-        u"Kategorie:Liste (Kulturdenkmäler in Berlin)": u"Category:Cultural heritage monuments in Berlin‏‎",
+        u"Kategorie:Liste (Kulturdenkmäler in Berlin)": u"Category:Cultural heritage monuments in Berlin",
         u"Kategorie:Liste (Baudenkmale in Brandenburg)": u"Category:Cultural heritage monuments in Brandenburg",
         u"Kategorie:Liste (Bodendenkmale in Brandenburg)": u"Category:Cultural heritage monuments in Brandenburg",
         u"Kategorie:Liste (Kulturdenkmäler in der Freien Hansestadt Bremen)": u"Category:Cultural heritage monuments in Bremen",
