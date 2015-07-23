@@ -54,5 +54,12 @@ class TestTemplateChecker(unittest.TestCase):
         expected_class = type(re.compile("test"))
         self.assertIsInstance(self.checker.config["Denkmalliste Bayern Tabellenzeile"]["id_check"], expected_class)
 
+    def test_is_allowed_template_checks_if_template_name_is_configured(self):
+        template = Mock()
+        template.name = u"Denkmalliste Sachsen Tabellenzeile"
+        self.assertTrue(self.checker.is_allowed_template(template))
+        template.name = u"Denkmalliste Kleinkleckersdorf Tabellenzeile"
+        self.assertFalse(self.checker.is_allowed_template(template))
+
 if __name__ == '__main__':
     unittest.main()

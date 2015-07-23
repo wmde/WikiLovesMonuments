@@ -33,6 +33,9 @@ class TemplateChecker(object):
     def has_valid_id(self, template):
         return bool(self.config[template.name]["id_check"].search(self.get_id(template)))
 
+    def is_allowed_template(self, template):
+        return template.name in self.config
+
     def compile_id_check_patterns(self, config):
         retype = type(re.compile("test"))
         for tpl in config:
