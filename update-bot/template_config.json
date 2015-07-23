@@ -1,0 +1,38 @@
+{
+      "Denkmalliste Bayern Tabellenzeile": {
+          "id": "Nummer",
+          "id_check": "D-\\d-\\d{3}-\\d{3}-\\d{3}"
+      },
+      "Denkmalliste Brandenburg Tabellenzeile": {
+          "id": "ID",
+          "id_check": "\\d{8}"
+      },
+      "Denkmalliste Hamburg Tabellenzeile": {
+          "id": "Nummer",
+          "id_check": "\\d{4,}"
+      },
+      "Denkmalliste Hessen Tabellenzeile": {
+          "id": "Nummer",
+          "id_check": "\\d{4,}"
+      },
+      "Denkmalliste1 Tabellenzeile": {
+          "id": "Nummer",
+          "id_check": "\\d{4,}"
+      },
+      "Denkmalliste Mecklenburg-Vorpommern Tabellenzeile": {
+          "id": "ID",
+          "id_check": "\\d{4,}"
+      },
+      "Denkmalliste Sachsen Tabellenzeile": {
+          "id": "ID",
+          "id_check": "\\d{4,}"
+      },
+      "Denkmalliste Sachsen-Anhalt Tabellenzeile": {
+          "id": "ID",
+          "id_check": "\\d{8}"
+      },
+      "Denkmalliste Thüringen Tabellenzeile": {
+          "id": "ID",
+          "id_check": "\\d{4,}"
+      }
+  }

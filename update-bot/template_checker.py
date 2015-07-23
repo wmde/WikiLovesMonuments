@@ -1,51 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import re
+import json
 
 class TemplateChecker(object):
     """ Stores the configured template names and allowed ID patterns """
 
-    config = {
-        u"Denkmalliste Bayern Tabellenzeile": {
-            "id": "Nummer",
-            "id_check": re.compile(r"D-\d-\d{3}-\d{3}-\d{3}")
-        },
-        u"Denkmalliste Brandenburg Tabellenzeile": {
-            "id": "ID",
-            "id_check": re.compile(r"\d{8}")
-        },
-        u"Denkmalliste Hamburg Tabellenzeile": {
-            "id": "Nummer",
-            "id_check": re.compile(r"\d{4,}")
-        },
-        u"Denkmalliste Hessen Tabellenzeile": {
-            "id": "Nummer",
-            "id_check": re.compile(r"\d{4,}")
-        },
-        u"Denkmalliste1 Tabellenzeile": {
-            "id": "Nummer",
-            "id_check": re.compile(r"\d{4,}")
-        },
-        u"Denkmalliste Mecklenburg-Vorpommern Tabellenzeile": {
-            "id": "ID",
-            "id_check": re.compile(r"\d{4,}")
-        },
-        u"Denkmalliste Sachsen Tabellenzeile": {
-            "id": "ID",
-            "id_check": re.compile(r"\d{4,}")
-        },
-        u"Denkmalliste Sachsen-Anhalt Tabellenzeile": {
-            "id": "ID",
-            "id_check": re.compile(r"\d{8}")
-        },
-        u"Denkmalliste Thüringen Tabellenzeile": {
-            "id": "ID",
-            "id_check": re.compile(r"\d{4,}")
-        },
-    }
-
-    def __init__(self):
+    def __init__(self, config={}):
         self.tpl_match_regex = None
+        self.config = config
 
     def text_contains_templates(self, text):
         if not self.tpl_match_regex:
@@ -69,3 +32,19 @@ class TemplateChecker(object):
 
     def has_valid_id(self, template):
         return bool(self.config[template.name]["id_check"].search(self.get_id(template)))
+
+    def compile_id_check_patterns(self, config):
+        retype = type(re.compile("test"))
+        for tpl in config:
+            if "id_check" in config[tpl] and not isinstance(config[tpl]["id_check"], retype):
+                config[tpl]["id_check"] = re.compile(config[tpl]["id_check"])
+        return config
+
+    @property
+    def config(self):
+        return self._config
+
+    @config.setter
+    def config(self, config):
+        self._config = self.compile_id_check_patterns(config)
+        self.tpl_match_regex = None

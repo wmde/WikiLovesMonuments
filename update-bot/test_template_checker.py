@@ -1,16 +1,23 @@
 # -*- coding: utf-8 -*-
 import unittest
 from mock import Mock
+import re
 
 from template_checker import TemplateChecker
 
 class TestTemplateChecker(unittest.TestCase):
 
     def setUp(self):
-        self.checker = TemplateChecker()
+        config = {
+            "Denkmalliste Sachsen Tabellenzeile": {
+                "id": "ID",
+                "id_check": "\\d{4,}"
+             }
+        }
+        self.checker = TemplateChecker(config)
 
     def test_text_contains_templates_finds_template_name(self):
-        text = "{{Denkmalliste Bayern Tabellenzeile|}}"
+        text = "{{Denkmalliste Sachsen Tabellenzeile|}}"
         self.assertTrue(self.checker.text_contains_templates(text))
 
     def test_get_id_returns_id(self):
@@ -36,6 +43,16 @@ class TestTemplateChecker(unittest.TestCase):
         template.get.return_value = u"ID=123"
         template.name = u"Denkmalliste Sachsen Tabellenzeile"
         self.assertFalse(self.checker.has_valid_id(template))
+
+    def test_setting_configuration_compiles_regex_patterns(self):
+        self.checker.config = {
+            "Denkmalliste Bayern Tabellenzeile": {
+                "id": "ID",
+                "id_check": "D-d{3}"
+             }
+        }
+        expected_class = type(re.compile("test"))
+        self.assertIsInstance(self.checker.config["Denkmalliste Bayern Tabellenzeile"]["id_check"], expected_class)
 
 if __name__ == '__main__':
     unittest.main()
