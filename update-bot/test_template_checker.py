@@ -2,12 +2,12 @@
 import unittest
 from mock import Mock
 
-from allowed_templates import AllowedTemplates
+from template_checker import TemplateChecker
 
-class TestAllowedTemplates(unittest.TestCase):
+class TestTemplateChecker(unittest.TestCase):
 
     def setUp(self):
-        self.checker = AllowedTemplates()
+        self.checker = TemplateChecker()
 
     def test_text_contains_templates_finds_template_name(self):
         text = "{{Denkmalliste Bayern Tabellenzeile|}}"

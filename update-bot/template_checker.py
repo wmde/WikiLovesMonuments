@@ -2,7 +2,7 @@
 
 import re
 
-class AllowedTemplates(object):
+class TemplateChecker(object):
     """ Stores the configured template names and allowed ID patterns """
 
     config = {
