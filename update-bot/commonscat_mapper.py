@@ -40,6 +40,9 @@ class CommonscatMapper(object):
         u"Kategorie:Liste (Kulturdenkmale in Zittau)": u"Category:Cultural heritage ensembles in Saxony",
     }
 
+    def __init__(self):
+        self.category_cache = {}
+
     def get_commonscat_from_category_links(self, text):
         """ Get the commonscat from the Category links (which is guaranteed to
             be on every page of the WLM pages)
@@ -76,9 +79,11 @@ class CommonscatMapper(object):
                 raise
 
     def get_commonscat(self, text, template):
-        category_candidates = [
-            self.get_commonscat_from_table_row_template(template),
-            self.get_commonscat_from_weblinks_template(text),
-            self.get_commonscat_from_category_links(text)
-        ]
+        text_id = id(text)
+        if text_id not in self.category_cache:
+            self.category_cache[text_id] = [
+                self.get_commonscat_from_weblinks_template(text),
+                self.get_commonscat_from_category_links(text)
+            ]
+        category_candidates = [self.get_commonscat_from_table_row_template(template)] + self.category_cache[text_id]
         return next(category for category in category_candidates if category) # return first non-empyt element
