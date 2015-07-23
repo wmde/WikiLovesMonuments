@@ -17,7 +17,7 @@ class TemplateChecker(object):
         return bool(self.tpl_match_regex.search(text))
 
     def get_id(self, template):
-        id_name = self.config[template.name]["id"]
+        id_name = self.template_config(template)["id"]
         try:
             id_param = unicode(template.get(id_name)).strip()
             if not id_param:
@@ -31,10 +31,10 @@ class TemplateChecker(object):
                 raise
 
     def has_valid_id(self, template):
-        return bool(self.config[template.name]["id_check"].search(self.get_id(template)))
+        return bool(self.template_config(template)["id_check"].search(self.get_id(template)))
 
     def is_allowed_template(self, template):
-        return template.name in self.config
+        return unicode(template.name) in self.config
 
     def compile_id_check_patterns(self, config):
         retype = type(re.compile("test"))
@@ -42,6 +42,9 @@ class TemplateChecker(object):
             if "id_check" in config[tpl] and not isinstance(config[tpl]["id_check"], retype):
                 config[tpl]["id_check"] = re.compile(config[tpl]["id_check"])
         return config
+
+    def template_config(self, template):
+        return self.config[unicode(template.name)]
 
     @property
     def config(self):
