@@ -67,6 +67,8 @@ def generate_result_page(results, pagelister):
         if not pagelister.root_category in category.categories():
             heading += "="
         text += u"{} {} {}\n".format(heading, category.title(), heading)
+        num_errors = len(category_results["results"])
+        text += u"{} Seiten geprüft, {} ohne Probleme\n".format(category_results["pages_checked"], category_results["pages_checked"] - num_errors)
         text += u"{{Fehler in Denkmallisten Tabellenkopf}}\n"
         for result in category_results["results"]:
             errors = {
@@ -134,11 +136,13 @@ def main(*args):
     else:
         categories = [pywikibot.Category(site, catname)]
     for category in categories:
+        prev_count = counter
         counter, result = get_results_for_county(checker, category.articles(), limit, counter)
         if result:
             results.append({
                 "category": category,
-                "results": result
+                "results": result,
+                "pages_checked": counter - (prev_count + 1) # Counter is already increased by 1
             })
         if limit and counter > limit:
             break
