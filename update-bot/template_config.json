@@ -1,38 +1,47 @@
 {
       "Denkmalliste Bayern Tabellenzeile": {
           "id": "Nummer",
-          "id_check": "D-\\d-\\d{3}-\\d{3}-\\d{3}"
+          "id_check": "D-\\d-\\d{3}-\\d{3}-\\d{3}",
+          "id_check_description": "Nummer im Format D-n-nnn-nnn-nnn"
       },
       "Denkmalliste Brandenburg Tabellenzeile": {
           "id": "ID",
-          "id_check": "\\d{8}"
+          "id_check": "\\d{8}",
+          "id_check_description": "achtstellige Nummer"
       },
       "Denkmalliste Hamburg Tabellenzeile": {
           "id": "Nummer",
-          "id_check": "\\d{4,}"
+          "id_check": "\\d{4,}",
+          "id_check_description": "Nummer, mindestens vierstellig"
       },
       "Denkmalliste Hessen Tabellenzeile": {
           "id": "Nummer",
-          "id_check": "\\d{4,}"
+          "id_check": "\\d{4,}",
+          "id_check_description": "Nummer, mindestens vierstellig"
       },
       "Denkmalliste1 Tabellenzeile": {
           "id": "Nummer",
-          "id_check": "\\d{4,}"
+          "id_check": "\\d{4,}",
+          "id_check_description": "Nummer, mindestens vierstellig"
       },
       "Denkmalliste Mecklenburg-Vorpommern Tabellenzeile": {
           "id": "ID",
-          "id_check": "\\d{4,}"
+          "id_check": "\\d{4,}",
+          "id_check_description": "Nummer, mindestens vierstellig"
       },
       "Denkmalliste Sachsen Tabellenzeile": {
           "id": "ID",
-          "id_check": "\\d{4,}"
+          "id_check": "\\d{4,}",
+          "id_check_description": "Nummer, mindestens vierstellig"
       },
       "Denkmalliste Sachsen-Anhalt Tabellenzeile": {
           "id": "ID",
-          "id_check": "\\d{8}"
+          "id_check": "\\d{8}",
+          "id_check_description": "achtstellige Nummer"
       },
       "Denkmalliste Thüringen Tabellenzeile": {
           "id": "ID",
-          "id_check": "\\d{4,}"
+          "id_check": "\\d{4,}",
+          "id_check_description": "Nummer, mindestens vierstellig"
       }
   }

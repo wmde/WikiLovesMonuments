@@ -9,13 +9,19 @@ class TestCheckerBot(unittest.TestCase):
     """ Integration testing for checker_bot """
 
     def setUp(self):
-        config = {
+        self.config = {
             u"Denkmalliste Sachsen Tabellenzeile": {
                 "id": "ID",
-                "id_check": "\\d{4,}"
-             }
+                "id_check": "\\d{4,}",
+                "id_check_description": u"Nummer, mindestens vierstellig"
+            },
+            u"Denkmalliste Bayern Tabellenzeile": {
+                "id": "Nummer",
+                "id_check": "D-\\d-\\d{3}",
+                "id_check_description": u"Nummer im Format D-n-nnn"
+            }
         }
-        self.checker = template_checker.TemplateChecker(config)
+        self.checker = template_checker.TemplateChecker(self.config)
 
     def create_article_with_text(self, text):
         article = Mock()
@@ -57,6 +63,25 @@ class TestCheckerBot(unittest.TestCase):
             checker_bot.ERROR_DUPLICATE_IDS: { u"1": 2 }
         }
         self.assertEqual(expected_errors, errors)
+
+    def test_generate_config_table_contains_a_column_for_each_template_configuration_in_alphabetic_order_of_template_names(self):
+        config_table = checker_bot.generate_config_table(self.config)
+        config_table_lines = config_table.split("|-\n")
+        self.assertIn("|[[Vorlage:Denkmalliste Bayern Tabellenzeile", config_table_lines[2])
+        self.assertIn("|[[Vorlage:Denkmalliste Sachsen Tabellenzeile", config_table_lines[3])
+
+    def test_generate_config_table_contains_a_column_id(self):
+        config_table = checker_bot.generate_config_table(self.config)
+        config_table_lines = config_table.split("|-\n")
+        self.assertIn("|Nummer", config_table_lines[2])
+        self.assertIn("|ID", config_table_lines[3])
+
+    def test_generate_config_table_contains_a_description_of_valid_ids(self):
+        config_table = checker_bot.generate_config_table(self.config)
+        config_table_lines = config_table.split("|-\n")
+        self.assertIn("|Nummer im Format D-n-nnn", config_table_lines[2])
+        self.assertIn("|Nummer, mindestens vierstellig", config_table_lines[3])
+
 
     # TODO write tests for generate_result_page and get_results_for_county
 

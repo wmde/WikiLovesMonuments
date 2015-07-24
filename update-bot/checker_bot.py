@@ -100,6 +100,14 @@ def get_results_for_county(checker, articles, limit, counter=0):
             })
     return counter, results
 
+def generate_config_table(checker_config):
+    line_fmt = "|-\n|[[Vorlage:{}|{}]]\n|{}\n|{}\n"
+    text = '{| class="wikitable"\n|-\n!Vorlage!!Bezeichner ID!!Format ID\n'
+    for template_name, config in sorted(checker_config.items()):
+        text += line_fmt.format(template_name, template_name, config["id"], config["id_check_description"])
+    text += "|}\n\n"
+    return text
+
 def main(*args):
     UTF8Writer = codecs.getwriter('utf8')
     output_destination = UTF8Writer(sys.stdout)
@@ -135,7 +143,8 @@ def main(*args):
         if limit and counter > limit:
             break
     result_page = generate_result_page(results, pagelister)
-    # TODO append human-readable tabular representation of checker_config to result page
+    result_page += "== Zulässige Vorlagen ==\nDie Seiten wurden mit folgenden zulässigen Vorlagen und Einstellungen geprüft:\n"
+    result_page += generate_config_table(checker_config)
     if outputpage:
         article = pywikibot.Page(site, outputpage)
         article.text = result_page
