@@ -23,9 +23,6 @@ Available command line options are:
 from __future__ import unicode_literals
 
 import pywikibot
-from os.path import join
-from pywikibot import config
-from pywikibot.exceptions import SiteDefinitionError
 import codecs
 import sys
 

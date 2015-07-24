@@ -4,15 +4,10 @@
 from __future__ import unicode_literals
 
 import pywikibot
-from os.path import join
-from pywikibot import config
 import codecs
 import sys
 import mwparserfromhell
-import random
-import operator
 import logging
-import re
 
 from commonscat_mapper import CommonscatMapper
 from template_replacer import TemplateReplacer

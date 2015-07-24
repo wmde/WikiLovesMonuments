@@ -1,5 +1,4 @@
 import pywikibot
-from pywikibot import config
 
 class Pagelist(object):
     """ Utility class top get subcategories and articles for WLM 2015 """
