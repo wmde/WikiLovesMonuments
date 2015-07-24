@@ -17,8 +17,6 @@ Available command line options are:
 from __future__ import unicode_literals
 
 import pywikibot
-from os.path import join
-from pywikibot import config
 import codecs
 import sys
 import logging
