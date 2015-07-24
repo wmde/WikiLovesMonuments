@@ -1,0 +1,39 @@
+<onlyinclude><includeonly>|- class="{{#switch: {{{Level|}}}
+| 1 = hintergrundfarbe7
+| 2 = hintergrundfarbe8
+| 4 = hintergrundfarbe5
+| 8 = hintergrundfarbe5
+}}"
+|[[{{{Titel}}}]]
+|data-sort-value="{{{Level|8}}}"|
+{{#ifeq: {{{Kein_Template|False}}}|True|
+* Keine Vorlage verwendet. |
+{{#if: {{{IDs_fehlen|}}}|
+* Es fehlen eindeutige IDs in {{{IDs_fehlen}}} Zeilen.
+}}
+{{#if: {{{IDs_ungueltig|}}}|
+* {{{IDs_ungueltig}}} IDs erfüllen nicht die Anforderungen für eindeutige IDs.
+}}
+{{#if: {{{IDs_doppelt|}}}|
+* Folgende Nummern kommen mehrfach auf der Seite vor: {{{IDs_doppelt}}}
+}}
+}}
+</includeonly></onlyinclude>
+Vorlage für das Anzeigen von Problemen in Denkmallisten.
+
+Beispielausgabe:
+{{Fehler in Denkmallisten Tabellenkopf}}
+|- class="hintergrundfarbe7"
+|[[Liste der Baudenkmäler in Otting]]
+|
+* Keine Vorlage verwendet.
+|- class="hintergrundfarbe8"
+|[[Liste der Baudenkmäler in Hasloch]]
+|
+* Es fehlen eindeutige IDs in 50 Zeilen.
+|- class="hintergrundfarbe5"
+|[[Liste der Baudenkmäler in Steinsfeld]]
+|
+* 16 IDs erfüllen nicht die Anforderungen für eindeutige IDs.
+* Folgende Nummern kommen mehrfach auf der Seite vor: 1,2,3
+|}
