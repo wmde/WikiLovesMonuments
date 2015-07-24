@@ -38,6 +38,12 @@ python list_bot.py -family:wikipedia -lang:de -user:"WMDE Update Bot"
 ### list_bot.py
 Creates lists of the pages in the subcategories of "[Liste (Kulturdenkmale in Deutschland)][wlm_liste]". Can output plain page names (for pasting in the export form), wiki links (for creating a wiki page) and URLs to the articles.
 
+### checker_bot.py
+Checks the pages in the in the subcategories of "[Liste (Kulturdenkmale in Deutschland)][wlm_liste]" if they use approved templates and if the templates
+have valid, unique IDs. It can create a result page from the check. The result
+page uses two MediaWiki templates, [`Fehler_in_Denkmallisten_Tabellenkopf`](wiki_templates/Fehler_in_Denkmallisten_Tabellenkopf.txt) and [`Fehler_in_Denkmallisten_Tabellenzeile`](wiki_templates/Fehler_in_Denkmallisten_Tabellenzeile.txt) which must be copied into the Wiki once.
+
+Configuration of the approved templates can be found in the file [`template_config.json`](template_config.json). It configures the names of the approved templates, the name of the ID parameter and a regular expression for validating ID parameters.
 
 ### stats_bot.py
 Shows the template count of pages in the each of the WLM categories. This is the preparation for writing the update bot: When it's clear which templates are used for table lines, the update bot can search/replace accordingly.
