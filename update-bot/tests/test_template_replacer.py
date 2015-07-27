@@ -9,7 +9,7 @@ class TemplateForTesting(object):
         self.name = name
         self.params = params
 
-class TestStringMethods(unittest.TestCase):
+class TestTemplateReplacer(unittest.TestCase):
 
     def test_get_value_returns_values(self):
         fixture = TemplateForTesting("", [u"a=5", u"b=Übertrag"])
