@@ -1,3 +1,4 @@
+.idea/
 update-bot/apicache
 update-bot/logs
 *.pyc
