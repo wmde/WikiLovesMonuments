@@ -19,8 +19,8 @@ def main():
 
 def parser(page_names, file):
     progress = 0
-    print('Analyzing page: ' + file)
-    print('Total Pages: ' + str(len(page_names)))
+    print 'Analyzing page: ' + file
+    print 'Total Pages: ' + str(len(page_names))
 
     results = []
 
@@ -30,7 +30,7 @@ def parser(page_names, file):
         location_end = []
 
         progress += 1
-        print('page: ' + str(progress))
+        print 'page: ' + str(progress)
 
         search_start = '! '
         finder_start(page_content, location_start, search_start)
@@ -42,7 +42,7 @@ def parser(page_names, file):
 
     frequency = counter(results)
 
-    print('\nFrequency in Array: \n' + str(frequency))
+    print '\nFrequency in Array: \n' + str(frequency)
     writing_file(frequency, file)
 
 
