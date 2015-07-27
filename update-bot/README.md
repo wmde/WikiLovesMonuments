@@ -63,8 +63,12 @@ If running this bot fails, check your `user-config.py` and `local_family.py` fil
 
 
 ## Running Tests
-The test for the `CommonscatMapper` and `TemplateReplacer` classes are standard `unittest.TestCase` classes. They can be run from the command line:
+The test cases are standard `unittest.TestCase` classes. They can be run from the command line:
 
-    python -m unittest test_commonscat_mapper test_template_replacer
+    python -m unittest discover tests
+
+You can also run individual tests like this:
+
+   python tests/test_commonscat_mapper.py
 
 [wlm_liste]: https://de.wikipedia.org/wiki/Kategorie:Liste_(Kulturdenkmale_in_Deutschland)
