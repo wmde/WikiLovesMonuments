@@ -3,6 +3,7 @@
 import re
 import json
 
+
 class TemplateChecker(object):
     """ Stores the configured template names and allowed ID patterns """
 

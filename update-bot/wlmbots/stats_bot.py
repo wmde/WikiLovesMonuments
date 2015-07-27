@@ -1,16 +1,19 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 # This bot checks which templates are used on the wlm pages
 
 from __future__ import unicode_literals
 
-import pywikibot
 import codecs
 import sys
-import mwparserfromhell
 import random
 import collections
 
-from pagelist import Pagelist
+import pywikibot
+import mwparserfromhell
+
+from lib.pagelist import Pagelist
+
 
 class TemplateCounter(object):
     """ Count occurrence of template names on pages """

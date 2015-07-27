@@ -1,16 +1,19 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 # This bot inserts placeholders to Wikimedia Commons on all the monument pages
 
 from __future__ import unicode_literals
 
-import pywikibot
 import codecs
 import sys
-import mwparserfromhell
 import logging
 
-from commonscat_mapper import CommonscatMapper
-from template_replacer import TemplateReplacer
+import pywikibot
+import mwparserfromhell
+
+from lib.commonscat_mapper import CommonscatMapper
+from lib.template_replacer import TemplateReplacer
+
 # TODO: import TableReplacer
 
 WLM_PLACEHOLDER = '<-- link to commons placeholder "#commonscat#" -->' # TODO proper placeholder

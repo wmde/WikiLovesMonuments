@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-import template_replacer
+from wlmbots.lib import template_replacer
+
 
 class TemplateForTesting(object):
     def __init__(self, name={}, params={}):
