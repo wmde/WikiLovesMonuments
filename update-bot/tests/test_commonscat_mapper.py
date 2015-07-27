@@ -6,7 +6,7 @@ from mock import Mock
 from wlmbots.lib import commonscat_mapper
 
 
-class TestStringMethods(unittest.TestCase):
+class TestCommonscatMapper(unittest.TestCase):
 
     def setUp(self):
         self.mapper = commonscat_mapper.CommonscatMapper()
