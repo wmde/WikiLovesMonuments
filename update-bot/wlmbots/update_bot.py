@@ -29,7 +29,7 @@ def add_placeholders(article):
         logging.error("  {} has no mapped category link.".format(article.title()))
         return
     text_with_placeholders_in_templates = replace_in_templates(text)
-    text_with_placeholders_in_tables = replace_in_tables(text_with_placeholders_in_templates, commonscat)
+    text_with_placeholders_in_tables = replace_in_tables(text_with_placeholders_in_templates )
     if text != text_with_placeholders_in_tables:
         # TODO store new text
         logging.info("  Updated article with placeholders")
@@ -56,7 +56,7 @@ def replace_in_templates(text):
     return text
 
 
-def replace_in_tables(text, commonscat):
+def replace_in_tables(text):
     # TODO Find table starts on page {|-
     # TODO parse table headings of each table to get a dictionary of heading => column_index
     # TODO find beginning of each table row, and use table_replacer to check/change image column of each row
