@@ -41,30 +41,41 @@ class CheckerBot(object):
     def generate_result_page(self, results, pagelister):
         text = u""
         for category_results in results:
-            heading = "=="
-            category = category_results["category"]
-            if pagelister.root_category not in category.categories():
-                heading += "="
-            text += u"{} {} {}\n".format(heading, category.title(), heading)
-            num_errors = len(category_results["results"])
-            text += u"{} Seiten geprüft, {} ohne Probleme\n".format(category_results["pages_checked"],
-                                                                    category_results["pages_checked"] - num_errors)
-            text += u"{{Fehler in Denkmallisten Tabellenkopf}}\n"
-            for result in category_results["results"]:
-                errors = {
-                    ERROR_MISSING_TEMPLATE: "",
-                    ERROR_MISSING_IDS: "",
-                    ERROR_INVALID_IDS: "",
-                    ERROR_DUPLICATE_IDS: ""
-                }
-                severity = min(result["errors"].keys())
-                errors.update(result["errors"])
-                duplicate_ids = ", ".join(errors[ERROR_DUPLICATE_IDS])
-                text += u"{{{{Fehler in Denkmallisten Tabellenzeile|Titel={}|Kein_Template={}|IDs_fehlen={}|IDs_ungueltig={}|IDs_doppelt={}|Level={}}}}}\n".format(
-                    result["title"], errors[ERROR_MISSING_TEMPLATE], errors[ERROR_MISSING_IDS], errors[ERROR_INVALID_IDS],
-                    duplicate_ids, severity
-                )
-            text += "|}\n\n"
+            text += generate_category_result_header(category_results, pagelister)
+            text += generate_category_result_table(category_results)
+        return text
+
+
+    def generate_category_result_header(self, results, pagelister):
+        text = u""
+        heading = "=="
+        category = results["category"]
+        if not pagelister.root_category in category.categories():
+            heading += "="
+        text += u"\n{} {} {}\n".format(heading, category.title(), heading)
+        num_errors = len(results["results"])
+        text += u"{} Seiten geprüft, {} ohne Probleme\n".format(results["pages_checked"],
+                                                                results["pages_checked"] - num_errors)
+        return text
+
+
+    def generate_category_result_table(self, results):
+        text = u"{{Fehler in Denkmallisten Tabellenkopf}}\n"
+        for result in results["results"]:
+            errors = {
+                ERROR_MISSING_TEMPLATE: "",
+                ERROR_MISSING_IDS: "",
+                ERROR_INVALID_IDS: "",
+                ERROR_DUPLICATE_IDS: ""
+            }
+            severity = min(result["errors"].keys())
+            errors.update(result["errors"])
+            duplicate_ids = ", ".join(errors[ERROR_DUPLICATE_IDS])
+            text += u"{{{{Fehler in Denkmallisten Tabellenzeile|Titel={}|Kein_Template={}|IDs_fehlen={}|IDs_ungueltig={}|IDs_doppelt={}|Level={}}}}}\n".format(
+                result["title"], errors[ERROR_MISSING_TEMPLATE], errors[ERROR_MISSING_IDS], errors[ERROR_INVALID_IDS],
+                duplicate_ids, severity
+            )
+        text += "|}\n\n"
         return text
 
 
