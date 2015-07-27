@@ -99,11 +99,10 @@ def sample_county(county, sample_size, output_destination, output_sample_article
     output.output_result(county.title(), counter_tpl.templates, len(articles))
 
 
-def main(*args):
+def main():
     utf8_writer = codecs.getwriter('utf8')
     output_destination = utf8_writer(sys.stdout)
     sample_size = 100
-    output_sample_article_titles = True
 
     site = pywikibot.Site()
     lister = Pagelist(site)

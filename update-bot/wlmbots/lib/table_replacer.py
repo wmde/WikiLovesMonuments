@@ -1,10 +1,9 @@
 class TableReplacer(object):
     """ This class represents a single table row on a wiki page """
 
-    def __init__(self, text, row_dict, row_start=0):
+    def __init__(self, text, row_dict):
         """ @param text Full page text
             @param row_dict Dictionary of row_name => column_index
-            @param row_start where to begin parsing the table row
         """
         self.text = text
         self.row_dict = row_dict
