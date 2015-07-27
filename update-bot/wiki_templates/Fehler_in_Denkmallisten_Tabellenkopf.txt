@@ -1,4 +1,7 @@
-{|class="wikitable sortable"
+<onlyinclude><includeonly>{|class="wikitable sortable"
 |-
 !Titel
-!Problem(e)
+!Problem(e)</includeonly></onlyinclude>
+Vorlage für den Tabellenkopf für das Anzeigen von Problemen in Denkmallisten auf [[Wikipedia:Wiki_Loves_Monuments_2015/Deutschland/Technische_Unterst%C3%BCtzung/Anzupassende_Listen]].
+
+Wird zusammen mit [[Vorlage:Fehler_in_Denkmallisten_Tabellenzeile]] verwendet.
