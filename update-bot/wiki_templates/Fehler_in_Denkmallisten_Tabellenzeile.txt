@@ -19,7 +19,7 @@
 }}
 }}
 </includeonly></onlyinclude>
-Vorlage für das Anzeigen von Problemen in Denkmallisten.
+Vorlage für das Anzeigen von Problemen in Denkmallisten auf [[Wikipedia:Wiki_Loves_Monuments_2015/Deutschland/Technische_Unterst%C3%BCtzung/Anzupassende_Listen]]
 
 Beispielausgabe:
 {{Fehler in Denkmallisten Tabellenkopf}}
