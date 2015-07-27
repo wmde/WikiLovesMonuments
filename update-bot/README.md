@@ -37,7 +37,7 @@ python list_bot.py -help
 The default `user-config.py` points to your local Mediawiki installation. If you want to run a bot against the German Wikipedia, call it like this:
 
 ```
-python wlmbots/list_bot.py -family:wikipedia -lang:de -user:"WMDE Update Bot"
+python wlmbots/list_bot.py -family:wikipedia -lang:de -user:"WLMUploadVorlageBot"
 ```
 
 ## Available Bots
