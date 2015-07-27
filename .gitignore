@@ -3,3 +3,5 @@ update-bot/logs
 *.pyc
 update-bot/throttle.ctrl
 update-bot/Denkmallistenliste.txt
+update-bot/local_family.py
+update-bot/user-config.py
