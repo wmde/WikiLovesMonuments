@@ -5,7 +5,11 @@ from wlmbots.lib import template_replacer
 
 
 class TemplateForTesting(object):
-    def __init__(self, name={}, params={}):
+    def __init__(self, name=None, params=None):
+        if not params:
+            params = {}
+        if not name:
+            name = {}
         self.name = name
         self.params = params
 
