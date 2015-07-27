@@ -26,7 +26,7 @@ import codecs
 import sys
 
 import pywikibot
-from lib.pagelist import Pagelist
+from wlmbots.lib.pagelist import Pagelist
 
 
 def export_to_file(outfile, items, formatstring=u"{}\n"):

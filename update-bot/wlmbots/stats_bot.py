@@ -12,7 +12,7 @@ import collections
 import pywikibot
 import mwparserfromhell
 
-from lib.pagelist import Pagelist
+from wlmbots.lib.pagelist import Pagelist
 
 
 class TemplateCounter(object):

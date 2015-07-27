@@ -26,8 +26,8 @@ import collections
 import pywikibot
 import mwparserfromhell
 
-from lib.template_checker import TemplateChecker
-from lib.pagelist import Pagelist
+from wlmbots.lib.template_checker import TemplateChecker
+from wlmbots.lib.pagelist import Pagelist
 
 ERROR_MISSING_TEMPLATE = 1
 ERROR_MISSING_IDS = 2

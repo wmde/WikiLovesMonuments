@@ -11,8 +11,8 @@ import logging
 import pywikibot
 import mwparserfromhell
 
-from lib.commonscat_mapper import CommonscatMapper
-from lib.template_replacer import TemplateReplacer
+from wlmbots.lib.commonscat_mapper import CommonscatMapper
+from wlmbots.lib.template_replacer import TemplateReplacer
 
 # TODO: import TableReplacer
 
