@@ -28,10 +28,10 @@ def add_placeholders(article):
         logging.error("  {} has no mapped category link.".format(article.title()))
         return
     text_with_placeholders_in_templates = replace_in_templates(text)
-    if text != text_with_placeholders_in_tables:
+    if text != text_with_placeholders_in_templates:
         # TODO store new text
         logging.info("  Updated article with placeholders")
-        logging.debug(text_with_placeholders_in_tables)
+        logging.debug(text_with_placeholders_in_templates)
 
 
 def replace_in_templates(text):
