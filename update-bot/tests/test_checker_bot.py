@@ -93,6 +93,46 @@ class TestCheckerBot(unittest.TestCase):
         self.assertIn(u"100 Seiten geprüft", header)
         self.assertIn(u"97 ohne Probleme", header)
 
+    def test_generate_category_result_table_creates_id_template_entries(self):
+        results = {
+            "results": [
+                 {
+                    "title" : u"Liste der Baudenkmale in Döbeln",
+                    "errors": {
+                        checker_bot.ERROR_INVALID_IDS: 7,
+                        checker_bot.ERROR_DUPLICATE_IDS: [u"42", u"23"],
+                        checker_bot.ERROR_MISSING_IDS: 8
+                    }
+                }
+            ]
+        }
+        table = checker_bot.generate_category_result_table(results)
+        self.assertIn(u"{{Fehler in Denkmallisten Tabellenzeile|", table)
+        self.assertIn(u"Titel=Liste der Baudenkmale in Döbeln", table)
+        self.assertIn(u"Kein_Template=|", table)
+        self.assertIn(u"IDs_fehlen=8", table)
+        self.assertIn(u"IDs_ungueltig=7", table)
+        self.assertIn(u"IDs_doppelt=42, 23", table)
+
+    def test_generate_category_result_table_creates_missing_template_entries(self):
+        results = {
+            "results": [
+                 {
+                    "title" : u"Liste der Baudenkmale in Döbeln",
+                    "errors": {
+                        checker_bot.ERROR_MISSING_TEMPLATE: True
+                    }
+                }
+            ]
+        }
+        table = checker_bot.generate_category_result_table(results)
+        self.assertIn(u"{{Fehler in Denkmallisten Tabellenzeile|", table)
+        self.assertIn(u"Titel=Liste der Baudenkmale in Döbeln", table)
+        self.assertIn(u"Kein_Template=True|", table)
+        self.assertIn(u"IDs_fehlen=|", table)
+        self.assertIn(u"IDs_ungueltig=|", table)
+        self.assertIn(u"IDs_doppelt=|", table)
+
 
 if __name__ == '__main__':
     unittest.main()
