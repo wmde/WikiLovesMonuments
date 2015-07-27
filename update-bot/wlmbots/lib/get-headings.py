@@ -9,17 +9,17 @@ site = pywikibot.Site()
 
 
 def main():
-    for file in os.listdir('lists/'):
+    for list_file in os.listdir('lists/'):
         page_names = []
-        datafile = open('lists/' + file)
+        datafile = open('lists/' + list_file)
         for line in datafile.readlines():
             page_names.append(line)
-        parser(page_names, file)
+        parser(page_names, list_file)
 
 
-def parser(page_names, file):
+def parser(page_names, input_file):
     progress = 0
-    print 'Analyzing page: ' + file
+    print 'Analyzing page: ' + input_file
     print 'Total Pages: ' + str(len(page_names))
 
     results = []
@@ -43,7 +43,7 @@ def parser(page_names, file):
     frequency = counter(results)
 
     print '\nFrequency in Array: \n' + str(frequency)
-    writing_file(frequency, file)
+    writing_file(frequency, input_file)
 
 
 def finder_start(page_content, location_start, search_start):
@@ -82,9 +82,9 @@ def counter(results):
 
 
 def writing_file(frequency, file_name):
-    with open('formats/' + file_name, 'w') as file:
+    with open('formats/' + file_name, 'w') as format_file:
         for f, count in frequency:
-            file.write('{}: {}\n'.format(f.encode('utf-8'), count))
+            format_file.write('{}: {}\n'.format(f.encode('utf-8'), count))
 
 if __name__ == '__main__':
     main()
