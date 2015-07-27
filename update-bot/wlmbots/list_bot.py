@@ -29,25 +29,26 @@ import pywikibot
 from lib.pagelist import Pagelist
 
 
-def export_to_file(outfile, items, formatstring=u"{}\n"):
+def export_to_file( outfile, items, formatstring = u"{}\n" ):
     """ Write article to file
 
         items: array or generator with objects that support the title method.
     """
     for article in items:
-        outfile.write(formatstring.format(article.title()))
+        outfile.write( formatstring.format( article.title( ) ) )
 
-def main(*args):
-    UTF8Writer = codecs.getwriter('utf8')
+
+def main( *args ):
+    UTF8Writer = codecs.getwriter( 'utf8' )
     single_categories = False
-    output_destination = UTF8Writer(sys.stdout)
+    output_destination = UTF8Writer( sys.stdout )
     formatstring = "{}\n"
     categories_only = False
-    for arg in pywikibot.handle_args(args):
+    for arg in pywikibot.handle_args( args ):
         if arg == "-out:categories":
             single_categories = True
         elif arg == "-out:file":
-            output_destination = codecs.open("Denkmallistenliste.txt", "w", 'utf-8')
+            output_destination = codecs.open( "Denkmallistenliste.txt", "w", 'utf-8' )
         elif arg == "-fmt:wiki":
             formatstring = "[[{}]]\n"
         elif arg == "-fmt:url":
@@ -55,19 +56,20 @@ def main(*args):
         elif arg == "-list-cat-only":
             categories_only = True
 
-    site = pywikibot.Site()
-    pl = Pagelist(site)
+    site = pywikibot.Site( )
+    pl = Pagelist( site )
 
     if categories_only and not single_categories:
-        export_to_file(output_destination, pl.get_county_categories(False), formatstring)
+        export_to_file( output_destination, pl.get_county_categories( False ), formatstring )
         return
 
     if single_categories:
-        for category in pl.get_county_categories():
-            with codecs.open(category.title() + u".txt", "w", 'utf-8') as outfile:
-                export_to_file(outfile, category.articles(), formatstring)
+        for category in pl.get_county_categories( ):
+            with codecs.open( category.title( ) + u".txt", "w", 'utf-8' ) as outfile:
+                export_to_file( outfile, category.articles( ), formatstring )
     else:
-        export_to_file(output_destination, pl.get_list_articles(), formatstring)
+        export_to_file( output_destination, pl.get_list_articles( ), formatstring )
+
 
 if __name__ == "__main__":
-    main()
+    main( )
