@@ -157,8 +157,12 @@ def main(*args):
     result_page += generate_config_table(checker_config)
     if outputpage:
         article = pywikibot.Page(site, outputpage)
-        article.text = result_page
-        article.save()
+        old_text = article.get()
+        if old_text != result_page:
+            article.text = result_page
+            article.save(summary="Bot: Update der Ergebnisliste")
+        else:
+            pywikibot.log("Result page has not changed, skipping update ...")
         # TODO check if the templates exist and if they don't, create the template pages from wiki_templates
     else:
         pywikibot.output(result_page)
