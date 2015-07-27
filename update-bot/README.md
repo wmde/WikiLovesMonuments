@@ -9,8 +9,14 @@ Prerequisites: Python, pip.
 The paths shown here are in `~/src` but you can change them to whatever you like.
 
 1. Clone the WLM repository: `git clone git@github.com:wmde/WikiLovesMonuments.git`.
-2. Edit `user-config.py`: insert your user name and set the absolute path for the local testing.
-3. Edit `local_family.py`: Replace the host name with your local testing host name.
+2. Copy and edit `user-config.py`: insert your user name.
+```
+cp user-config.template.py user-config.py
+```
+3. Copy and edit `local_family.py`: Replace the host name with your local testing host name.
+```
+cp local_family.template.py local_family.py
+```
 4. Clone the pywikibot repository:
    `git clone --branch 2.0 --recursive  https://gerrit.wikimedia.org/r/pywikibot/core.git ~/src/pywikibot`
 5. Install the necessary libraries:
