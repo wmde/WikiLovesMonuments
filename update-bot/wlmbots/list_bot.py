@@ -26,7 +26,7 @@ import codecs
 import sys
 
 import pywikibot
-from lib.pagelist import Pagelist
+from wlmbots.lib.pagelist import Pagelist
 
 
 def export_to_file(outfile, items, formatstring=u"{}\n"):
@@ -37,10 +37,11 @@ def export_to_file(outfile, items, formatstring=u"{}\n"):
     for article in items:
         outfile.write(formatstring.format(article.title()))
 
+
 def main(*args):
-    UTF8Writer = codecs.getwriter('utf8')
+    utf8_writer = codecs.getwriter('utf8')
     single_categories = False
-    output_destination = UTF8Writer(sys.stdout)
+    output_destination = utf8_writer(sys.stdout)
     formatstring = "{}\n"
     categories_only = False
     for arg in pywikibot.handle_args(args):
@@ -68,6 +69,7 @@ def main(*args):
                 export_to_file(outfile, category.articles(), formatstring)
     else:
         export_to_file(output_destination, pl.get_list_articles(), formatstring)
+
 
 if __name__ == "__main__":
     main()

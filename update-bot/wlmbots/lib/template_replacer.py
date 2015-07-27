@@ -1,9 +1,12 @@
 import re
 
+
 class TemplateReplacer(object):
     """ Replaces parameter values in a mwparserfromhell.Template node while
         preserving its whitespace.
     """
+
+
     def __init__(self, template):
         self.template = template
         self.params_dict = {}
@@ -12,8 +15,10 @@ class TemplateReplacer(object):
         self.params_parsed = False
         self._parse_params()
 
+
     def get_value(self, name):
         return self.params_dict[name]
+
 
     def set_value(self, name, value):
         whitespace = re.match(r"(\s*)(.*?)(\s*)$", self.params_dict[name], re.UNICODE)
@@ -28,11 +33,14 @@ class TemplateReplacer(object):
         else:
             self.params_dict[name] = whitespace.group(1) + unicode(value) + whitespace.group(3)
 
+
     def get_available_params(self):
         return [p["name_key"] for p in self.params_index]
 
+
     def param_is_empty(self, name):
         return self.params_dict[name].strip() == ""
+
 
     def __unicode__(self):
         template = u"{{" + unicode(self.template.name)
@@ -41,8 +49,10 @@ class TemplateReplacer(object):
         template += u"}}"
         return template
 
+
     def __str__(self):
         return unicode(self).encode('utf-8')
+
 
     def _parse_params(self):
         if self.params_parsed:

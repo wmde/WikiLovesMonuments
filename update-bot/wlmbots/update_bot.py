@@ -11,12 +11,13 @@ import logging
 import pywikibot
 import mwparserfromhell
 
-from lib.commonscat_mapper import CommonscatMapper
-from lib.template_replacer import TemplateReplacer
+from wlmbots.lib.commonscat_mapper import CommonscatMapper
+from wlmbots.lib.template_replacer import TemplateReplacer
 
 # TODO: import TableReplacer
 
-WLM_PLACEHOLDER = '<-- link to commons placeholder "#commonscat#" -->' # TODO proper placeholder
+WLM_PLACEHOLDER = '<-- link to commons placeholder "#commonscat#" -->'  # TODO proper placeholder
+
 
 def add_placeholders(article):
     logging.info("{}".format(article.title()))
@@ -33,6 +34,7 @@ def add_placeholders(article):
         # TODO store new text
         logging.info("  Updated article with placeholders")
         logging.debug(text_with_placeholders_in_tables)
+
 
 def replace_in_templates(text):
     global WLM_PLACEHOLDER
@@ -53,15 +55,17 @@ def replace_in_templates(text):
             text = text.replace(unicode(template), unicode(replacer))
     return text
 
+
 def replace_in_tables(text, commonscat):
     # TODO Find table starts on page {|-
     # TODO parse table headings of each table to get a dictionary of heading => column_index
     # TODO find beginning of each table row, and use table_replacer to check/change image column of each row
     return text
 
+
 def main(*args):
-    UTF8Writer = codecs.getwriter('utf8')
-    output_destination = UTF8Writer(sys.stdout)
+    utf8_writer = codecs.getwriter('utf8')
+    output_destination = utf8_writer(sys.stdout)
     verbosity = logging.ERROR
     limit = 0
     for argument in pywikibot.handle_args(args):
@@ -82,6 +86,7 @@ def main(*args):
         counter += 1
         if limit and counter > limit:
             break
+
 
 if __name__ == "__main__":
     main()

@@ -26,13 +26,14 @@ import collections
 import pywikibot
 import mwparserfromhell
 
-from lib.template_checker import TemplateChecker
-from lib.pagelist import Pagelist
+from wlmbots.lib.template_checker import TemplateChecker
+from wlmbots.lib.pagelist import Pagelist
 
 ERROR_MISSING_TEMPLATE = 1
-ERROR_MISSING_IDS      = 2
-ERROR_INVALID_IDS      = 4
-ERROR_DUPLICATE_IDS    = 8
+ERROR_MISSING_IDS = 2
+ERROR_INVALID_IDS = 4
+ERROR_DUPLICATE_IDS = 8
+
 
 def check_for_errors(article, checker):
     if article.isRedirectPage():
@@ -58,16 +59,18 @@ def check_for_errors(article, checker):
     errors = {e: v for e, v in errors.iteritems() if v}
     return errors
 
+
 def generate_result_page(results, pagelister):
     text = u""
     for category_results in results:
         heading = "=="
         category = category_results["category"]
-        if not pagelister.root_category in category.categories():
+        if pagelister.root_category not in category.categories():
             heading += "="
         text += u"{} {} {}\n".format(heading, category.title(), heading)
         num_errors = len(category_results["results"])
-        text += u"{} Seiten geprüft, {} ohne Probleme\n".format(category_results["pages_checked"], category_results["pages_checked"] - num_errors)
+        text += u"{} Seiten geprüft, {} ohne Probleme\n".format(category_results["pages_checked"],
+                                                                category_results["pages_checked"] - num_errors)
         text += u"{{Fehler in Denkmallisten Tabellenkopf}}\n"
         for result in category_results["results"]:
             errors = {
@@ -80,12 +83,14 @@ def generate_result_page(results, pagelister):
             errors.update(result["errors"])
             duplicate_ids = ", ".join(errors[ERROR_DUPLICATE_IDS])
             text += u"{{{{Fehler in Denkmallisten Tabellenzeile|Titel={}|Kein_Template={}|IDs_fehlen={}|IDs_ungueltig={}|IDs_doppelt={}|Level={}}}}}\n".format(
-                result["title"], errors[ERROR_MISSING_TEMPLATE], errors[ERROR_MISSING_IDS], errors[ERROR_INVALID_IDS], duplicate_ids, severity
+                result["title"], errors[ERROR_MISSING_TEMPLATE], errors[ERROR_MISSING_IDS], errors[ERROR_INVALID_IDS],
+                duplicate_ids, severity
             )
         text += "|}\n\n"
     return text
 
-def get_results_for_county(checker, articles, limit, counter=0):
+
+def get_results_for_county(checker, articles, limit, counter = 0):
     results = []
     for article in articles:
         counter += 1
@@ -101,6 +106,7 @@ def get_results_for_county(checker, articles, limit, counter=0):
             })
     return counter, results
 
+
 def generate_config_table(checker_config):
     line_fmt = "|-\n|[[Vorlage:{}|{}]]\n|{}\n|{}\n"
     text = '{| class="wikitable"\n|-\n!Vorlage!!Bezeichner ID!!Format ID\n'
@@ -109,9 +115,10 @@ def generate_config_table(checker_config):
     text += "|}\n\n"
     return text
 
+
 def main(*args):
-    UTF8Writer = codecs.getwriter('utf8')
-    output_destination = UTF8Writer(sys.stdout)
+    utf8_writer = codecs.getwriter('utf8')
+    output_destination = utf8_writer(sys.stdout)
     verbosity = logging.ERROR
     limit = 0
     catname = "ALL"
@@ -122,7 +129,7 @@ def main(*args):
             catname = argument[10:]
         elif argument.find("-outputpage:") == 0:
             outputpage = argument[12:]
-    logging.basicConfig(level=verbosity, stream=output_destination)
+    logging.basicConfig(level = verbosity, stream = output_destination)
     site = pywikibot.Site()
     counter = 0
     results = []
@@ -141,7 +148,7 @@ def main(*args):
             results.append({
                 "category": category,
                 "results": result,
-                "pages_checked": counter - (prev_count + 1) # Counter is already increased by 1
+                "pages_checked": counter - (prev_count + 1)  # Counter is already increased by 1
             })
         if limit and counter > limit:
             break
@@ -155,6 +162,7 @@ def main(*args):
         # TODO check if the templates exist and if they don't, create the template pages from wiki_templates
     else:
         pywikibot.output(result_page)
+
 
 if __name__ == "__main__":
     main()

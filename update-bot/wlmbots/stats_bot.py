@@ -12,7 +12,7 @@ import collections
 import pywikibot
 import mwparserfromhell
 
-from lib.pagelist import Pagelist
+from wlmbots.lib.pagelist import Pagelist
 
 
 class TemplateCounter(object):
@@ -34,8 +34,10 @@ class TemplateCounter(object):
         '"'
     ]
 
+
     def __init__(self):
         self.templates = collections.Counter()
+
 
     def count_templates(self, pagetext):
         """ Count templates on a single page """
@@ -46,8 +48,10 @@ class TemplateCounter(object):
                 continue
             self.templates[tpl_name] += 1
 
+
 class StatsOutput(object):
     """ Output statistics on templates and table headings """
+
 
     def __init__(self, output_destination, output_sample_article_titles=False, cutoff=0):
         self.out = output_destination
@@ -55,8 +59,10 @@ class StatsOutput(object):
         self.cutoff = cutoff
         self.output_sample_article_titles = output_sample_article_titles
 
+
     def add_article(self, article):
         self.sample_articles.append(article)
+
 
     def output_result(self, county_name, template_counts, num_articles):
         sample_size = len(self.sample_articles)
@@ -82,7 +88,7 @@ def sample_county(county, sample_size, output_destination, output_sample_article
         sample_articles = random.sample(articles, sample_size)
     else:
         sample_articles = articles
-    cutoff = 10 # Minimum occurrance of template/table heading to be relevant
+    cutoff = 10  # Minimum occurrance of template/table heading to be relevant
     counter_tpl = TemplateCounter()
     output = StatsOutput(output_destination, output_sample_article_titles, cutoff)
     for article in sample_articles:
@@ -94,8 +100,8 @@ def sample_county(county, sample_size, output_destination, output_sample_article
 
 
 def main(*args):
-    UTF8Writer = codecs.getwriter('utf8')
-    output_destination = UTF8Writer(sys.stdout)
+    utf8_writer = codecs.getwriter('utf8')
+    output_destination = utf8_writer(sys.stdout)
     sample_size = 100
     output_sample_article_titles = True
 
@@ -104,6 +110,7 @@ def main(*args):
     counties = lister.get_county_categories()
     for county in counties:
         sample_county(county, sample_size, output_destination)
+
 
 if __name__ == "__main__":
     main()
