@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import re
-import json
 
 
 class TemplateChecker(object):
