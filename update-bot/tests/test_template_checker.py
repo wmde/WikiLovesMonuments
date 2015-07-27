@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import unittest
-from mock import Mock
 import re
 
-from template_checker import TemplateChecker
+from mock import Mock
+from wlmbots.lib.template_checker import TemplateChecker
+
 
 class TestTemplateChecker(unittest.TestCase):
 

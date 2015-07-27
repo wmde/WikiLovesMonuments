@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-import template_replacer
+from wlmbots.lib import template_replacer
+
 
 class TemplateForTesting(object):
     def __init__(self, name={}, params={}):
         self.name = name
         self.params = params
 
-class TestStringMethods(unittest.TestCase):
+class TestTemplateReplacer(unittest.TestCase):
 
     def test_get_value_returns_values(self):
         fixture = TemplateForTesting("", [u"a=5", u"b=Übertrag"])

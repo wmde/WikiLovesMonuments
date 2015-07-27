@@ -10,6 +10,8 @@ install:
   - cd update-bot
   - pip install -r requirements.txt
   - pip install -r dev-requirements.txt
+  - cp user-config.template.py user-config.py
+  - cp local_family.template.py local_family.py
 
 script:
   - python -m unittest discover .

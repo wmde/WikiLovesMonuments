@@ -22,11 +22,12 @@ Available command line options are:
 
 from __future__ import unicode_literals
 
-import pywikibot
 import codecs
 import sys
 
-from pagelist import Pagelist
+import pywikibot
+from lib.pagelist import Pagelist
+
 
 def export_to_file(outfile, items, formatstring=u"{}\n"):
     """ Write article to file

@@ -9,8 +9,14 @@ Prerequisites: Python, pip.
 The paths shown here are in `~/src` but you can change them to whatever you like.
 
 1. Clone the WLM repository: `git clone git@github.com:wmde/WikiLovesMonuments.git`.
-2. Edit `user-config.py`: insert your user name and set the absolute path for the local testing.
-3. Edit `local_family.py`: Replace the host name with your local testing host name.
+2. Copy and edit `user-config.py`: insert your user name.
+```
+cp user-config.template.py user-config.py
+```
+3. Copy and edit `local_family.py`: Replace the host name with your local testing host name.
+```
+cp local_family.template.py local_family.py
+```
 4. Clone the pywikibot repository:
    `git clone --branch 2.0 --recursive  https://gerrit.wikimedia.org/r/pywikibot/core.git ~/src/pywikibot`
 5. Install the necessary libraries:
@@ -31,7 +37,7 @@ python list_bot.py -help
 The default `user-config.py` points to your local Mediawiki installation. If you want to run a bot against the German Wikipedia, call it like this:
 
 ```
-python list_bot.py -family:wikipedia -lang:de -user:"WMDE Update Bot"
+python wlmbots/list_bot.py -family:wikipedia -lang:de -user:"WMDE Update Bot"
 ```
 
 ## Available Bots
@@ -57,8 +63,12 @@ If running this bot fails, check your `user-config.py` and `local_family.py` fil
 
 
 ## Running Tests
-The test for the `CommonscatMapper` and `TemplateReplacer` classes are standard `unittest.TestCase` classes. They can be run from the command line:
+The test cases are standard `unittest.TestCase` classes. They can be run from the command line:
 
-    python -m unittest test_commonscat_mapper test_template_replacer
+    python -m unittest discover tests
+
+You can also run individual tests like this:
+
+   python tests/test_commonscat_mapper.py
 
 [wlm_liste]: https://de.wikipedia.org/wiki/Kategorie:Liste_(Kulturdenkmale_in_Deutschland)

@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import unittest
+
 from mock import Mock
 
-import checker_bot
-import template_checker
+from wlmbots import checker_bot
+from wlmbots.lib import template_checker
+
 
 class TestCheckerBot(unittest.TestCase):
     """ Integration testing for checker_bot """
@@ -37,12 +39,12 @@ class TestCheckerBot(unittest.TestCase):
     def test_check_for_errors_reports_pages_without_templates(self):
         article = self.create_article_with_text(u"Just some test text")
         errors = checker_bot.check_for_errors(article, self.checker)
-        self.assertEqual({checker_bot.ERROR_MISSING_TEMPLATE: True}, errors)
+        self.assertEqual({ checker_bot.ERROR_MISSING_TEMPLATE: True}, errors)
 
     def test_check_for_errors_reports_invalid_ids(self):
         article = self.create_article_with_text(u"{{Denkmalliste Sachsen Tabellenzeile|ID=1}}")
         errors = checker_bot.check_for_errors(article, self.checker)
-        self.assertEqual({checker_bot.ERROR_INVALID_IDS: 1}, errors)
+        self.assertEqual({ checker_bot.ERROR_INVALID_IDS: 1}, errors)
 
     def test_check_for_errors_returns_empty_dict_for_valid_text(self):
         article = self.create_article_with_text(u"{{Denkmalliste Sachsen Tabellenzeile|ID=1234}}")
@@ -52,7 +54,7 @@ class TestCheckerBot(unittest.TestCase):
     def test_check_for_errors_reports_duplicate_ids(self):
         article = self.create_article_with_text(u"{{Denkmalliste Sachsen Tabellenzeile|ID=1234}}{{Denkmalliste Sachsen Tabellenzeile|ID=1234}}{{Denkmalliste Sachsen Tabellenzeile|ID=1223}}")
         errors = checker_bot.check_for_errors(article, self.checker)
-        self.assertEqual({checker_bot.ERROR_DUPLICATE_IDS: {u"1234": 2}}, errors)
+        self.assertEqual({ checker_bot.ERROR_DUPLICATE_IDS: {u"1234": 2}}, errors)
 
     def test_check_for_errors_can_report_multiple_errors(self):
         article = self.create_article_with_text(u"{{Denkmalliste Sachsen Tabellenzeile|ID=1}}{{Denkmalliste Sachsen Tabellenzeile|ID=1}}{{Denkmalliste Sachsen Tabellenzeile|}}")

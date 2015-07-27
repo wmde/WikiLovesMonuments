@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import unittest
+
 from mock import Mock # unittest.mock for Python >= 3.3
 
-import update_bot
+from wlmbots import update_bot
+
 
 class TestUpdateBot(unittest.TestCase):
 

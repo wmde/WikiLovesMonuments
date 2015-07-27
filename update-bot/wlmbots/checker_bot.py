@@ -16,17 +16,18 @@ Available command line options are:
 
 from __future__ import unicode_literals
 
-import pywikibot
 import codecs
 import sys
 import logging
 import json
 import itertools
 import collections
+
+import pywikibot
 import mwparserfromhell
 
-from template_checker import TemplateChecker
-from pagelist import Pagelist
+from lib.template_checker import TemplateChecker
+from lib.pagelist import Pagelist
 
 ERROR_MISSING_TEMPLATE = 1
 ERROR_MISSING_IDS      = 2
