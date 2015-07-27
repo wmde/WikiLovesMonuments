@@ -6,7 +6,9 @@ import re
 class TemplateChecker(object):
     """ Stores the configured template names and allowed ID patterns """
 
-    def __init__(self, config={}):
+    def __init__(self, config=None):
+        if not config:
+            config = {}
         self.tpl_match_regex = None
         self.config = config
 
