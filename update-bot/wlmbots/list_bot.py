@@ -39,9 +39,9 @@ def export_to_file(outfile, items, formatstring=u"{}\n"):
 
 
 def main(*args):
-    UTF8Writer = codecs.getwriter('utf8')
+    utf8_writer = codecs.getwriter('utf8')
     single_categories = False
-    output_destination = UTF8Writer(sys.stdout)
+    output_destination = utf8_writer(sys.stdout)
     formatstring = "{}\n"
     categories_only = False
     for arg in pywikibot.handle_args(args):

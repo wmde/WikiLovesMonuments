@@ -100,8 +100,8 @@ def sample_county(county, sample_size, output_destination, output_sample_article
 
 
 def main(*args):
-    UTF8Writer = codecs.getwriter('utf8')
-    output_destination = UTF8Writer(sys.stdout)
+    utf8_writer = codecs.getwriter('utf8')
+    output_destination = utf8_writer(sys.stdout)
     sample_size = 100
     output_sample_article_titles = True
 

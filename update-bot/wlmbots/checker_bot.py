@@ -117,8 +117,8 @@ def generate_config_table(checker_config):
 
 
 def main(*args):
-    UTF8Writer = codecs.getwriter('utf8')
-    output_destination = UTF8Writer(sys.stdout)
+    utf8_writer = codecs.getwriter('utf8')
+    output_destination = utf8_writer(sys.stdout)
     verbosity = logging.ERROR
     limit = 0
     catname = "ALL"
