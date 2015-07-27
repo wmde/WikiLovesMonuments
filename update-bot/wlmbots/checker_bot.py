@@ -65,7 +65,7 @@ def generate_result_page(results, pagelister):
     for category_results in results:
         heading = "=="
         category = category_results["category"]
-        if not pagelister.root_category in category.categories():
+        if pagelister.root_category not in category.categories():
             heading += "="
         text += u"{} {} {}\n".format(heading, category.title(), heading)
         num_errors = len(category_results["results"])
@@ -90,7 +90,7 @@ def generate_result_page(results, pagelister):
     return text
 
 
-def get_results_for_county(checker, articles, limit, counter=0):
+def get_results_for_county(checker, articles, limit, counter = 0):
     results = []
     for article in articles:
         counter += 1
@@ -129,7 +129,7 @@ def main(*args):
             catname = argument[10:]
         elif argument.find("-outputpage:") == 0:
             outputpage = argument[12:]
-    logging.basicConfig(level=verbosity, stream=output_destination)
+    logging.basicConfig(level = verbosity, stream = output_destination)
     site = pywikibot.Site()
     counter = 0
     results = []
