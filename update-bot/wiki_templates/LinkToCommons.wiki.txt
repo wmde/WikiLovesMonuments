@@ -1,0 +1,15 @@
+<noinclude>
+This template creates a link to the Upload Wizard. The following parameters can be passed to it:
+* '''Campaign'''
+: Campaign name defined in the campaign namespace
+* '''Categories'''
+: Additional categories the upload should be linked to (apart from the ones being defined by the campaign)
+* '''Lat'''
+* '''Lon'''
+* '''ID'''
+: The identifier of the monument; should be unique, may be the official ID
+* '''Link_Text'''
+: The text being displayed as the link; currently defaults to "Bild gesucht"
+</noinclude>
+<onlyinclude>[{{SERVER}}/wiki/Special:UploadWizard?campaign={{{Campaign}}}&categories={{{Categories}}}{{#if:{{{Lat}}}|&lat={{{Lat}}}}}{{#if:{{{Lon}}}|&lon={{{Lon}}}}}{{#if:{{{ID}}}|&objref=dewiki{{!}}{{urlencode:{{PAGENAME}}}}{{!}}{{urlencode:{{{ID}}}}}}} {{{Link_Text|Bild gesucht}}}]</onlyinclude>
+
