@@ -27,8 +27,8 @@ class TemplateChecker(object):
                 return ""
             _, id_value = id_param.split("=", 1)
             return id_value.strip()
-        except ValueError as e:
-            if str(e) == id_name:
+        except ValueError as error:
+            if str(error) == id_name:
                 return ""
             else:
                 raise
