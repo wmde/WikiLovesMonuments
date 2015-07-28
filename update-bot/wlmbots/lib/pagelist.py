@@ -45,7 +45,7 @@ class ArticleIterator(object):
         for category in self.categories:
             counter = self.iterate_articles(category, counter)
             if self.category_callback:
-                self.category_callback(category, counter, self)
+                self.category_callback(category = category, counter = counter, article_iterator = self)
             if self.limit and counter > self.limit:
                 return;
 
@@ -54,7 +54,7 @@ class ArticleIterator(object):
             if self.logging_callback and counter % self.log_every_n == 0:
                 self.logging_callback("Fetching page {} ({})".format(counter, article.title()))
             if self.article_callback:
-                self.article_callback(article, category, counter, self)
+                self.article_callback(article = article, category = category, counter = counter, article_iterator = self)
             counter += 1
             if self.limit and counter > self.limit:
                 return counter - 1;  # Decrease counter by one because to reflect the real number of processed items

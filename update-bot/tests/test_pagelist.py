@@ -16,7 +16,7 @@ class TestArticleIterator(unittest.TestCase):
         category.articles.return_value = []
         it.categories = [category]
         it.iterate_categories()
-        category_callback.assert_called_once_with(category, 0, it)
+        category_callback.assert_called_once_with(category = category, counter = 0, article_iterator = it)
 
     def test_article_iterator_iterates_over_articles(self):
         article_callback = Mock()
@@ -27,8 +27,8 @@ class TestArticleIterator(unittest.TestCase):
         category.articles.return_value = [article1, article2]
         it.categories = [category]
         it.iterate_categories()
-        article_callback.assert_any_call(article1, category, 0, it)
-        article_callback.assert_any_call(article2, category, 1, it)
+        article_callback.assert_any_call(article = article1, category = category, counter = 0, article_iterator = it)
+        article_callback.assert_any_call(article = article2, category = category, counter = 1, article_iterator = it)
 
 
     def test_article_iterator_with_limit_stops_at_limit(self):
@@ -40,7 +40,7 @@ class TestArticleIterator(unittest.TestCase):
         category.articles.return_value = articles
         it.categories = [category]
         it.iterate_categories()
-        category_callback.assert_called_once_with(category, 10, it)
+        category_callback.assert_called_once_with(category = category, counter = 10, article_iterator = it)
 
 
     def test_article_iterator_returns_correct_counter(self):
@@ -51,7 +51,7 @@ class TestArticleIterator(unittest.TestCase):
         category.articles.return_value = articles
         it.categories = [category]
         it.iterate_categories()
-        category_callback.assert_called_once_with(category, 10, it)
+        category_callback.assert_called_once_with(category = category, counter = 10, article_iterator = it)
 
 
     def test_article_iterator_logs_every_n_articles(self):
