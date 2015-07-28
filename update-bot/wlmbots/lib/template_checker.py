@@ -1,18 +1,22 @@
 # -*- coding: utf-8 -*-
 
 import re
+import json
 
 
 class TemplateChecker(object):
     """ Stores the configured template names and allowed ID patterns """
 
     def __init__(self, config=None):
-        if not config:
-            config = {}
-        self.tpl_match_regex = None
         self._config = {}
-        self.config = config
+        if config:
+            self.config = config
+        self.tpl_match_regex = None
 
+
+    def load_config(self, filename):
+        with open(filename, "r") as tplconf:
+            self.config = json.load(tplconf)
 
 
     def text_contains_templates(self, text):

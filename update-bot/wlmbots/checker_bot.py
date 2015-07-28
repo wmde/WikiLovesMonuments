@@ -19,7 +19,6 @@ from __future__ import unicode_literals
 import codecs
 import sys
 import logging
-import json
 import itertools
 import collections
 
@@ -134,10 +133,9 @@ def main(*args):
     site = pywikibot.Site()
     counter = 0
     results = []
-    with open("template_config.json", "r") as tplconf:
-        checker_config = json.load(tplconf)
     pagelister = Pagelist(site)
     checker = TemplateChecker(checker_config)
+    checker.load_config("template_config.json")
     if catname == "ALL":
         categories = pagelister.get_county_categories()
     else:
