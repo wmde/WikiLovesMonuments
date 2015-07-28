@@ -11,7 +11,7 @@ class TemplateChecker(object):
             config = {}
         self.tpl_match_regex = None
         self.config = config
-        self._config = None
+        self._config = config
 
     def text_contains_templates(self, text):
         if not self.tpl_match_regex:
