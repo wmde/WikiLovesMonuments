@@ -1,6 +1,9 @@
+#!/usr/bin/python
 import pywikibot
 
-s = pywikibot.Site("de", "local")
-p = pywikibot.Page(s, "Liste_der_Baudenkmale_in_Klein_Vielen")
 
-print p.get()
+def main():
+    site = pywikibot.Site("de", "local")
+    page = pywikibot.Page(site, "Liste_der_Baudenkmale_in_Klein_Vielen")
+
+    print page.get()
