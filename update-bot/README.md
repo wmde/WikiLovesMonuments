@@ -24,13 +24,13 @@ cp local_family.template.py local_family.py
 
 You can get information on each bot by calling it with the `-help` parameter like this:
 ```
-python list_bot.py -help
+python -m wlmbots.list_bot -help
 ```
 
 The default `user-config.py` points to your local Mediawiki installation. If you want to run a bot against the German Wikipedia, call it like this:
 
 ```
-python wlmbots/list_bot.py -family:wikipedia -lang:de -user:"WLMUploadVorlageBot"
+python -m wlmbots.list_bot -family:wikipedia -lang:de -user:"WLMUploadVorlageBot"
 ```
 
 ## Available Bots
