@@ -44,7 +44,7 @@ def main(*args):
     output_destination = utf8_writer(sys.stdout)
     formatstring = "{}\n"
     categories_only = False
-    for arg in pywikibot.handle_args(args):
+    for arg in pywikibot.handle_args(*args):
         if arg == "-out:categories":
             single_categories = True
         elif arg == "-out:file":
