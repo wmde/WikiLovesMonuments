@@ -77,7 +77,7 @@ class TestCheckerBot(unittest.TestCase):
         self.assertEqual(expected_errors, errors)
 
 
-    def test_generate_config_table_contains_a_column_for_each_template_configuration_in_alphabetic_order_of_template_names(
+    def test_generate_config_table_contains_template_configuration_columns_in_alphabetic_order(
             self):
         config_table = checker_bot.generate_config_table(self.config)
         config_table_lines = config_table.split("|-\n")

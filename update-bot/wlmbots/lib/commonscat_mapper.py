@@ -76,8 +76,8 @@ class CommonscatMapper(object):
                 return u"Category:" + commonscat.strip()
             else:
                 return ""
-        except ValueError as e:
-            if str(e) == "Commonscat":
+        except ValueError as error:
+            if str(error) == "Commonscat":
                 return ""
             else:
                 raise

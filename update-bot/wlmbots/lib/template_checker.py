@@ -10,7 +10,10 @@ class TemplateChecker(object):
         if not config:
             config = {}
         self.tpl_match_regex = None
+        self._config = None
         self.config = config
+
+
 
     def text_contains_templates(self, text):
         if not self.tpl_match_regex:
@@ -26,8 +29,8 @@ class TemplateChecker(object):
                 return ""
             _, id_value = id_param.split("=", 1)
             return id_value.strip()
-        except ValueError as e:
-            if str(e) == id_name:
+        except ValueError as error:
+            if str(error) == id_name:
                 return ""
             else:
                 raise

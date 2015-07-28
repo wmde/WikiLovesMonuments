@@ -122,6 +122,7 @@ def main(*args):
     verbosity = logging.ERROR
     limit = 0
     catname = "ALL"
+    outputpage = None
     for argument in pywikibot.handle_args(args):
         if argument.find("-limit:") == 0:
             limit = int(argument[7:])

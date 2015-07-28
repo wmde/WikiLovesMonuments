@@ -57,18 +57,18 @@ def main(*args):
             categories_only = True
 
     site = pywikibot.Site()
-    pl = Pagelist(site)
+    page_list = Pagelist(site)
 
     if categories_only and not single_categories:
-        export_to_file(output_destination, pl.get_county_categories(False), formatstring)
+        export_to_file(output_destination, page_list.get_county_categories(False), formatstring)
         return
 
     if single_categories:
-        for category in pl.get_county_categories():
+        for category in page_list.get_county_categories():
             with codecs.open(category.title() + u".txt", "w", 'utf-8') as outfile:
                 export_to_file(outfile, category.articles(), formatstring)
     else:
-        export_to_file(output_destination, pl.get_list_articles(), formatstring)
+        export_to_file(output_destination, page_list.get_list_articles(), formatstring)
 
 
 if __name__ == "__main__":
