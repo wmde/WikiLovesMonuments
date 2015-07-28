@@ -13,12 +13,13 @@ import mwparserfromhell
 
 from wlmbots.lib.commonscat_mapper import CommonscatMapper
 from wlmbots.lib.template_replacer import TemplateReplacer
+from wlmbots.lib.pagelist import Pagelist, ArticleIterator, ArticleIteratorArgumentParser
 
 
 WLM_PLACEHOLDER = '<-- link to commons placeholder "#commonscat#" -->'  # TODO proper placeholder
 
 
-def add_placeholders(article):
+def add_placeholders(article, **kwargs):
     logging.info("{}".format(article.title()))
     if article.isRedirectPage():
         return
@@ -58,26 +59,24 @@ def main(*args):
     utf8_writer = codecs.getwriter('utf8')
     output_destination = utf8_writer(sys.stdout)
     verbosity = logging.ERROR
-    limit = 0
+    site = pywikibot.Site()
+    pagelister = Pagelist(site)
+    article_iterator = ArticleIterator(
+        article_callback = add_placeholders,
+        categories = pagelister.get_county_categories()
+    )
+    parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
     for argument in pywikibot.handle_args(args):
-        if argument == "-v":
+        if parser.check_argument(argument):
+            continue
+        elif argument == "-v":
             verbosity = logging.WARNING
         elif argument == "-vv":
             verbosity = logging.INFO
         elif argument == "-vvv":
             verbosity = logging.DEBUG
-        elif argument.find("-limit=") == 0:
-            limit = int(argument[7:])
     logging.basicConfig(level=verbosity, stream=output_destination)
-    site = pywikibot.Site()
-    counter = 0
-    # TODO use pagelist class and iterate over categories
-    for article in pywikibot.Category(site, u"Liste_(Kulturdenkmale_in_Baden-Württemberg)").articles():
-        add_placeholders(article)
-        counter += 1
-        if limit and counter > limit:
-            break
-
+    article_iterator.iterate_categories()
 
 if __name__ == "__main__":
     main()
