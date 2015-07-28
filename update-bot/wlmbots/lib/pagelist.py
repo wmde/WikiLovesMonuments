@@ -57,7 +57,7 @@ class ArticleIterator(object):
                 self.article_callback(article, category, counter, self)
             counter += 1
             if self.limit and counter > self.limit:
-                return counter;
+                return counter - 1;  # Decrease counter by one because to reflect the real number of processed items
         return counter
 
 
