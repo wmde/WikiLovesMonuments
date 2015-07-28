@@ -25,24 +25,26 @@ class TestCheckerBot(unittest.TestCase):
             }
         }
 
+        self.bot = checker_bot.CheckerBot(self.checker)
+
 
     def test_generate_config_table_contains_template_configuration_columns_in_alphabetic_order(
             self):
-        config_table = checker_bot.generate_config_table(self.config)
+        config_table = self.bot.generate_config_table()
         config_table_lines = config_table.split("|-\n")
         self.assertIn("|[[Vorlage:Denkmalliste Bayern Tabellenzeile", config_table_lines[2])
         self.assertIn("|[[Vorlage:Denkmalliste Sachsen Tabellenzeile", config_table_lines[3])
 
 
     def test_generate_config_table_contains_a_column_id(self):
-        config_table = checker_bot.generate_config_table(self.config)
+        config_table = self.bot.generate_config_table()
         config_table_lines = config_table.split("|-\n")
         self.assertIn("|Nummer", config_table_lines[2])
         self.assertIn("|ID", config_table_lines[3])
 
 
     def test_generate_config_table_contains_a_description_of_valid_ids(self):
-        config_table = checker_bot.generate_config_table(self.config)
+        config_table = self.bot.generate_config_table()
         config_table_lines = config_table.split("|-\n")
         self.assertIn("|Nummer im Format D-n-nnn", config_table_lines[2])
         self.assertIn("|Nummer, mindestens vierstellig", config_table_lines[3])

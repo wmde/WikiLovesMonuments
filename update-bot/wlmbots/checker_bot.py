@@ -28,46 +28,7 @@ from wlmbots.lib.pagelist import Pagelist
 from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser
 
 
-def generate_result_page(results, pagelister):
-    text = u""
-    for category_results in results:
-        heading = "=="
-        category = category_results["category"]
-        if pagelister.root_category not in category.categories():
-            heading += "="
-        text += u"{} {} {}\n".format(heading, category.title(), heading)
-        num_errors = len(category_results["results"])
-        text += u"{} Seiten geprüft, {} ohne Probleme\n".format(category_results["pages_checked"],
-                                                                category_results["pages_checked"] - num_errors)
-        text += u"{{Fehler in Denkmallisten Tabellenkopf}}\n"
-        for result in category_results["results"]:
-            errors = {
-                TemplateChecker.ERROR_MISSING_TEMPLATE: "",
-                TemplateChecker.ERROR_MISSING_IDS: "",
-                TemplateChecker.ERROR_INVALID_IDS: "",
-                TemplateChecker.ERROR_DUPLICATE_IDS: ""
-            }
-            severity = min(result["errors"].keys())
-            errors.update(result["errors"])
-            duplicate_ids = ", ".join(errors[TemplateChecker.ERROR_DUPLICATE_IDS])
-            text += u"{{{{Fehler in Denkmallisten Tabellenzeile|Titel={}|Kein_Template={}|IDs_fehlen={}|IDs_ungueltig={}|IDs_doppelt={}|Level={}}}}}\n".format(
-                result["title"], errors[TemplateChecker.ERROR_MISSING_TEMPLATE], errors[TemplateChecker.ERROR_MISSING_IDS],
-                errors[TemplateChecker.ERROR_INVALID_IDS], duplicate_ids, severity
-            )
-        text += "|}\n\n"
-    return text
-
-
-def generate_config_table(checker_config):
-    line_fmt = "|-\n|[[Vorlage:{}|{}]]\n|{}\n|{}\n"
-    text = '{| class="wikitable"\n|-\n!Vorlage!!Bezeichner ID!!Format ID\n'
-    for template_name, config in sorted(checker_config.items()):
-        text += line_fmt.format(template_name, template_name, config["id"], config["id_check_description"])
-    text += "|}\n\n"
-    return text
-
-
-class ResultCollector(object):
+class CheckerBot(object):
 
 
     def __init__(self, template_checker):
@@ -75,6 +36,45 @@ class ResultCollector(object):
         self.article_results = []
         self.previous_count = 0
         self.checker = template_checker
+
+
+    def generate_result_page(self, results, pagelister):
+        text = u""
+        for category_results in results:
+            heading = "=="
+            category = category_results["category"]
+            if pagelister.root_category not in category.categories():
+                heading += "="
+            text += u"{} {} {}\n".format(heading, category.title(), heading)
+            num_errors = len(category_results["results"])
+            text += u"{} Seiten geprüft, {} ohne Probleme\n".format(category_results["pages_checked"],
+                                                                    category_results["pages_checked"] - num_errors)
+            text += u"{{Fehler in Denkmallisten Tabellenkopf}}\n"
+            for result in category_results["results"]:
+                errors = {
+                    ERROR_MISSING_TEMPLATE: "",
+                    ERROR_MISSING_IDS: "",
+                    ERROR_INVALID_IDS: "",
+                    ERROR_DUPLICATE_IDS: ""
+                }
+                severity = min(result["errors"].keys())
+                errors.update(result["errors"])
+                duplicate_ids = ", ".join(errors[ERROR_DUPLICATE_IDS])
+                text += u"{{{{Fehler in Denkmallisten Tabellenzeile|Titel={}|Kein_Template={}|IDs_fehlen={}|IDs_ungueltig={}|IDs_doppelt={}|Level={}}}}}\n".format(
+                    result["title"], errors[ERROR_MISSING_TEMPLATE], errors[ERROR_MISSING_IDS], errors[ERROR_INVALID_IDS],
+                    duplicate_ids, severity
+                )
+            text += "|}\n\n"
+        return text
+
+
+    def generate_config_table(self):
+        line_fmt = "|-\n|[[Vorlage:{}|{}]]\n|{}\n|{}\n"
+        text = '{| class="wikitable"\n|-\n!Vorlage!!Bezeichner ID!!Format ID\n'
+        for template_name, config in sorted(self.checker.config.items()):
+            text += line_fmt.format(template_name, template_name, config["id"], config["id_check_description"])
+        text += "|}\n\n"
+        return text
 
 
     def store_category_result(self, category, counter, article_iterator):
@@ -89,7 +89,7 @@ class ResultCollector(object):
 
 
     def check_article(self, article, category, counter, article_iterator):
-        errors = check_for_errors(article, self.checker)
+        errors = self.checker.check_article_for_errors(article, self.checker)
         if errors:
             self.article_results.append({
                 "title": article.title(),
@@ -104,9 +104,10 @@ def main(*args):
     checker = TemplateChecker()
     checker.load_config("template_config.json")
     collector = ResultCollector(checker)
+    checker_bot = CheckerBot(template_checker)
     article_iterator = ArticleIterator(
-        category_callback = collector.store_category_result,
-        article_callback = collector.check_article,
+        category_callback = checker_bot.store_category_result,
+        article_callback = checker_bot.check_article,
         categories = pagelister.get_county_categories()
     )
     parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
@@ -118,9 +119,10 @@ def main(*args):
 
     article_iterator.iterate_categories()
 
-    result_page = generate_result_page(collector.results, pagelister)
+    result_page = checker_bot.generate_result_page(collector.results, pagelister)
     result_page += "== Zulässige Vorlagen ==\nDie Seiten wurden mit folgenden zulässigen Vorlagen und Einstellungen geprüft:\n"
-    result_page += generate_config_table(checker.config)
+    result_page += checker_bot.generate_config_table(checker_config)
+
     if outputpage:
         article = pywikibot.Page(site, outputpage)
         old_text = article.get()
