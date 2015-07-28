@@ -16,9 +16,9 @@ cp user-config.template.py user-config.py
 cp local_family.template.py local_family.py
 ```
 4. Install the necessary libraries:
-   `pip install -r update-bot/requirements.txt`
+   `pip install -r requirements.txt`
 5. To run tests install dev libraries (optional)
-   `pip install -r update-bot/dev-requirements.txt`
+   `pip install -r dev-requirements.txt`
 
 ## General usage information
 
