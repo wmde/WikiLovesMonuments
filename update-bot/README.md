@@ -6,8 +6,6 @@ This bot is for updating the placeholders in lists of monuments in the German Wi
 
 Prerequisites: Python, pip.
 
-The paths shown here are in `~/src` but you can change them to whatever you like.
-
 1. Clone the WLM repository: `git clone git@github.com:wmde/WikiLovesMonuments.git`.
 2. Copy and edit `user-config.py`: insert your user name.
 ```
