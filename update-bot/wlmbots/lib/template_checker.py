@@ -2,10 +2,18 @@
 
 import re
 import json
-
+import itertools
+import collections
+import mwparserfromhell
 
 class TemplateChecker(object):
     """ Check templates for allowed ID patterns """
+
+    ERROR_MISSING_TEMPLATE = 1
+    ERROR_MISSING_IDS = 2
+    ERROR_INVALID_IDS = 4
+    ERROR_DUPLICATE_IDS = 8
+
 
     def __init__(self, config=None):
         self._config = {}
@@ -73,7 +81,31 @@ class TemplateChecker(object):
         Returns:
             True if ID matches the validation pattern
         """
-        return tpl_id == "" or bool(self.template_config(template)["id_check"].search(self.get_id(template)))
+        return bool(self.template_config(template)["id_check"].search(self.get_id(template)))
+
+    def check_article_for_errors(self, article):
+        if article.isRedirectPage():
+            return
+        text = article.get()
+        if not self.text_contains_templates(text):
+            return { self.ERROR_MISSING_TEMPLATE: True }
+        templates = mwparserfromhell.parse(text).filter_templates()
+        errors = {
+            self.ERROR_MISSING_IDS: 0,
+            self.ERROR_INVALID_IDS: 0
+        }
+        ids = collections.Counter()
+        for template in itertools.ifilter(self.is_allowed_template, templates):
+            row_id = self.get_id(template)
+            if not row_id:
+                errors[self.ERROR_MISSING_IDS] += 1
+                continue
+            ids[row_id] += 1
+            if not self.has_valid_id(template):
+                errors[self.ERROR_INVALID_IDS] += 1
+        errors[self.ERROR_DUPLICATE_IDS] = {row_id: count for row_id, count in ids.iteritems() if count > 1}
+        errors = {e: v for e, v in errors.iteritems() if v}
+        return errors
 
     def is_allowed_template(self, template):
         return unicode(template.name) in self.config

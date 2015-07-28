@@ -24,57 +24,6 @@ class TestCheckerBot(unittest.TestCase):
                 "id_check_description": u"Nummer im Format D-n-nnn"
             }
         }
-        self.checker = template_checker.TemplateChecker(self.config)
-
-
-    def create_article_with_text(self, text):
-        article = Mock()
-        article.get.return_value = text
-        article.isRedirectPage.return_value = False
-        return article
-
-
-    def test_check_for_errors_skips_redirect_pages(self):
-        article = Mock()
-        article.isRedirectPage.return_value = True
-        self.assertEqual(None, checker_bot.check_for_errors(article, self.checker))
-
-
-    def test_check_for_errors_reports_pages_without_templates(self):
-        article = self.create_article_with_text(u"Just some test text")
-        errors = checker_bot.check_for_errors(article, self.checker)
-        self.assertEqual({checker_bot.ERROR_MISSING_TEMPLATE: True}, errors)
-
-
-    def test_check_for_errors_reports_invalid_ids(self):
-        article = self.create_article_with_text(u"{{Denkmalliste Sachsen Tabellenzeile|ID=1}}")
-        errors = checker_bot.check_for_errors(article, self.checker)
-        self.assertEqual({checker_bot.ERROR_INVALID_IDS: 1}, errors)
-
-
-    def test_check_for_errors_returns_empty_dict_for_valid_text(self):
-        article = self.create_article_with_text(u"{{Denkmalliste Sachsen Tabellenzeile|ID=1234}}")
-        errors = checker_bot.check_for_errors(article, self.checker)
-        self.assertEqual({}, errors)
-
-
-    def test_check_for_errors_reports_duplicate_ids(self):
-        article = self.create_article_with_text(
-            u"{{Denkmalliste Sachsen Tabellenzeile|ID=1234}}{{Denkmalliste Sachsen Tabellenzeile|ID=1234}}{{Denkmalliste Sachsen Tabellenzeile|ID=1223}}")
-        errors = checker_bot.check_for_errors(article, self.checker)
-        self.assertEqual({checker_bot.ERROR_DUPLICATE_IDS: {u"1234": 2}}, errors)
-
-
-    def test_check_for_errors_can_report_multiple_errors(self):
-        article = self.create_article_with_text(
-            u"{{Denkmalliste Sachsen Tabellenzeile|ID=1}}{{Denkmalliste Sachsen Tabellenzeile|ID=1}}{{Denkmalliste Sachsen Tabellenzeile|}}")
-        errors = checker_bot.check_for_errors(article, self.checker)
-        expected_errors = {
-            checker_bot.ERROR_INVALID_IDS: 2,
-            checker_bot.ERROR_MISSING_IDS: 1,
-            checker_bot.ERROR_DUPLICATE_IDS: {u"1": 2}
-        }
-        self.assertEqual(expected_errors, errors)
 
 
     def test_generate_config_table_contains_template_configuration_columns_in_alphabetic_order(
