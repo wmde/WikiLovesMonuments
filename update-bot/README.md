@@ -8,13 +8,13 @@ Prerequisites: Python, pip.
 
 1. Clone the WLM repository: `git clone git@github.com:wmde/WikiLovesMonuments.git`.
 2. Copy and edit `user-config.py`: insert your user name.
-```
-cp user-config.template.py user-config.py
-```
+    ```
+    cp user-config.template.py user-config.py
+    ```
 3. Copy and edit `local_family.py`: Replace the host name with your local testing host name.
-```
-cp local_family.template.py local_family.py
-```
+    ```
+    cp local_family.template.py local_family.py
+    ```
 4. Install the necessary libraries:
    `pip install -r requirements.txt`
 5. To run tests install dev libraries (optional)
