@@ -24,7 +24,6 @@ class TestCheckerBot(unittest.TestCase):
                 "id_check_description": u"Nummer im Format D-n-nnn"
             }
         }
-
         self.bot = checker_bot.CheckerBot(self.checker)
 
 
