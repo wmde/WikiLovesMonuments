@@ -24,7 +24,7 @@ import pywikibot
 import mwparserfromhell
 
 from wlmbots.lib.template_checker import TemplateChecker
-from wlmbots.lib.pagelist import Pagelist
+from wlmbots.lib.pagelist import Pagelist, ArticleIterator, ArticleIteratorArgumentParser
 
 
 def generate_result_page(results, pagelister):
@@ -57,23 +57,6 @@ def generate_result_page(results, pagelister):
     return text
 
 
-def get_results_for_county(checker, articles, limit, counter=0):
-    results = []
-    for article in articles:
-        counter += 1
-        if not counter % 100:
-            pywikibot.log("Fetching Page {} ({})".format(counter, article.title()))
-        if limit and counter > limit:
-            break
-        errors = checker.check_article_for_errors(article)
-        if errors:
-            results.append({
-                "title": article.title(),
-                "errors": errors
-            })
-    return counter, results
-
-
 def generate_config_table(checker_config):
     line_fmt = "|-\n|[[Vorlage:{}|{}]]\n|{}\n|{}\n"
     text = '{| class="wikitable"\n|-\n!Vorlage!!Bezeichner ID!!Format ID\n'
@@ -83,43 +66,58 @@ def generate_config_table(checker_config):
     return text
 
 
+class ResultCollector(object):
+
+
+    def __init__(self, template_checker):
+        self.results = []
+        self.article_results = []
+        self.previous_count = 0
+        self.checker = template_checker
+
+
+    def store_category_result(self, category, counter, article_iterator):
+        if self.article_results:
+            self.results.append({
+                "category": category,
+                "results": self.article_results,
+                "pages_checked": counter - self.previous_count
+            })
+        self.article_results = []
+        self.previous_count = counter
+
+
+    def check_article(self, article, category, counter, article_iterator):
+        errors = check_for_errors(article, self.checker)
+        if errors:
+            self.article_results.append({
+                "title": article.title(),
+                "errors": errors
+            })
+
+
 def main(*args):
-    utf8_writer = codecs.getwriter('utf8')
-    output_destination = utf8_writer(sys.stdout)
-    verbosity = logging.ERROR
-    limit = 0
-    catname = "ALL"
     outputpage = None
-    for argument in pywikibot.handle_args(args):
-        if argument.find("-limit:") == 0:
-            limit = int(argument[7:])
-        elif argument.find("-category:") == 0:
-            catname = argument[10:]
-        elif argument.find("-outputpage:") == 0:
-            outputpage = argument[12:]
-    logging.basicConfig(level=verbosity, stream=output_destination)
     site = pywikibot.Site()
-    counter = 0
-    results = []
     pagelister = Pagelist(site)
     checker = TemplateChecker()
     checker.load_config("template_config.json")
-    if catname == "ALL":
+    collector = ResultCollector(checker)
+    article_iterator = ArticleIterator(
+        category_callback = collector.store_category_result,
+        article_callback = collector.check_article,
         categories = pagelister.get_county_categories()
-    else:
-        categories = [pywikibot.Category(site, catname)]
-    for category in categories:
-        prev_count = counter
-        counter, result = get_results_for_county(checker, category.articles(), limit, counter)
-        if result:
-            results.append({
-                "category": category,
-                "results": result,
-                "pages_checked": counter - (prev_count + 1)  # Counter is already increased by 1
-            })
-        if limit and counter > limit:
-            break
-    result_page = generate_result_page(results, pagelister)
+    )
+    parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
+    for argument in pywikibot.handle_args(args):
+        if parser.check_argument(argument):
+            continue
+        elif argument.find("-outputpage:") == 0:
+            outputpage = argument[12:]
+
+    article_iterator.iterate_categories()
+
+    result_page = generate_result_page(collector.results, pagelister)
     result_page += "== Zulässige Vorlagen ==\nDie Seiten wurden mit folgenden zulässigen Vorlagen und Einstellungen geprüft:\n"
     result_page += generate_config_table(checker.config)
     if outputpage:

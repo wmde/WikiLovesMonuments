@@ -47,7 +47,6 @@ class TestCheckerBot(unittest.TestCase):
         self.assertIn("|Nummer im Format D-n-nnn", config_table_lines[2])
         self.assertIn("|Nummer, mindestens vierstellig", config_table_lines[3])
 
-        # TODO write tests for generate_result_page and get_results_for_county
 
 if __name__ == '__main__':
     unittest.main()
