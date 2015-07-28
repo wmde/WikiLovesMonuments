@@ -10,7 +10,7 @@ class TemplateChecker(object):
         if not config:
             config = {}
         self.tpl_match_regex = None
-        self._config = None
+        self._config = {}
         self.config = config
 
 
