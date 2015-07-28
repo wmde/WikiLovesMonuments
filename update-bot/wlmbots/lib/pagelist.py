@@ -11,8 +11,13 @@ class Pagelist(object):
 
 
     def get_county_categories(self, recursive=True):
-        """ Get all subcategories of Liste (Kulturdenkmale in Deutschland) """
+        """ Get all subcategories of the root category """
         return self.root_category.subcategories(recursive)
+
+
+    def get_county_categories_by_name(self, names, recursive=True):
+        """ Get all subcategories of Liste (Kulturdenkmale in Deutschland) """
+        return [c for c in self.get_county_categories(recursive) if c.title() in names]
 
 
     def get_list_articles(self):
@@ -53,10 +58,18 @@ class ArticleIteratorArgumentParser(object):
     """ Parse command line arguments -limit: and -category: and set to ArticleIterator """
 
 
-    def __init__(self, article_iterator):
+    def __init__(self, article_iterator, pagelister):
         self.article_iterator = article_iterator
+        self.pagelister = pagelister
 
 
     def check_argument(self, argument):
         if argument.find("-limit:") == 0:
             self.article_iterator.limit = int(argument[7:])
+            return True
+        elif argument.find("-category:") == 0:
+            category_names = argument[10:].split(",")
+            self.article_iterator.categories = self.pagelister.get_county_categories_by_name(category_names)
+            return True
+        else:
+            return False
