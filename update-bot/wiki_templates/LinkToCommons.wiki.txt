@@ -11,5 +11,5 @@ This template creates a link to the Upload Wizard. The following parameters can 
 * '''Link_Text'''
 : The text being displayed as the link; currently defaults to "Bild gesucht"
 </noinclude>
-<onlyinclude>[{{SERVER}}/wiki/Special:UploadWizard?campaign={{{Campaign}}}&categories={{{Categories}}}{{#if:{{{Lat}}}|&lat={{{Lat}}}}}{{#if:{{{Lon}}}|&lon={{{Lon}}}}}{{#if:{{{ID}}}|&objref=dewiki{{!}}{{urlencode:{{PAGENAME}}}}{{!}}{{urlencode:{{{ID}}}}}}} {{{Link_Text|Bild gesucht}}}]</onlyinclude>
+<onlyinclude>[{{SERVER}}/wiki/Special:UploadWizard?campaign={{{Campaign}}}&categories={{{Categories}}}{{#if:{{{Lat|}}}|&lat={{{Lat}}}}}{{#if:{{{Lon|}}}|&lon={{{Lon}}}}}{{#if:{{{ID|}}}|&objref=dewiki{{!}}{{urlencode:{{PAGENAME}}}}{{!}}{{urlencode:{{{ID}}}}}}} {{{Link_Text|Bild gesucht}}}]</onlyinclude>
 
