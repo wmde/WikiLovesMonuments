@@ -3,7 +3,7 @@ import unittest
 
 from mock import Mock  # unittest.mock for Python >= 3.3
 
-from wlmbots.lib import pagelist
+from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser
 
 
 class TestArticleIterator(unittest.TestCase):
@@ -11,7 +11,7 @@ class TestArticleIterator(unittest.TestCase):
 
     def test_article_iterator_iterates_over_categories(self):
         category_callback = Mock()
-        it = pagelist.ArticleIterator(category_callback = category_callback)
+        it = ArticleIterator(category_callback = category_callback)
         category = Mock()
         category.articles.return_value = []
         it.categories = [category]
@@ -20,7 +20,7 @@ class TestArticleIterator(unittest.TestCase):
 
     def test_article_iterator_iterates_over_articles(self):
         article_callback = Mock()
-        it = pagelist.ArticleIterator(article_callback = article_callback)
+        it = ArticleIterator(article_callback = article_callback)
         article1 = Mock()
         article2 = Mock()
         category = Mock()
@@ -33,7 +33,7 @@ class TestArticleIterator(unittest.TestCase):
 
     def test_article_iterator_with_limit_stops_at_limit(self):
         category_callback = Mock()
-        it = pagelist.ArticleIterator(category_callback = category_callback)
+        it = ArticleIterator(category_callback = category_callback)
         it.limit = 10
         articles = [Mock()] * 20
         category = Mock()
@@ -45,7 +45,7 @@ class TestArticleIterator(unittest.TestCase):
 
     def test_article_iterator_with_multiple_categories_stops_at_limit(self):
         category_callback = Mock()
-        it = pagelist.ArticleIterator(category_callback = category_callback)
+        it = ArticleIterator(category_callback = category_callback)
         it.limit = 10
         articles = [Mock()] * 10
         category = Mock()
@@ -58,7 +58,7 @@ class TestArticleIterator(unittest.TestCase):
 
     def test_article_iterator_returns_correct_counter(self):
         category_callback = Mock()
-        it = pagelist.ArticleIterator(category_callback = category_callback)
+        it = ArticleIterator(category_callback = category_callback)
         articles = [Mock()] * 10
         category = Mock()
         category.articles.return_value = articles
@@ -69,7 +69,7 @@ class TestArticleIterator(unittest.TestCase):
 
     def test_article_iterator_logs_every_n_articles(self):
         log_callback = Mock()
-        it = pagelist.ArticleIterator(logging_callback = log_callback)
+        it = ArticleIterator(logging_callback = log_callback)
         it.log_every_n = 1
         article1 = Mock()
         article2 = Mock()
@@ -89,13 +89,13 @@ class TestArticleIteratorArgumentParser(unittest.TestCase):
 
     def test_limit_is_set(self):
         article_iterator = Mock()
-        parser = pagelist.ArticleIteratorArgumentParser(article_iterator, Mock())
+        parser = ArticleIteratorArgumentParser(article_iterator, Mock())
         self.assertTrue(parser.check_argument("-limit:5"))
         self.assertEqual(article_iterator.limit, 5)
 
 
     def test_parser_returns_false_when_no_valid_argument_is_found(self):
-        parser = pagelist.ArticleIteratorArgumentParser(Mock(), Mock())
+        parser = ArticleIteratorArgumentParser(Mock(), Mock())
         self.assertFalse(parser.check_argument("-foo"))
 
 
@@ -104,7 +104,7 @@ class TestArticleIteratorArgumentParser(unittest.TestCase):
         pagelister = Mock()
         category = Mock()
         pagelister.get_county_categories_by_name.return_value = [category]
-        parser = pagelist.ArticleIteratorArgumentParser(article_iterator, pagelister)
+        parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
         self.assertTrue(parser.check_argument(u"-category:Baudenkmäler in Sachsen"))
         self.assertEqual(article_iterator.categories, [category])
 

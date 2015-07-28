@@ -24,7 +24,8 @@ import pywikibot
 import mwparserfromhell
 
 from wlmbots.lib.template_checker import TemplateChecker
-from wlmbots.lib.pagelist import Pagelist, ArticleIterator, ArticleIteratorArgumentParser
+from wlmbots.lib.pagelist import Pagelist
+from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser
 
 
 def generate_result_page(results, pagelister):
