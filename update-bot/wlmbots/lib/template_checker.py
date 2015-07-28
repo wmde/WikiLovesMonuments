@@ -5,7 +5,7 @@ import json
 
 
 class TemplateChecker(object):
-    """ Stores the configured template names and allowed ID patterns """
+    """ Check templates for allowed ID patterns """
 
     def __init__(self, config=None):
         self._config = {}
@@ -15,17 +15,41 @@ class TemplateChecker(object):
 
 
     def load_config(self, filename):
+        """ Load configuration from JSON file """
         with open(filename, "r") as tplconf:
             self.config = json.load(tplconf)
 
 
     def text_contains_templates(self, text):
+        """
+        Check if the page text contains templates that are configured.
+
+        Parameters:
+            text - unicode page text
+
+        Returns:
+            True if at least one of the configured templates is contained on the
+            page, otherwise false.
+        """
         if not self.tpl_match_regex:
             pattern = r"\{\{" + "|".join([re.escape(tpl) for tpl in self.config])
             self.tpl_match_regex = re.compile(pattern)
         return bool(self.tpl_match_regex.search(text))
 
+
     def get_id(self, template):
+        """
+        Return unique identifier from template, if it exists.
+
+        Which template param is used for the id ("ID", "Nummer", etc) comes from
+        the configuration
+
+        Parameters:
+            template - a mwparserfromhell template
+
+        Returns:
+            Unique ID or empty string.
+        """
         id_name = self.template_config(template)["id"]
         try:
             id_param = unicode(template.get(id_name)).strip()
@@ -40,7 +64,16 @@ class TemplateChecker(object):
                 raise
 
     def has_valid_id(self, template):
-        return bool(self.template_config(template)["id_check"].search(self.get_id(template)))
+        """
+        Check if the id from the template matches the configured pattern for valid IDs.
+
+        Parameters:
+            template - a mwparserfromhell template
+
+        Returns:
+            True if ID matches the validation pattern
+        """
+        return tpl_id == "" or bool(self.template_config(template)["id_check"].search(self.get_id(template)))
 
     def is_allowed_template(self, template):
         return unicode(template.name) in self.config
@@ -53,6 +86,9 @@ class TemplateChecker(object):
         return config
 
     def template_config(self, template):
+        """
+        Access the template configuration with a template object
+        """
         return self.config[unicode(template.name)]
 
     @property
