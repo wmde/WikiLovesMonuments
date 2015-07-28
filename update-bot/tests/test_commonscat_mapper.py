@@ -70,7 +70,7 @@ class TestCommonscatMapper(unittest.TestCase):
         self.assertEqual(commonscat, u"")
 
 
-    def test_commonscat_from_table_row_template_returns_empty_string_if_it_consists_only_of_whitespace(self):
+    def test_commonscat_from_table_row_template_returns_empty_string_if_only_whitespace(self):
         template = Mock()
         template.get.return_value = u"    \n"
         commonscat = self.mapper.get_commonscat_from_table_row_template(template)
@@ -78,7 +78,7 @@ class TestCommonscatMapper(unittest.TestCase):
         self.assertEqual(commonscat, u"")
 
 
-    def test_commonscat_from_table_row_template_returns_empty_string_if_template_throws_value_error_with_commonscat_as_message(
+    def test_commonscat_from_table_row_template_returns_empty_string_if_template_throws_error(
             self):
         template = Mock()
         template.get.side_effect = ValueError("Commonscat")
@@ -103,7 +103,7 @@ class TestCommonscatMapper(unittest.TestCase):
         self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Gorleben")
 
 
-    def test_get_commonscat_returns_commonscat_from_category_links_if_table_row_and_commonscat_template_are_empty(
+    def test_get_commonscat_returns_commonscat_from_category_links_if_row_and_commonscat_template_empty(
             self):
         template = Mock()
         template.get.return_value = u""
