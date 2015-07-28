@@ -30,6 +30,22 @@ class TestArticleIterator(unittest.TestCase):
         article_callback.assert_any_call(article1, category, 0, it)
         article_callback.assert_any_call(article2, category, 1, it)
 
+    def test_article_iterator_logs_every_n_articles(self):
+        log_callback = Mock()
+        it = pagelist.ArticleIterator(logging_callback = log_callback)
+        it.log_every_n = 1
+        article1 = Mock()
+        article2 = Mock()
+        article1.title.return_value = "Foo"
+        article2.title.return_value = "Bar"
+        category = Mock()
+        category.articles.return_value = [article1, article2]
+        it.categories = [category]
+        it.iterate_categories()
+        log_callback.assert_any_call(u"Fetching page 0 (Foo)")
+        log_callback.assert_any_call(u"Fetching page 1 (Bar)")
+
+
 
 class TestArticleIteratorArgumentParser(unittest.TestCase):
 

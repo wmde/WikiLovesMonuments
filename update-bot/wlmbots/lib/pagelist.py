@@ -28,11 +28,16 @@ class Pagelist(object):
 class ArticleIterator(object):
     """ Iterate over categories and their article pages depending on category and limit settings """
 
-    def __init__(self, category_callback = None, article_callback = None):
+    def __init__(self, category_callback = None, article_callback = None, logging_callback = None, categories = None):
         self.limit = 0
-        self.categories = []
+        self.log_every_n = 100
         self.category_callback = category_callback
         self.article_callback = article_callback
+        self.logging_callback = logging_callback
+        if categories:
+            self.categories = categories
+        else:
+            self.categories = []
 
 
     def iterate_categories(self):
@@ -46,6 +51,8 @@ class ArticleIterator(object):
 
     def iterate_articles(self, category, counter):
         for article in category.articles():
+            if self.logging_callback and counter % self.log_every_n == 0:
+                self.logging_callback("Fetching page {} ({})".format(counter, article.title()))
             if self.article_callback:
                 self.article_callback(article, category, counter, self)
             counter += 1
