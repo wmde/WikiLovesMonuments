@@ -46,7 +46,7 @@ class ArticleIterator(object):
             counter = self.iterate_articles(category, counter)
             if self.category_callback:
                 self.category_callback(category = category, counter = counter, article_iterator = self)
-            if self.limit and counter > self.limit:
+            if self.limit and counter >= self.limit:
                 return;
 
     def iterate_articles(self, category, counter):

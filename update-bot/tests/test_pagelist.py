@@ -43,6 +43,19 @@ class TestArticleIterator(unittest.TestCase):
         category_callback.assert_called_once_with(category = category, counter = 10, article_iterator = it)
 
 
+    def test_article_iterator_with_multiple_categories_stops_at_limit(self):
+        category_callback = Mock()
+        it = pagelist.ArticleIterator(category_callback = category_callback)
+        it.limit = 10
+        articles = [Mock()] * 10
+        category = Mock()
+        category.articles.return_value = articles
+        it.categories = [category, category]
+        it.iterate_categories()
+        category_callback.assert_called_once_with(category = category, counter = 10, article_iterator = it)
+
+
+
     def test_article_iterator_returns_correct_counter(self):
         category_callback = Mock()
         it = pagelist.ArticleIterator(category_callback = category_callback)
