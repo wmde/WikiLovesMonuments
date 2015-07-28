@@ -17,15 +17,10 @@ cp user-config.template.py user-config.py
 ```
 cp local_family.template.py local_family.py
 ```
-4. Clone the pywikibot repository:
-   `git clone --branch 2.0 --recursive  https://gerrit.wikimedia.org/r/pywikibot/core.git ~/src/pywikibot`
-5. Install the necessary libraries:
+4. Install the necessary libraries:
    `pip install -r update-bot/requirements.txt`
-6. Set and export the library path:
-```
-PYTHONPATH=$PYTHONPATH:~/src/pywikibot
-export PYTHONPATH
-```
+5. To run tests install dev libraries (optional)
+   `pip install -r update-bot/dev-requirements.txt`
 
 ## General usage information
 
