@@ -6,8 +6,6 @@ This bot is for updating the placeholders in lists of monuments in the German Wi
 
 Prerequisites: Python, pip.
 
-The paths shown here are in `~/src` but you can change them to whatever you like.
-
 1. Clone the WLM repository: `git clone git@github.com:wmde/WikiLovesMonuments.git`.
 2. Copy and edit `user-config.py`: insert your user name.
 ```
@@ -17,15 +15,10 @@ cp user-config.template.py user-config.py
 ```
 cp local_family.template.py local_family.py
 ```
-4. Clone the pywikibot repository:
-   `git clone --branch 2.0 --recursive  https://gerrit.wikimedia.org/r/pywikibot/core.git ~/src/pywikibot`
-5. Install the necessary libraries:
-   `pip install -r update-bot/requirements.txt`
-6. Set and export the library path:
-```
-PYTHONPATH=$PYTHONPATH:~/src/pywikibot
-export PYTHONPATH
-```
+4. Install the necessary libraries:
+   `pip install -r requirements.txt`
+5. To run tests install dev libraries (optional)
+   `pip install -r dev-requirements.txt`
 
 ## General usage information
 
