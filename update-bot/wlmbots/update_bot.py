@@ -18,7 +18,7 @@ from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumen
 from wlmbots.lib.template_checker import TemplateChecker
 
 
-WLM_PLACEHOLDER = '<-- link to commons placeholder "#commonscat#" -->'  # TODO proper placeholder
+WLM_PLACEHOLDER = '{{LinkToCommons|Campaign=#campaign#|categories=#commonscat#|Lat=|Lon=|ID=#id#}}'
 
 class UpdateBot(object):
 
