@@ -20,14 +20,14 @@ from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumen
 WLM_PLACEHOLDER = '<-- link to commons placeholder "#commonscat#" -->'  # TODO proper placeholder
 
 
-def add_placeholders(article, **kwargs):
-    logging.info("{}".format(article.title()))
+def cb_add_placeholders(article, **kwargs):
+    logging.info("%s", article.title())
     if article.isRedirectPage():
         return
     text = article.get()
     commonscat = CommonscatMapper().get_commonscat_from_category_links(text)
     if not commonscat:
-        logging.error("  {} has no mapped category link.".format(article.title()))
+        logging.error("  %s has no mapped category link.", article.title())
         return
     text_with_placeholders_in_templates = replace_in_templates(text)
     if text != text_with_placeholders_in_templates:
@@ -63,8 +63,8 @@ def main(*args):
     site = pywikibot.Site()
     pagelister = Pagelist(site)
     article_iterator = ArticleIterator(
-        article_callback = add_placeholders,
-        categories = pagelister.get_county_categories()
+        article_callback=cb_add_placeholders,
+        categories=pagelister.get_county_categories()
     )
     parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
     for argument in pywikibot.handle_args(args):
