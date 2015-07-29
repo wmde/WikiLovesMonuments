@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
+import os
 
 from mock import Mock
 
@@ -9,6 +10,7 @@ from wlmbots.lib import commonscat_mapper
 class TestCommonscatMapper(unittest.TestCase):
     def setUp(self):
         self.mapper = commonscat_mapper.CommonscatMapper()
+        self.mapper.load_mapping(os.path.join(os.path.dirname(os.path.realpath('__file__')), "config/commonscat_mapping.json"))
 
 
     def test_category_link_mapping(self):
