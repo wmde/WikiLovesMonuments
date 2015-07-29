@@ -4,8 +4,7 @@ import unittest
 from mock import Mock
 
 from wlmbots import checker_bot
-from wlmbots.lib import template_checker
-
+from wlmbots.lib.template_checker import TemplateChecker
 
 class TestCheckerBot(unittest.TestCase):
     """ Integration testing for checker_bot """
@@ -24,6 +23,8 @@ class TestCheckerBot(unittest.TestCase):
                 "id_check_description": u"Nummer im Format D-n-nnn"
             }
         }
+        self.checker = Mock()
+        self.checker.config = self.config
         self.bot = checker_bot.CheckerBot(self.checker)
 
 
@@ -60,7 +61,7 @@ class TestCheckerBot(unittest.TestCase):
             "results": [],
             "pages_checked": 0
         }
-        header = checker_bot.generate_category_result_header(results, pagelister)
+        header = self.bot.generate_category_result_header(results, pagelister)
         self.assertIn(u"== Baudenkmäler in Sachsen ==", header)
 
     def test_generate_category_result_header_increases_header_level_by_one_if_parent_category_is_not_root_category(self):
@@ -74,7 +75,7 @@ class TestCheckerBot(unittest.TestCase):
             "results": [],
             "pages_checked": 0
         }
-        header = checker_bot.generate_category_result_header(results, pagelister)
+        header = self.bot.generate_category_result_header(results, pagelister)
         self.assertIn(u"=== Baudenkmäler in Greifswald ===", header)
 
     def test_generate_category_result_header_adds_page_statistics(self):
@@ -88,7 +89,7 @@ class TestCheckerBot(unittest.TestCase):
             "results": [{}, {}, {}],
             "pages_checked": 100
         }
-        header = checker_bot.generate_category_result_header(results, pagelister)
+        header = self.bot.generate_category_result_header(results, pagelister)
         self.assertIn(u"100 Seiten geprüft", header)
         self.assertIn(u"97 ohne Probleme", header)
 
@@ -98,14 +99,14 @@ class TestCheckerBot(unittest.TestCase):
                  {
                     "title" : u"Liste der Baudenkmale in Döbeln",
                     "errors": {
-                        checker_bot.ERROR_INVALID_IDS: 7,
-                        checker_bot.ERROR_DUPLICATE_IDS: [u"42", u"23"],
-                        checker_bot.ERROR_MISSING_IDS: 8
+                        TemplateChecker.ERROR_INVALID_IDS: 7,
+                        TemplateChecker.ERROR_DUPLICATE_IDS: [u"42", u"23"],
+                        TemplateChecker.ERROR_MISSING_IDS: 8
                     }
                 }
             ]
         }
-        table = checker_bot.generate_category_result_table(results)
+        table = self.bot.generate_category_result_table(results)
         self.assertIn(u"{{Fehler in Denkmallisten Tabellenzeile|", table)
         self.assertIn(u"Titel=Liste der Baudenkmale in Döbeln", table)
         self.assertIn(u"Kein_Template=|", table)
@@ -119,12 +120,12 @@ class TestCheckerBot(unittest.TestCase):
                  {
                     "title" : u"Liste der Baudenkmale in Döbeln",
                     "errors": {
-                        checker_bot.ERROR_MISSING_TEMPLATE: True
+                        TemplateChecker.ERROR_MISSING_TEMPLATE: True
                     }
                 }
             ]
         }
-        table = checker_bot.generate_category_result_table(results)
+        table = self.bot.generate_category_result_table(results)
         self.assertIn(u"{{Fehler in Denkmallisten Tabellenzeile|", table)
         self.assertIn(u"Titel=Liste der Baudenkmale in Döbeln", table)
         self.assertIn(u"Kein_Template=True|", table)

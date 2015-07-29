@@ -63,17 +63,17 @@ class CheckerBot(object):
         text = u"{{Fehler in Denkmallisten Tabellenkopf}}\n"
         for result in results["results"]:
             errors = {
-                ERROR_MISSING_TEMPLATE: "",
-                ERROR_MISSING_IDS: "",
-                ERROR_INVALID_IDS: "",
-                ERROR_DUPLICATE_IDS: ""
+                TemplateChecker.ERROR_MISSING_TEMPLATE: "",
+                TemplateChecker.ERROR_MISSING_IDS: "",
+                TemplateChecker.ERROR_INVALID_IDS: "",
+                TemplateChecker.ERROR_DUPLICATE_IDS: ""
             }
             severity = min(result["errors"].keys())
             errors.update(result["errors"])
-            duplicate_ids = ", ".join(errors[ERROR_DUPLICATE_IDS])
+            duplicate_ids = ", ".join(errors[TemplateChecker.ERROR_DUPLICATE_IDS])
             text += u"{{{{Fehler in Denkmallisten Tabellenzeile|Titel={}|Kein_Template={}|IDs_fehlen={}|IDs_ungueltig={}|IDs_doppelt={}|Level={}}}}}\n".format(
-                result["title"], errors[ERROR_MISSING_TEMPLATE], errors[ERROR_MISSING_IDS], errors[ERROR_INVALID_IDS],
-                duplicate_ids, severity
+                result["title"], errors[TemplateChecker.ERROR_MISSING_TEMPLATE], errors[TemplateChecker.ERROR_MISSING_IDS],
+                errors[TemplateChecker.ERROR_INVALID_IDS], duplicate_ids, severity
             )
         text += "|}\n\n"
         return text
