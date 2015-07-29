@@ -15,39 +15,40 @@ from wlmbots.lib.commonscat_mapper import CommonscatMapper
 from wlmbots.lib.template_replacer import TemplateReplacer
 from wlmbots.lib.pagelist import Pagelist
 from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser
+from wlmbots.lib.template_checker import TemplateChecker
+
 
 WLM_PLACEHOLDER = '<-- link to commons placeholder "#commonscat#" -->'  # TODO proper placeholder
 
 class UpdateBot(object):
 
-    def __init__(self, commonscat_mapper):
+    def __init__(self, commonscat_mapper, template_checker):
         self.commonscat_mapper = commonscat_mapper
+        self.template_checker = template_checker
 
     def cb_add_placeholders(self, article):
         logging.info("%s", article.title())
         if article.isRedirectPage():
+            return
+        errors = self.template_checker.check_article_for_errors(article)
+        if TemplateChecker.ERROR_MISSING_TEMPLATE in errors:
+            logging.info("  No templates found, skipping")
             return
         text = article.get()
         commonscat = self.commonscat_mapper.get_commonscat_from_category_links(text)
         if not commonscat:
             logging.error("  %s has no mapped category link.", article.title())
             return
-        text_with_placeholders_in_templates = self.replace_in_templates(text)
+        text_with_placeholders_in_templates = self.replace_in_templates(text, errors)
         if text != text_with_placeholders_in_templates:
             # TODO store new text
             logging.info("  Updated article with placeholders")
             logging.debug(text_with_placeholders_in_templates)
 
-    def replace_in_templates(self, text):
+    def replace_in_templates(self, text, errors):
         global WLM_PLACEHOLDER
-        # fail fast
-        if text.find("Tabellenzeile") == -1:
-            logging.info("   no templates found.")
-            return text
         code = mwparserfromhell.parse(text)
-        for template in code.filter_templates():
-            if template.name.find("Tabellenzeile") == -1:
-                continue
+        for template in self.template_checker.filter_allowed_templates(code.filter_templates()):
             replacer = TemplateReplacer(template)
             if replacer.param_is_empty("Bild"):
                 row_commonscat = self.commonscat_mapper.get_commonscat(text, template)
@@ -65,7 +66,9 @@ def main(*args):
     pagelister = Pagelist(site)
     mapper = CommonscatMapper()
     mapper.load_mapping("config/commonscat_mapping.json")
-    update_bot = UpdateBot()
+    checker = TemplateChecker()
+    checker.load_config("template_config.json")
+    update_bot = UpdateBot(mapper, checker)
     article_iterator = ArticleIterator(
         article_callback=update_bot.cb_add_placeholders,
         categories=pagelister.get_county_categories()
