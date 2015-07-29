@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+Contains the class TemplateChecker that checks templates and articles for errors.
+"""
 
 import re
 import json
@@ -84,11 +87,25 @@ class TemplateChecker(object):
         return bool(self.template_config(template)["id_check"].search(self.get_id(template)))
 
     def check_article_for_errors(self, article):
+        """
+        Return error codes and error meta data for an article.
+
+        Parameters:
+            article - a pywikibot Article
+
+        Returns:
+            A dictionary with error types as keys and metadata as values.
+            If an error type did not occur, it won't be in the dictionary.
+            ERROR_MISSING_IDS and ERROR_INVALID_IDS have a value of the number
+            of templates where this error occured.
+            ERROR_DUPLICATE_IDS has a value list of the duplicate IDs.
+            ERROR_MISSING_TEMPLATE is just True or missing in the dict.
+        """
         if article.isRedirectPage():
             return
         text = article.get()
         if not self.text_contains_templates(text):
-            return { self.ERROR_MISSING_TEMPLATE: True }
+            return {self.ERROR_MISSING_TEMPLATE: True}
         templates = mwparserfromhell.parse(text).filter_templates()
         errors = {
             self.ERROR_MISSING_IDS: 0,
