@@ -6,6 +6,7 @@ from mock import Mock
 from wlmbots import checker_bot
 from wlmbots.lib.template_checker import TemplateChecker
 
+
 class TestCheckerBot(unittest.TestCase):
     """ Integration testing for checker_bot """
 
@@ -64,7 +65,9 @@ class TestCheckerBot(unittest.TestCase):
         header = self.bot.generate_category_result_header(results, pagelister)
         self.assertIn(u"== Baudenkmäler in Sachsen ==", header)
 
-    def test_generate_category_result_header_increases_header_level_by_one_if_parent_category_is_not_root_category(self):
+
+    def test_generate_category_result_header_increases_header_level_by_one_if_parent_category_is_not_root_category(
+            self):
         category = Mock()
         category.categories.return_value = [u"Denkmäler in Sachsen"]
         category.title.return_value = u"Baudenkmäler in Greifswald"
@@ -77,6 +80,7 @@ class TestCheckerBot(unittest.TestCase):
         }
         header = self.bot.generate_category_result_header(results, pagelister)
         self.assertIn(u"=== Baudenkmäler in Greifswald ===", header)
+
 
     def test_generate_category_result_header_adds_page_statistics(self):
         category = Mock()
@@ -93,11 +97,12 @@ class TestCheckerBot(unittest.TestCase):
         self.assertIn(u"100 Seiten geprüft", header)
         self.assertIn(u"97 ohne Probleme", header)
 
+
     def test_generate_category_result_table_creates_id_template_entries(self):
         results = {
             "results": [
-                 {
-                    "title" : u"Liste der Baudenkmale in Döbeln",
+                {
+                    "title": u"Liste der Baudenkmale in Döbeln",
                     "errors": {
                         TemplateChecker.ERROR_INVALID_IDS: 7,
                         TemplateChecker.ERROR_DUPLICATE_IDS: [u"42", u"23"],
@@ -114,11 +119,12 @@ class TestCheckerBot(unittest.TestCase):
         self.assertIn(u"IDs_ungueltig=7", table)
         self.assertIn(u"IDs_doppelt=42, 23", table)
 
+
     def test_generate_category_result_table_creates_missing_template_entries(self):
         results = {
             "results": [
-                 {
-                    "title" : u"Liste der Baudenkmale in Döbeln",
+                {
+                    "title": u"Liste der Baudenkmale in Döbeln",
                     "errors": {
                         TemplateChecker.ERROR_MISSING_TEMPLATE: True
                     }

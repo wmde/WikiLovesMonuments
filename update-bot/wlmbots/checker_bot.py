@@ -25,7 +25,6 @@ from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumen
 
 class CheckerBot(object):
 
-
     def __init__(self, template_checker):
         self.results = []
         self.article_results = []
@@ -45,7 +44,7 @@ class CheckerBot(object):
         text = u""
         heading = "=="
         category = results["category"]
-        if not pagelister.root_category in category.categories():
+        if pagelister.root_category not in category.categories():
             heading += "="
         text += u"\n{} {} {}\n".format(heading, category.title(), heading)
         num_errors = len(results["results"])

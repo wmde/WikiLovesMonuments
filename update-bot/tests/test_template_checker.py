@@ -8,7 +8,6 @@ from wlmbots.lib.template_checker import TemplateChecker
 
 class TestTemplateChecker(unittest.TestCase):
 
-
     def setUp(self):
         self.config = {
             u"Denkmalliste Sachsen Tabellenzeile": {
@@ -126,7 +125,6 @@ class TestTemplateChecker(unittest.TestCase):
             TemplateChecker.ERROR_DUPLICATE_IDS: {u"1": 2}
         }
         self.assertEqual(expected_errors, errors)
-
 
 
 if __name__ == '__main__':
