@@ -64,11 +64,12 @@ def main(*args):
     verbosity = logging.ERROR
     site = pywikibot.Site()
     pagelister = Pagelist(site)
-    mapper = CommonscatMapper()
-    mapper.load_mapping("config/commonscat_mapping.json")
+    commonscat_mapper = CommonscatMapper()
+    commonscat_mapper.load_mapping("config/commonscat_mapping.json")
+    commonscat_mapper.load_subcategories_into_map(site)
     checker = TemplateChecker()
     checker.load_config("template_config.json")
-    update_bot = UpdateBot(mapper, checker)
+    update_bot = UpdateBot(commonscat_mapper, checker)
     article_iterator = ArticleIterator(
         article_callback=update_bot.cb_add_placeholders,
         categories=pagelister.get_county_categories()
