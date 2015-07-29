@@ -63,7 +63,7 @@ class CheckerBot(object):
         for result in results["results"]:
             errors = {
                 TemplateChecker.ERROR_MISSING_TEMPLATE: "",
-                TemplahandlerteChecker.ERROR_MISSING_IDS: "",
+                TemplateChecker.ERROR_MISSING_IDS: "",
                 TemplateChecker.ERROR_INVALID_IDS: "",
                 TemplateChecker.ERROR_DUPLICATE_IDS: ""
             }
