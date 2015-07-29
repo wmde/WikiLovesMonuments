@@ -37,6 +37,9 @@ class CommonscatMapper(object):
         """ Get the commonscat from the Category links (which is guaranteed to
             be on every page of the WLM pages)
         """
+        text_id = id(text)
+        if text_id in self.category_cache:
+            return self.category_cache[text_id][1]
         code = mwparserfromhell.parse(text)
         for link in code.filter_wikilinks():
             title = unicode(link.title)
