@@ -16,7 +16,8 @@ class TestUpdateBot(unittest.TestCase):
                 "id_check": "D-\\d-\\d{3}-\\d{3}-\\d{3}",
             }
         })
-        self.bot = update_bot.UpdateBot(CommonscatMapper(), self.template_checker)
+        self.bot = update_bot.UpdateBot(CommonscatMapper(), self.template_checker, Mock())
+        self.bot.current_campaign = u""
 
     def test_replace_in_templates_does_nothing_if_image_exists(self):
         article_text = "{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=testcategory}}"

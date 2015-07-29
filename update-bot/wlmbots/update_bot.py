@@ -12,6 +12,7 @@ import pywikibot
 import mwparserfromhell
 
 from wlmbots.lib.commonscat_mapper import CommonscatMapper
+from wlmbots.lib.campaign_mapper import CampaignMapper
 from wlmbots.lib.template_replacer import TemplateReplacer
 from wlmbots.lib.pagelist import Pagelist
 from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser
@@ -22,11 +23,13 @@ WLM_PLACEHOLDER = '{{LinkToCommons|Campaign=#campaign#|categories=#commonscat#|L
 
 class UpdateBot(object):
 
-    def __init__(self, commonscat_mapper, template_checker):
+    def __init__(self, commonscat_mapper, template_checker, campaign_mapper):
         self.commonscat_mapper = commonscat_mapper
         self.template_checker = template_checker
+        self.campaign_mapper = campaign_mapper
+        self.current_campaign = None
 
-    def cb_add_placeholders(self, article):
+    def cb_add_placeholders(self, article, **kwargs):
         logging.info("%s", article.title())
         if article.isRedirectPage():
             return
@@ -45,6 +48,9 @@ class UpdateBot(object):
             logging.info("  Updated article with placeholders")
             logging.debug(text_with_placeholders_in_templates)
 
+    def cb_switch_campaign(self, category, **kwargs):
+        self.current_campaign = self.campaign_mapper.get_campaign(category.title())
+
     def replace_in_templates(self, text, errors):
         global WLM_PLACEHOLDER
         code = mwparserfromhell.parse(text)
@@ -53,6 +59,7 @@ class UpdateBot(object):
             if replacer.param_is_empty("Bild"):
                 row_commonscat = self.commonscat_mapper.get_commonscat(text, template)
                 placeholder = WLM_PLACEHOLDER.replace("#commonscat#", row_commonscat)
+                placeholder = placeholder.replace("#campaign#", self.current_campaign)
                 replacer.set_value('Bild', placeholder)
                 text = text.replace(unicode(template), unicode(replacer))
         return text
@@ -69,9 +76,12 @@ def main(*args):
     commonscat_mapper.load_subcategories_into_map(site)
     checker = TemplateChecker()
     checker.load_config("template_config.json")
-    update_bot = UpdateBot(commonscat_mapper, checker)
+    campaign_mapper = CampaignMapper(commonscat_mapper)
+    campaign_mapper.load_mapping("config/campaigns.json")
+    update_bot = UpdateBot(commonscat_mapper, checker, campaign_mapper)
     article_iterator = ArticleIterator(
         article_callback=update_bot.cb_add_placeholders,
+        category_callback=update_bot.cb_switch_campaign,
         categories=pagelister.get_county_categories()
     )
     parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
