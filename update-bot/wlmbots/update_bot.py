@@ -20,12 +20,18 @@ from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumen
 WLM_PLACEHOLDER = '<-- link to commons placeholder "#commonscat#" -->'  # TODO proper placeholder
 
 
+def get_commonscat_mapper():
+    mapper = CommonscatMapper()
+    mapper.load_mapping("config/commonscat_mapping.json")
+    return mapper
+
+
 def cb_add_placeholders(article, **kwargs):
     logging.info("%s", article.title())
     if article.isRedirectPage():
         return
     text = article.get()
-    commonscat = CommonscatMapper().get_commonscat_from_category_links(text)
+    commonscat = get_commonscat_mapper().get_commonscat_from_category_links(text)
     if not commonscat:
         logging.error("  %s has no mapped category link.", article.title())
         return
@@ -42,7 +48,7 @@ def replace_in_templates(text):
     if text.find("Tabellenzeile") == -1:
         logging.info("   no templates found.")
         return text
-    mapper = CommonscatMapper()
+    mapper = get_commonscat_mapper()
     code = mwparserfromhell.parse(text)
     for template in code.filter_templates():
         if template.name.find("Tabellenzeile") == -1:
