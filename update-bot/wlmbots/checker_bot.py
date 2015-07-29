@@ -30,7 +30,6 @@ from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumen
 
 class CheckerBot(object):
 
-
     def __init__(self, template_checker):
         self.results = []
         self.article_results = []
@@ -50,7 +49,7 @@ class CheckerBot(object):
         text = u""
         heading = "=="
         category = results["category"]
-        if not pagelister.root_category in category.categories():
+        if pagelister.root_category not in category.categories():
             heading += "="
         text += u"\n{} {} {}\n".format(heading, category.title(), heading)
         num_errors = len(results["results"])
@@ -64,7 +63,7 @@ class CheckerBot(object):
         for result in results["results"]:
             errors = {
                 TemplateChecker.ERROR_MISSING_TEMPLATE: "",
-                TemplateChecker.ERROR_MISSING_IDS: "",
+                TemplahandlerteChecker.ERROR_MISSING_IDS: "",
                 TemplateChecker.ERROR_INVALID_IDS: "",
                 TemplateChecker.ERROR_DUPLICATE_IDS: ""
             }
@@ -117,9 +116,9 @@ def main(*args):
     collector = ResultCollector(checker)
     checker_bot = CheckerBot(template_checker)
     article_iterator = ArticleIterator(
-        category_callback = checker_bot.store_category_result,
-        article_callback = checker_bot.check_article,
-        categories = pagelister.get_county_categories()
+        category_callback=checker_bot.store_category_result,
+        article_callback=checker_bot.check_article,
+        categories=pagelister.get_county_categories()
     )
     parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
     for argument in pywikibot.handle_args(args):
