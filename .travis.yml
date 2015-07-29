@@ -11,5 +11,6 @@ install:
   - cp local_family.template.py local_family.py
 
 script:
+  - cd update-bot
   - python -m unittest discover .
-
+  - pylint -r n tests/*.py wlmbots/*.py wlmbots/lib/*.py -E
