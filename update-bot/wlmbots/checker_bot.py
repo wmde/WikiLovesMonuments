@@ -19,45 +19,12 @@ from __future__ import unicode_literals
 import codecs
 import sys
 import logging
-import json
-import itertools
-import collections
 
 import pywikibot
 import mwparserfromhell
 
 from wlmbots.lib.template_checker import TemplateChecker
 from wlmbots.lib.pagelist import Pagelist
-
-ERROR_MISSING_TEMPLATE = 1
-ERROR_MISSING_IDS = 2
-ERROR_INVALID_IDS = 4
-ERROR_DUPLICATE_IDS = 8
-
-
-def check_for_errors(article, checker):
-    if article.isRedirectPage():
-        return
-    text = article.get()
-    if not checker.text_contains_templates(text):
-        return {ERROR_MISSING_TEMPLATE: True}
-    templates = mwparserfromhell.parse(text).filter_templates()
-    errors = {
-        ERROR_MISSING_IDS: 0,
-        ERROR_INVALID_IDS: 0
-    }
-    ids = collections.Counter()
-    for template in itertools.ifilter(checker.is_allowed_template, templates):
-        row_id = checker.get_id(template)
-        if not row_id:
-            errors[ERROR_MISSING_IDS] += 1
-            continue
-        ids[row_id] += 1
-        if not checker.has_valid_id(template):
-            errors[ERROR_INVALID_IDS] += 1
-    errors[ERROR_DUPLICATE_IDS] = {row_id: count for row_id, count in ids.iteritems() if count > 1}
-    errors = {e: v for e, v in errors.iteritems() if v}
-    return errors
 
 
 def generate_result_page(results, pagelister):
@@ -74,17 +41,17 @@ def generate_result_page(results, pagelister):
         text += u"{{Fehler in Denkmallisten Tabellenkopf}}\n"
         for result in category_results["results"]:
             errors = {
-                ERROR_MISSING_TEMPLATE: "",
-                ERROR_MISSING_IDS: "",
-                ERROR_INVALID_IDS: "",
-                ERROR_DUPLICATE_IDS: ""
+                TemplateChecker.ERROR_MISSING_TEMPLATE: "",
+                TemplateChecker.ERROR_MISSING_IDS: "",
+                TemplateChecker.ERROR_INVALID_IDS: "",
+                TemplateChecker.ERROR_DUPLICATE_IDS: ""
             }
             severity = min(result["errors"].keys())
             errors.update(result["errors"])
-            duplicate_ids = ", ".join(errors[ERROR_DUPLICATE_IDS])
+            duplicate_ids = ", ".join(errors[TemplateChecker.ERROR_DUPLICATE_IDS])
             text += u"{{{{Fehler in Denkmallisten Tabellenzeile|Titel={}|Kein_Template={}|IDs_fehlen={}|IDs_ungueltig={}|IDs_doppelt={}|Level={}}}}}\n".format(
-                result["title"], errors[ERROR_MISSING_TEMPLATE], errors[ERROR_MISSING_IDS], errors[ERROR_INVALID_IDS],
-                duplicate_ids, severity
+                result["title"], errors[TemplateChecker.ERROR_MISSING_TEMPLATE], errors[TemplateChecker.ERROR_MISSING_IDS],
+                errors[TemplateChecker.ERROR_INVALID_IDS], duplicate_ids, severity
             )
         text += "|}\n\n"
     return text
@@ -98,7 +65,7 @@ def get_results_for_county(checker, articles, limit, counter=0):
             pywikibot.log("Fetching Page {} ({})".format(counter, article.title()))
         if limit and counter > limit:
             break
-        errors = check_for_errors(article, checker)
+        errors = checker.check_article_for_errors(article)
         if errors:
             results.append({
                 "title": article.title(),
@@ -134,10 +101,9 @@ def main(*args):
     site = pywikibot.Site()
     counter = 0
     results = []
-    with open("template_config.json", "r") as tplconf:
-        checker_config = json.load(tplconf)
     pagelister = Pagelist(site)
-    checker = TemplateChecker(checker_config)
+    checker = TemplateChecker()
+    checker.load_config("template_config.json")
     if catname == "ALL":
         categories = pagelister.get_county_categories()
     else:
@@ -155,7 +121,7 @@ def main(*args):
             break
     result_page = generate_result_page(results, pagelister)
     result_page += "== Zulässige Vorlagen ==\nDie Seiten wurden mit folgenden zulässigen Vorlagen und Einstellungen geprüft:\n"
-    result_page += generate_config_table(checker_config)
+    result_page += generate_config_table(checker.config)
     if outputpage:
         article = pywikibot.Page(site, outputpage)
         old_text = article.get()
