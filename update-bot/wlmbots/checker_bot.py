@@ -16,12 +16,7 @@ Available command line options are:
 
 from __future__ import unicode_literals
 
-import codecs
-import sys
-import logging
-
 import pywikibot
-import mwparserfromhell
 
 from wlmbots.lib.template_checker import TemplateChecker
 from wlmbots.lib.pagelist import Pagelist
@@ -38,11 +33,11 @@ class CheckerBot(object):
         self.checker = template_checker
 
 
-    def generate_result_page(self, results, pagelister):
+    def generate_result_page(self, pagelister):
         text = u""
-        for category_results in results:
-            text += generate_category_result_header(category_results, pagelister)
-            text += generate_category_result_table(category_results)
+        for category_results in self.results:
+            text += self.generate_category_result_header(category_results, pagelister)
+            text += self.generate_category_result_table(category_results)
         return text
 
 
@@ -88,7 +83,7 @@ class CheckerBot(object):
         return text
 
 
-    def store_category_result(self, category, counter, article_iterator):
+    def cb_store_category_result(self, category, counter=0, **kwargs):
         if self.article_results:
             self.results.append({
                 "category": category,
@@ -99,8 +94,8 @@ class CheckerBot(object):
         self.previous_count = counter
 
 
-    def check_article(self, article, category, counter, article_iterator):
-        errors = self.checker.check_article_for_errors(article, self.checker)
+    def cb_check_article(self, article, **kwargs):
+        errors = self.checker.check_article_for_errors(article)
         if errors:
             self.article_results.append({
                 "title": article.title(),
@@ -114,12 +109,11 @@ def main(*args):
     pagelister = Pagelist(site)
     checker = TemplateChecker()
     checker.load_config("template_config.json")
-    collector = ResultCollector(checker)
-    checker_bot = CheckerBot(template_checker)
+    checker_bot = CheckerBot(checker)
     article_iterator = ArticleIterator(
-        category_callback = checker_bot.store_category_result,
-        article_callback = checker_bot.check_article,
-        categories = pagelister.get_county_categories()
+        category_callback=checker_bot.cb_store_category_result,
+        article_callback=checker_bot.cb_check_article,
+        categories=pagelister.get_county_categories()
     )
     parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
     for argument in pywikibot.handle_args(args):
@@ -130,9 +124,9 @@ def main(*args):
 
     article_iterator.iterate_categories()
 
-    result_page = checker_bot.generate_result_page(collector.results, pagelister)
+    result_page = checker_bot.generate_result_page(pagelister)
     result_page += "== Zulässige Vorlagen ==\nDie Seiten wurden mit folgenden zulässigen Vorlagen und Einstellungen geprüft:\n"
-    result_page += checker_bot.generate_config_table(checker_config)
+    result_page += checker_bot.generate_config_table()
 
     if outputpage:
         article = pywikibot.Page(site, outputpage)
