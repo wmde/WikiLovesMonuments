@@ -66,8 +66,7 @@ class TestCheckerBot(unittest.TestCase):
         self.assertIn(u"== Baudenkmäler in Sachsen ==", header)
 
 
-    def test_generate_category_result_header_increases_header_level_by_one_if_parent_category_is_not_root_category(
-            self):
+    def test_generate_category_result_header_dynamically_sets_header_level(self):
         category = Mock()
         category.categories.return_value = [u"Denkmäler in Sachsen"]
         category.title.return_value = u"Baudenkmäler in Greifswald"
