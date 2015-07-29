@@ -16,30 +16,46 @@ Available command line options are:
 
 from __future__ import unicode_literals
 
-import codecs
-import sys
-import logging
-
 import pywikibot
-import mwparserfromhell
 
 from wlmbots.lib.template_checker import TemplateChecker
 from wlmbots.lib.pagelist import Pagelist
+from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser
 
 
-def generate_result_page(results, pagelister):
-    text = u""
-    for category_results in results:
+class CheckerBot(object):
+
+    def __init__(self, template_checker):
+        self.results = []
+        self.article_results = []
+        self.previous_count = 0
+        self.checker = template_checker
+
+
+    def generate_result_page(self, pagelister):
+        text = u""
+        for category_results in self.results:
+            text += self.generate_category_result_header(category_results, pagelister)
+            text += self.generate_category_result_table(category_results)
+        return text
+
+
+    def generate_category_result_header(self, results, pagelister):
+        text = u""
         heading = "=="
-        category = category_results["category"]
+        category = results["category"]
         if pagelister.root_category not in category.categories():
             heading += "="
-        text += u"{} {} {}\n".format(heading, category.title(), heading)
-        num_errors = len(category_results["results"])
-        text += u"{} Seiten geprüft, {} ohne Probleme\n".format(category_results["pages_checked"],
-                                                                category_results["pages_checked"] - num_errors)
-        text += u"{{Fehler in Denkmallisten Tabellenkopf}}\n"
-        for result in category_results["results"]:
+        text += u"\n{} {} {}\n".format(heading, category.title(), heading)
+        num_errors = len(results["results"])
+        text += u"{} Seiten geprüft, {} ohne Probleme\n".format(results["pages_checked"],
+                                                                results["pages_checked"] - num_errors)
+        return text
+
+
+    def generate_category_result_table(self, results):
+        text = u"{{Fehler in Denkmallisten Tabellenkopf}}\n"
+        for result in results["results"]:
             errors = {
                 TemplateChecker.ERROR_MISSING_TEMPLATE: "",
                 TemplateChecker.ERROR_MISSING_IDS: "",
@@ -54,74 +70,63 @@ def generate_result_page(results, pagelister):
                 errors[TemplateChecker.ERROR_INVALID_IDS], duplicate_ids, severity
             )
         text += "|}\n\n"
-    return text
+        return text
 
 
-def get_results_for_county(checker, articles, limit, counter=0):
-    results = []
-    for article in articles:
-        counter += 1
-        if not counter % 100:
-            pywikibot.log("Fetching Page {} ({})".format(counter, article.title()))
-        if limit and counter > limit:
-            break
-        errors = checker.check_article_for_errors(article)
+    def generate_config_table(self):
+        line_fmt = "|-\n|[[Vorlage:{}|{}]]\n|{}\n|{}\n"
+        text = '{| class="wikitable"\n|-\n!Vorlage!!Bezeichner ID!!Format ID\n'
+        for template_name, config in sorted(self.checker.config.items()):
+            text += line_fmt.format(template_name, template_name, config["id"], config["id_check_description"])
+        text += "|}\n\n"
+        return text
+
+
+    def cb_store_category_result(self, category, counter=0, **kwargs):
+        if self.article_results:
+            self.results.append({
+                "category": category,
+                "results": self.article_results,
+                "pages_checked": counter - self.previous_count
+            })
+        self.article_results = []
+        self.previous_count = counter
+
+
+    def cb_check_article(self, article, **kwargs):
+        errors = self.checker.check_article_for_errors(article)
         if errors:
-            results.append({
+            self.article_results.append({
                 "title": article.title(),
                 "errors": errors
             })
-    return counter, results
-
-
-def generate_config_table(checker_config):
-    line_fmt = "|-\n|[[Vorlage:{}|{}]]\n|{}\n|{}\n"
-    text = '{| class="wikitable"\n|-\n!Vorlage!!Bezeichner ID!!Format ID\n'
-    for template_name, config in sorted(checker_config.items()):
-        text += line_fmt.format(template_name, template_name, config["id"], config["id_check_description"])
-    text += "|}\n\n"
-    return text
 
 
 def main(*args):
-    utf8_writer = codecs.getwriter('utf8')
-    output_destination = utf8_writer(sys.stdout)
-    verbosity = logging.ERROR
-    limit = 0
-    catname = "ALL"
     outputpage = None
-    for argument in pywikibot.handle_args(args):
-        if argument.find("-limit:") == 0:
-            limit = int(argument[7:])
-        elif argument.find("-category:") == 0:
-            catname = argument[10:]
-        elif argument.find("-outputpage:") == 0:
-            outputpage = argument[12:]
-    logging.basicConfig(level=verbosity, stream=output_destination)
     site = pywikibot.Site()
-    counter = 0
-    results = []
     pagelister = Pagelist(site)
     checker = TemplateChecker()
     checker.load_config("template_config.json")
-    if catname == "ALL":
-        categories = pagelister.get_county_categories()
-    else:
-        categories = [pywikibot.Category(site, catname)]
-    for category in categories:
-        prev_count = counter
-        counter, result = get_results_for_county(checker, category.articles(), limit, counter)
-        if result:
-            results.append({
-                "category": category,
-                "results": result,
-                "pages_checked": counter - (prev_count + 1)  # Counter is already increased by 1
-            })
-        if limit and counter > limit:
-            break
-    result_page = generate_result_page(results, pagelister)
+    checker_bot = CheckerBot(checker)
+    article_iterator = ArticleIterator(
+        category_callback=checker_bot.cb_store_category_result,
+        article_callback=checker_bot.cb_check_article,
+        categories=pagelister.get_county_categories()
+    )
+    parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
+    for argument in pywikibot.handle_args(args):
+        if parser.check_argument(argument):
+            continue
+        elif argument.find("-outputpage:") == 0:
+            outputpage = argument[12:]
+
+    article_iterator.iterate_categories()
+
+    result_page = checker_bot.generate_result_page(pagelister)
     result_page += "== Zulässige Vorlagen ==\nDie Seiten wurden mit folgenden zulässigen Vorlagen und Einstellungen geprüft:\n"
-    result_page += generate_config_table(checker.config)
+    result_page += checker_bot.generate_config_table()
+
     if outputpage:
         article = pywikibot.Page(site, outputpage)
         old_text = article.get()

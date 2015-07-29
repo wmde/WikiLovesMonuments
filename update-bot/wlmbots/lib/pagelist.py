@@ -11,8 +11,13 @@ class Pagelist(object):
 
 
     def get_county_categories(self, recursive=True):
-        """ Get all subcategories of Liste (Kulturdenkmale in Deutschland) """
+        """ Get all subcategories of the root category """
         return self.root_category.subcategories(recursive)
+
+
+    def get_county_categories_by_name(self, names, recursive=True):
+        """ Get all subcategories of Liste (Kulturdenkmale in Deutschland) """
+        return [c for c in self.get_county_categories(recursive) if c.title() in names]
 
 
     def get_list_articles(self):

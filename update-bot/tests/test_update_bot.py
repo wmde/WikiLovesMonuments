@@ -33,8 +33,8 @@ class TestUpdateBot(unittest.TestCase):
         article = Mock()
         article.get.return_value = "{{Denkmalliste Bayern Tabellenzeile|Bild=}}"
         article.title.return_value = "Testseite"
+        update_bot.cb_add_placeholders(article)
         article.save.assert_not_called()
-        update_bot.add_placeholders(article)
 
 
 if __name__ == '__main__':

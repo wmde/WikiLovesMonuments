@@ -9,6 +9,7 @@ import itertools
 import collections
 import mwparserfromhell
 
+
 class TemplateChecker(object):
     """ Check templates for allowed ID patterns """
 
@@ -16,7 +17,6 @@ class TemplateChecker(object):
     ERROR_MISSING_IDS = 2
     ERROR_INVALID_IDS = 4
     ERROR_DUPLICATE_IDS = 8
-
 
     def __init__(self, config=None):
         self._config = {}
