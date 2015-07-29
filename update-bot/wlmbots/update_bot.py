@@ -18,47 +18,43 @@ from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumen
 
 WLM_PLACEHOLDER = '<-- link to commons placeholder "#commonscat#" -->'  # TODO proper placeholder
 
+class UpdateBot(object):
 
-def get_commonscat_mapper():
-    mapper = CommonscatMapper()
-    mapper.load_mapping("config/commonscat_mapping.json")
-    return mapper
+    def __init__(self, commonscat_mapper):
+        self.commonscat_mapper = commonscat_mapper
 
+    def cb_add_placeholders(self, article):
+        logging.info("%s", article.title())
+        if article.isRedirectPage():
+            return
+        text = article.get()
+        commonscat = self.commonscat_mapper.get_commonscat_from_category_links(text)
+        if not commonscat:
+            logging.error("  %s has no mapped category link.", article.title())
+            return
+        text_with_placeholders_in_templates = self.replace_in_templates(text)
+        if text != text_with_placeholders_in_templates:
+            # TODO store new text
+            logging.info("  Updated article with placeholders")
+            logging.debug(text_with_placeholders_in_templates)
 
-def cb_add_placeholders(article, **kwargs):
-    logging.info("%s", article.title())
-    if article.isRedirectPage():
-        return
-    text = article.get()
-    commonscat = get_commonscat_mapper().get_commonscat_from_category_links(text)
-    if not commonscat:
-        logging.error("  %s has no mapped category link.", article.title())
-        return
-    text_with_placeholders_in_templates = replace_in_templates(text)
-    if text != text_with_placeholders_in_templates:
-        # TODO store new text
-        logging.info("  Updated article with placeholders")
-        logging.debug(text_with_placeholders_in_templates)
-
-
-def replace_in_templates(text):
-    global WLM_PLACEHOLDER
-    # fail fast
-    if text.find("Tabellenzeile") == -1:
-        logging.info("   no templates found.")
+    def replace_in_templates(self, text):
+        global WLM_PLACEHOLDER
+        # fail fast
+        if text.find("Tabellenzeile") == -1:
+            logging.info("   no templates found.")
+            return text
+        code = mwparserfromhell.parse(text)
+        for template in code.filter_templates():
+            if template.name.find("Tabellenzeile") == -1:
+                continue
+            replacer = TemplateReplacer(template)
+            if replacer.param_is_empty("Bild"):
+                row_commonscat = self.commonscat_mapper.get_commonscat(text, template)
+                placeholder = WLM_PLACEHOLDER.replace("#commonscat#", row_commonscat)
+                replacer.set_value('Bild', placeholder)
+                text = text.replace(unicode(template), unicode(replacer))
         return text
-    mapper = get_commonscat_mapper()
-    code = mwparserfromhell.parse(text)
-    for template in code.filter_templates():
-        if template.name.find("Tabellenzeile") == -1:
-            continue
-        replacer = TemplateReplacer(template)
-        if replacer.param_is_empty("Bild"):
-            row_commonscat = mapper.get_commonscat(text, template)
-            placeholder = WLM_PLACEHOLDER.replace("#commonscat#", row_commonscat)
-            replacer.set_value('Bild', placeholder)
-            text = text.replace(unicode(template), unicode(replacer))
-    return text
 
 
 def main(*args):
@@ -67,8 +63,11 @@ def main(*args):
     verbosity = logging.ERROR
     site = pywikibot.Site()
     pagelister = Pagelist(site)
+    mapper = CommonscatMapper()
+    mapper.load_mapping("config/commonscat_mapping.json")
+    update_bot = UpdateBot()
     article_iterator = ArticleIterator(
-        article_callback=cb_add_placeholders,
+        article_callback=update_bot.cb_add_placeholders,
         categories=pagelister.get_county_categories()
     )
     parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
@@ -83,6 +82,7 @@ def main(*args):
             verbosity = logging.DEBUG
     logging.basicConfig(level=verbosity, stream=output_destination)
     article_iterator.iterate_categories()
+
 
 if __name__ == "__main__":
     main()
