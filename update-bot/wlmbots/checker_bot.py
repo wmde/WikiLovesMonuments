@@ -107,7 +107,7 @@ def main(*args):
     site = pywikibot.Site()
     pagelister = Pagelist(site)
     checker = TemplateChecker()
-    checker.load_config("template_config.json")
+    checker.load_config("config/templates.json")
     checker_bot = CheckerBot(checker)
     article_iterator = ArticleIterator(
         category_callback=checker_bot.cb_store_category_result,
