@@ -109,7 +109,7 @@ class TemplateChecker(object):
             self.ERROR_INVALID_IDS: 0
         }
         ids = collections.Counter()
-        for template in itertools.ifilter(self.is_allowed_template, templates):
+        for template in self.filter_allowed_templates(templates):
             row_id = self.get_id(template)
             if not row_id:
                 errors[self.ERROR_MISSING_IDS] += 1
@@ -120,6 +120,9 @@ class TemplateChecker(object):
         errors[self.ERROR_DUPLICATE_IDS] = {row_id: count for row_id, count in ids.iteritems() if count > 1}
         errors = {e: v for e, v in errors.iteritems() if v}
         return errors
+
+    def filter_allowed_templates(self, templates):
+        return itertools.ifilter(self.is_allowed_template, templates)
 
     def is_allowed_template(self, template):
         return self._get_template_name(template) in self.config
