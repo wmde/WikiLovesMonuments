@@ -48,8 +48,17 @@ class CheckerBot(object):
             heading += "="
         text += u"\n{} {} {}\n".format(heading, category.title(), heading)
         num_errors = len(results["results"])
-        text += u"{} Seiten geprüft, {} ohne Probleme\n".format(results["pages_checked"],
-                                                                results["pages_checked"] - num_errors)
+        pages_ok = results["pages_checked"] - num_errors
+        text += u"{} Seiten geprüft".format(results["pages_checked"])
+        if num_errors == 0:
+            text += u", alle Seiten werden unterstützt."
+        elif num_errors == results["pages_checked"]:
+            text += u", keine der Seiten wird unterstützt"
+        else:
+            text += u", {} Seiten werden unterstützt ({:.0%}), {} Seiten nicht unterstützt ({:.0%}).".format(
+                pages_ok, pages_ok / results["pages_checked"], num_errors, num_errors / results["pages_checked"]
+            )
+        text += "\n"
         return text
 
 
