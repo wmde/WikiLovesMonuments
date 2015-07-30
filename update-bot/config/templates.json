@@ -43,5 +43,10 @@
           "id": "ID",
           "id_check": "\\d{4,}",
           "id_check_description": "Nummer, mindestens vierstellig"
+      },
+      "Denkmalliste Nürnberg Tabellenzeile": {
+        "id": "Nummer_Denkmalliste",
+        "id_check": "[DE]-\\d-\\d{1,3}-\\d{1,3}-\\d{1,3}",
+        "id_check_description": "Nummer im Format D-n-nnn-nnn-nnn"
       }
   }
