@@ -125,7 +125,7 @@ class TemplateChecker(object):
         return errors
 
     def is_allowed_template(self, template):
-        return unicode(template.name) in self.config
+        return self._get_template_name(template) in self.config
 
     def compile_id_check_patterns(self, config):
         retype = type(re.compile("test"))
@@ -138,7 +138,10 @@ class TemplateChecker(object):
         """
         Access the template configuration with a template object
         """
-        return self.config[unicode(template.name)]
+        return self.config[self._get_template_name(template)]
+
+    def _get_template_name(self, template):
+        return unicode(template.name).strip()
 
     @property
     def config(self):
