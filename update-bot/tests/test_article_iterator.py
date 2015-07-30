@@ -105,6 +105,23 @@ class TestArticleIteratorArgumentParser(unittest.TestCase):
         self.assertTrue(parser.check_argument(u"-category:Baudenkmäler in Sachsen"))
         self.assertEqual(article_iterator.categories, [category])
 
+    def test_category_is_cleaned_up(self):
+        article_iterator = Mock()
+        pagelister = Mock()
+        category = Mock()
+        pagelister.get_county_categories_by_name.return_value = [category]
+        parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
+        self.assertTrue(parser.check_argument(u"-category:Baudenkmäler_in_Sachsen"))
+        pagelister.get_county_categories_by_name.assert_called_once_with([u"Kategorie:Baudenkmäler in Sachsen"])
+
+    def test_multiple_categories_are_supported(self):
+        article_iterator = Mock()
+        pagelister = Mock()
+        category = Mock()
+        pagelister.get_county_categories_by_name.return_value = [category]
+        parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
+        self.assertTrue(parser.check_argument(u"-category:Baudenkmäler_in_Sachsen,Baudenkmäler in Bayern"))
+        pagelister.get_county_categories_by_name.assert_called_once_with([u"Kategorie:Baudenkmäler in Sachsen", u"Kategorie:Baudenkmäler in Bayern"])
 
 if __name__ == '__main__':
     unittest.main()

@@ -61,7 +61,14 @@ class ArticleIteratorArgumentParser(object):
             return True
         elif argument.find("-category:") == 0:
             category_names = argument[10:].split(",")
+            category_names = [self._format_category(n) for n in category_names]
             self.article_iterator.categories = self.pagelister.get_county_categories_by_name(category_names)
             return True
         else:
             return False
+
+    def _format_category(self, category_name):
+        name = category_name.strip().replace(u"_", u" ")
+        if name.find(u"Kategorie:") == -1 and name.find(u"Category:") == -1:
+            name = u"Kategorie:{}".format(name)
+        return name
