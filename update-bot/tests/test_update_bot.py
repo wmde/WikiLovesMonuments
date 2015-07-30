@@ -38,6 +38,13 @@ class TestUpdateBot(unittest.TestCase):
         self.assertEqual(new_text,
                          "{{Denkmalliste Bayern Tabellenzeile|Bild=<-- Category:testcategory -->\n|Commonscat=testcategory\n}}")
 
+    def test_replace_in_templates_adds_id(self):
+        article_text = "{{Denkmalliste Bayern Tabellenzeile|Bild=\n|Commonscat=testcategory\n|Nummer=1\n}}"
+        update_bot.WLM_PLACEHOLDER = "<-- #id# -->"
+        new_text = self.bot.replace_in_templates(article_text, {})
+        self.assertEqual(new_text,
+                         "{{Denkmalliste Bayern Tabellenzeile|Bild=<-- 1 -->\n|Commonscat=testcategory\n|Nummer=1\n}}")
+
     def test_add_placeholders_does_nothing_if_category_link_is_missing(self):
         article = Mock()
         article.get.return_value = "{{Denkmalliste Bayern Tabellenzeile|Bild=}}"

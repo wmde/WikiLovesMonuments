@@ -60,9 +60,19 @@ class UpdateBot(object):
                 row_commonscat = self.commonscat_mapper.get_commonscat(text, template)
                 placeholder = WLM_PLACEHOLDER.replace("#commonscat#", row_commonscat)
                 placeholder = placeholder.replace("#campaign#", self.current_campaign)
+                placeholder = placeholder.replace("#id#", self._get_id_for_placeholder(template, errors))
                 replacer.set_value('Bild', placeholder)
                 text = text.replace(unicode(template), unicode(replacer))
         return text
+
+
+    def _get_id_for_placeholder(self, template, errors):
+        placeholder_id = self.template_checker.get_id(template)
+        if not placeholder_id:
+            return u""
+        if TemplateChecker.ERROR_DUPLICATE_IDS in errors and placeholder_id in errors[TemplateChecker.ERROR_DUPLICATE_IDS]:
+            return u""
+        return placeholder_id
 
 
 def main(*args):
