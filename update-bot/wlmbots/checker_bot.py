@@ -58,11 +58,19 @@ class CheckerBot(object):
             text += u", keine der Seiten wird unterstützt."
         else:
             divisor = float(results["pages_checked"])
-            text += u", {} Seiten werden unterstützt ({:.0%}), {} Seiten nicht unterstützt ({:.0%}).".format(
-                pages_ok, pages_ok / divisor, num_errors, num_errors / divisor
+            text += u", {} {} unterstützt ({:.0%}), {} {} nicht unterstützt ({:.0%}).".format(
+                pages_ok, self._plural_pages(pages_ok), pages_ok / divisor,
+                num_errors, self._plural_pages(num_errors), num_errors / divisor
             )
         text += "\n"
         return text
+
+
+    def _plural_pages(self, num_pages):
+        if num_pages == 1:
+            return u"Seite"
+        else:
+            return u"Seiten"
 
 
     def generate_category_result_table(self, results):
