@@ -112,6 +112,7 @@ def main(*args):
     article_iterator = ArticleIterator(
         category_callback=checker_bot.cb_store_category_result,
         article_callback=checker_bot.cb_check_article,
+        logging_callback=pywikibot.log,
         categories=pagelister.get_county_categories()
     )
     parser = ArticleIteratorArgumentParser(article_iterator, pagelister)

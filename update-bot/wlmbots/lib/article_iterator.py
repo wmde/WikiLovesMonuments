@@ -38,7 +38,7 @@ class ArticleIterator(object):
             if self.limit and counter >= self.limit:
                 return counter
             if self.logging_callback and counter % self.log_every_n == 0:
-                self.logging_callback("Fetching page {} ({})".format(counter, article.title()))
+                self.logging_callback(u"Fetching page {} ({})".format(counter, article.title()))
             if self.article_callback:
                 self.article_callback(article=article, category=category, counter=counter,
                                       article_iterator=self)
