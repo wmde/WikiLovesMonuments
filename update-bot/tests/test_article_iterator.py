@@ -52,6 +52,21 @@ class TestArticleIterator(unittest.TestCase):
         iterator.iterate_categories()
         category_callback.assert_called_once_with(category=category, counter=10, article_iterator=iterator)
 
+    def test_category_limit_is_respected_together_with_limit(self):
+        category_callback = Mock()
+        article_callback = Mock()
+        iterator = ArticleIterator(category_callback=category_callback, article_callback=article_callback)
+        iterator.limit = 5
+        iterator.category_limit = 3
+        articles = [Mock()] * 10
+        category = Mock()
+        category.articles.return_value = articles
+        iterator.categories = [category, category, category, category]
+        iterator.iterate_categories()
+        self.assertEqual(article_callback.call_count, 5)
+        self.assertEqual(category_callback.call_count, 2)
+
+
     def test_article_iterator_returns_correct_counter(self):
         category_callback = Mock()
         iterator = ArticleIterator(category_callback=category_callback)
@@ -85,6 +100,12 @@ class TestArticleIteratorArgumentParser(unittest.TestCase):
         parser = ArticleIteratorArgumentParser(article_iterator, Mock())
         self.assertTrue(parser.check_argument("-limit:5"))
         self.assertEqual(article_iterator.limit, 5)
+
+    def test_category_limit_is_set(self):
+        article_iterator = Mock()
+        parser = ArticleIteratorArgumentParser(article_iterator, Mock())
+        self.assertTrue(parser.check_argument("-categorylimit:10"))
+        self.assertEqual(article_iterator.category_limit, 10)
 
     def test_parser_returns_false_when_no_valid_argument_is_found(self):
         parser = ArticleIteratorArgumentParser(Mock(), Mock())

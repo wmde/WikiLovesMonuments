@@ -12,6 +12,7 @@ class ArticleIterator(object):
 
     def __init__(self, category_callback=None, article_callback=None, logging_callback=None, categories=None):
         self.limit = 0
+        self.category_limit = 0
         self.log_every_n = 100
         self.category_callback = category_callback
         self.article_callback = article_callback
@@ -31,7 +32,10 @@ class ArticleIterator(object):
                 return
 
     def iterate_articles(self, category, counter):
+        category_counter = 0
         for article in category.articles():
+            if self.category_limit and category_counter >= self.category_limit:
+                return counter
             if self.limit and counter >= self.limit:
                 return counter
             if self.logging_callback and counter % self.log_every_n == 0:
@@ -40,6 +44,7 @@ class ArticleIterator(object):
                 self.article_callback(article=article, category=category, counter=counter,
                                       article_iterator=self)
             counter += 1
+            category_counter += 1
         return counter
 
 
@@ -53,6 +58,9 @@ class ArticleIteratorArgumentParser(object):
     def check_argument(self, argument):
         if argument.find("-limit:") == 0:
             self.article_iterator.limit = int(argument[7:])
+            return True
+        if argument.find("-categorylimit:") == 0:
+            self.article_iterator.category_limit = int(argument[15:])
             return True
         elif argument.find("-category:") == 0:
             category_names = argument[10:].split(",")
