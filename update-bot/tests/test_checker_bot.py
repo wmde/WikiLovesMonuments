@@ -94,7 +94,8 @@ class TestCheckerBot(unittest.TestCase):
         }
         header = self.bot.generate_category_result_header(results, pagelister)
         self.assertIn(u"100 Seiten geprüft", header)
-        self.assertIn(u"97 ohne Probleme", header)
+        self.assertIn(u"97 Seiten unterstützt", header)
+        self.assertIn(u"3 Seiten nicht unterstützt", header)
 
 
     def test_generate_category_result_table_creates_id_template_entries(self):
