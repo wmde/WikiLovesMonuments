@@ -25,7 +25,7 @@ class TestCheckerBot(unittest.TestCase):
         }
         self.checker = Mock()
         self.checker.config = self.config
-        self.bot = checker_bot.CheckerBot(self.checker)
+        self.bot = checker_bot.CheckerBot(self.checker, Mock())
 
     def test_generate_config_table_contains_template_configuration_columns_in_alphabetic_order(
             self):
@@ -57,7 +57,7 @@ class TestCheckerBot(unittest.TestCase):
             "results": [],
             "pages_checked": 0
         }
-        header = self.bot.generate_category_result_header(results, pagelister)
+        header = self.bot.generate_category_result_header(results)
         self.assertIn(u"== Baudenkmäler in Sachsen ==", header)
 
     def test_generate_category_result_header_dynamically_sets_header_level(self):
@@ -71,7 +71,7 @@ class TestCheckerBot(unittest.TestCase):
             "results": [],
             "pages_checked": 0
         }
-        header = self.bot.generate_category_result_header(results, pagelister)
+        header = self.bot.generate_category_result_header(results)
         self.assertIn(u"=== Baudenkmäler in Greifswald ===", header)
 
     def test_generate_category_result_header_adds_page_statistics(self):
@@ -85,7 +85,7 @@ class TestCheckerBot(unittest.TestCase):
             "results": [{}, {}, {}],
             "pages_checked": 100
         }
-        header = self.bot.generate_category_result_header(results, pagelister)
+        header = self.bot.generate_category_result_header(results)
         self.assertIn(u"100 Seiten geprüft", header)
         self.assertIn(u"97 Seiten unterstützt", header)
         self.assertIn(u"3 Seiten nicht unterstützt", header)
