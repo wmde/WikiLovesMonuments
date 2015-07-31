@@ -69,8 +69,7 @@ class CheckerBot(object):
     def _plural_pages(self, num_pages):
         if num_pages == 1:
             return u"Seite"
-        else:
-            return u"Seiten"
+        return u"Seiten"
 
 
     def generate_category_result_table(self, results):
