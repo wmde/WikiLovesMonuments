@@ -55,7 +55,7 @@ class CheckerBot(object):
         if num_errors == 0:
             text += u", alle Seiten werden unterstützt."
         elif num_errors == results["pages_checked"]:
-            text += u", keine der Seiten wird unterstützt"
+            text += u", keine der Seiten wird unterstützt."
         else:
             divisor = float(results["pages_checked"])
             text += u", {} Seiten werden unterstützt ({:.0%}), {} Seiten nicht unterstützt ({:.0%}).".format(
