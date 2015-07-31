@@ -47,6 +47,8 @@ class CheckerBot(object):
         if pagelister.root_category not in category.categories():
             heading += "="
         text += u"\n{} {} {}\n".format(heading, category.title(), heading)
+        if results["pages_checked"] == 0:
+            return text + "Es wurden keine Seiten in dieser Kategorie geprüft.\n"
         num_errors = len(results["results"])
         pages_ok = results["pages_checked"] - num_errors
         text += u"{} Seiten geprüft".format(results["pages_checked"])
