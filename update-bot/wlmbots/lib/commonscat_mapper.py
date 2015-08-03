@@ -3,6 +3,7 @@ import mwparserfromhell
 import re
 import json
 
+
 class CommonscatMapper(object):
     mapping = {}
 
