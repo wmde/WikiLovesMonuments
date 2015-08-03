@@ -4,6 +4,7 @@ from pywikibot import family
 
 # Local test wiki
 
+
 class Family(family.Family):
     def __init__(self):
         family.Family.__init__(self)
