@@ -35,30 +35,21 @@ class CheckerBot(object):
         self.site = site
         self.outputpage = None
 
-<<<<<<< HEAD
-    def generate_result_page(self, pagelister):
-        text = u""
-=======
 
     def generate_summary_page(self):
         text = u"\n"
->>>>>>> Checker bot result page for each category
         for category_results in self.results:
             _, category_title = category_results["category"].title().split(":", 1)
             text += u"; [[{}|{}]]\n".format(self.outputpage + u"/" + category_title, category_title)
             text += u": " + self.get_result_summary(category_results)
         return text
 
-<<<<<<< HEAD
-    def generate_category_result_header(self, results, pagelister):
-=======
-
-    def generate_category_result_header(self, results):
->>>>>>> Checker bot result page for each category
+    def generate_category_result_header(self, results, pagelister=None):
         text = u""
         heading = "=="
         category = results["category"]
-        pagelister = Pagelist(self.site)
+        if not pagelister:
+            pagelister = Pagelist(self.site)
         if pagelister.root_category not in category.categories():
             heading += "="
         text += u"\n{} {} {}\n".format(heading, category.title(), heading)

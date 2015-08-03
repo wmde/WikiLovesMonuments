@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from mock import Mock
+from mock import Mock, patch
 
 from wlmbots import checker_bot
 from wlmbots.lib.template_checker import TemplateChecker
@@ -46,46 +46,47 @@ class TestCheckerBot(unittest.TestCase):
         self.assertIn("|Nummer im Format D-n-nnn", config_table_lines[2])
         self.assertIn("|Nummer, mindestens vierstellig", config_table_lines[3])
 
-    def test_generate_category_result_header_adds_category_name_as_header(self):
+
+    @patch("wlmbots.lib.pagelist.Pagelist")
+    def test_generate_category_result_header_adds_category_name_as_header(self, pagelister):
         category = Mock()
         category.categories.return_value = [u"Denkmäler in Deutschland"]
         category.title.return_value = u"Baudenkmäler in Sachsen"
-        pagelister = Mock()
         pagelister.root_category = u"Denkmäler in Deutschland"
         results = {
             "category": category,
             "results": [],
             "pages_checked": 0
         }
-        header = self.bot.generate_category_result_header(results)
+        header = self.bot.generate_category_result_header(results, pagelister)
         self.assertIn(u"== Baudenkmäler in Sachsen ==", header)
 
-    def test_generate_category_result_header_dynamically_sets_header_level(self):
+    @patch("wlmbots.lib.pagelist.Pagelist")
+    def test_generate_category_result_header_dynamically_sets_header_level(self, pagelister):
         category = Mock()
         category.categories.return_value = [u"Denkmäler in Sachsen"]
         category.title.return_value = u"Baudenkmäler in Greifswald"
-        pagelister = Mock()
         pagelister.root_category = u"Denkmäler in Deutschland"
         results = {
             "category": category,
             "results": [],
             "pages_checked": 0
         }
-        header = self.bot.generate_category_result_header(results)
+        header = self.bot.generate_category_result_header(results, pagelister)
         self.assertIn(u"=== Baudenkmäler in Greifswald ===", header)
 
-    def test_generate_category_result_header_adds_page_statistics(self):
+    @patch("wlmbots.lib.pagelist.Pagelist")
+    def test_generate_category_result_header_adds_page_statistics(self, pagelister):
         category = Mock()
         category.categories.return_value = [u"Denkmäler in Deutschland"]
         category.title.return_value = u"Baudenkmäler in Sachsen"
-        pagelister = Mock()
         pagelister.root_category = u"Denkmäler in Deutschland"
         results = {
             "category": category,
             "results": [{}, {}, {}],
             "pages_checked": 100
         }
-        header = self.bot.generate_category_result_header(results)
+        header = self.bot.generate_category_result_header(results, pagelister)
         self.assertIn(u"100 Seiten geprüft", header)
         self.assertIn(u"97 Seiten unterstützt", header)
         self.assertIn(u"3 Seiten nicht unterstützt", header)
