@@ -12,7 +12,7 @@ class ArticleIterator(object):
 
     def __init__(self, category_callback=None, article_callback=None, logging_callback=None, categories=None):
         self.limit = 0
-        self.category_limit = 0
+        self.articles_per_category_limit = 0
         self.log_every_n = 100
         self.category_callback = category_callback
         self.article_callback = article_callback
@@ -48,7 +48,7 @@ class ArticleIterator(object):
     def _limit_reached(self, counter, category_counter):
         """ Return True if the absolute or category limit is reached. """
         return (
-            self.category_limit and category_counter >= self.category_limit
+            self.articles_per_category_limit and category_counter >= self.articles_per_category_limit
             ) or (
                 self.limit and counter >= self.limit
             )
@@ -67,7 +67,7 @@ class ArticleIteratorArgumentParser(object):
             self.article_iterator.limit = int(argument[7:])
             return True
         if argument.find("-categorylimit:") == 0:
-            self.article_iterator.category_limit = int(argument[15:])
+            self.article_iterator.articles_per_category_limit = int(argument[15:])
             return True
         elif argument.find("-category:") == 0:
             category_names = argument[10:].split(",")

@@ -57,7 +57,7 @@ class TestArticleIterator(unittest.TestCase):
         article_callback = Mock()
         iterator = ArticleIterator(category_callback=category_callback, article_callback=article_callback)
         iterator.limit = 5
-        iterator.category_limit = 3
+        iterator.articles_per_category_limit = 3
         articles = [Mock()] * 10
         category = Mock()
         category.articles.return_value = articles
@@ -105,7 +105,7 @@ class TestArticleIteratorArgumentParser(unittest.TestCase):
         article_iterator = Mock()
         parser = ArticleIteratorArgumentParser(article_iterator, Mock())
         self.assertTrue(parser.check_argument("-categorylimit:10"))
-        self.assertEqual(article_iterator.category_limit, 10)
+        self.assertEqual(article_iterator.articles_per_category_limit, 10)
 
     def test_parser_returns_false_when_no_valid_argument_is_found(self):
         parser = ArticleIteratorArgumentParser(Mock(), Mock())
