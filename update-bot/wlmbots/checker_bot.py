@@ -112,12 +112,7 @@ class CheckerBot(object):
     def save_wikipage(self, page_text, page_name, summary="Bot: Update der Ergebnisliste"):
         try:
             article = pywikibot.Page(self.site, page_name)
-            if not article.exists():
-                article.text = page_text
-                article.save(summary=summary)
-                return
-            old_text = article.get()
-            if old_text != page_text:
+            if not article.exists() or article.get() != page_text:
                 article.text = page_text
                 article.save(summary=summary)
             else:
