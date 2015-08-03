@@ -102,7 +102,8 @@ class CheckerBot(object):
 
     def generate_config_table(self):
         line_fmt = "|-\n|[[Vorlage:{}|{}]]\n|{}\n|{}\n"
-        text = '{| class="wikitable"\n|-\n!Vorlage!!Bezeichner ID!!Format ID\n'
+        text = "== Unterstützte Vorlagen ==\nDie Seiten wurden mit folgenden Vorlagen und Einstellungen geprüft:\n"
+        text += '{| class="wikitable"\n|-\n!Vorlage!!Bezeichner ID!!Format ID\n'
         for template_name, config in sorted(self.checker.config.items()):
             text += line_fmt.format(template_name, template_name, config["id"], config["id_check_description"])
         text += "|}\n\n"
