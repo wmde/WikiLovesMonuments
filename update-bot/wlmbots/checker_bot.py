@@ -62,7 +62,7 @@ class CheckerBot(object):
             return text + "Es wurden keine Seiten in dieser Kategorie geprüft.\n"
         num_errors = len(results["results"])
         pages_ok = results["pages_checked"] - num_errors
-        text += u"{} Seiten geprüft".format(results["pages_checked"])
+        text += u"{} {} geprüft".format(results["pages_checked"], self._plural_pages(results["pages_checked"]))
         if num_errors == 0:
             text += u", alle Seiten werden unterstützt."
         elif num_errors == results["pages_checked"]:
