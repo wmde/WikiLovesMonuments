@@ -36,7 +36,7 @@
       },
       "Denkmalliste Sachsen-Anhalt Tabellenzeile": {
           "id": "ID",
-          "id_check": "\\d{3}\\s*\\d{5}",
+          "id_check": "\\d{3}(:?\\s+|&nbsp;)?\\d{5}",
           "id_check_description": "Achtstellige Nummer im Format nnn nnnnn"
       },
       "Denkmalliste Thüringen Tabellenzeile": {
