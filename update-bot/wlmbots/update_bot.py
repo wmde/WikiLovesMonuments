@@ -85,7 +85,7 @@ def main(*args):
     commonscat_mapper.load_mapping("config/commonscat_mapping.json")
     commonscat_mapper.load_subcategories_into_map(site)
     checker = TemplateChecker()
-    checker.load_config("template_config.json")
+    checker.load_config("config/templates.json")
     campaign_mapper = CampaignMapper(commonscat_mapper)
     campaign_mapper.load_mapping("config/campaigns.json")
     update_bot = UpdateBot(commonscat_mapper, checker, campaign_mapper)
