@@ -12,7 +12,6 @@ class TestUpdateBot(unittest.TestCase):
         new_text = update_bot.replace_in_templates(article_text)
         self.assertEqual(new_text, article_text)
 
-
     def test_replace_in_templates_inserts_placeholder_when_image_is_missing(self):
         article_text = "{{Denkmalliste Bayern Tabellenzeile|Bild=|Commonscat=testcategory}}"
         update_bot.WLM_PLACEHOLDER = "<-- test placeholder -->"
@@ -20,14 +19,12 @@ class TestUpdateBot(unittest.TestCase):
         self.assertEqual(new_text,
                          "{{Denkmalliste Bayern Tabellenzeile|Bild=<-- test placeholder -->|Commonscat=testcategory}}")
 
-
     def test_replace_in_templates_inserts_commoncat_in_placeholder(self):
         article_text = "{{Denkmalliste Bayern Tabellenzeile|Bild=\n|Commonscat=testcategory\n}}"
         update_bot.WLM_PLACEHOLDER = "<-- #commonscat# -->"
         new_text = update_bot.replace_in_templates(article_text)
         self.assertEqual(new_text,
                          "{{Denkmalliste Bayern Tabellenzeile|Bild=<-- Category:testcategory -->\n|Commonscat=testcategory\n}}")
-
 
     def test_add_placeholders_does_nothing_if_category_link_is_missing(self):
         article = Mock()

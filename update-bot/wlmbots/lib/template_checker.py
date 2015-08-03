@@ -24,12 +24,10 @@ class TemplateChecker(object):
             self.config = config
         self.tpl_match_regex = None
 
-
     def load_config(self, filename):
         """ Load configuration from JSON file """
         with open(filename, "r") as tplconf:
             self.config = json.load(tplconf)
-
 
     def text_contains_templates(self, text):
         """
@@ -46,7 +44,6 @@ class TemplateChecker(object):
             pattern = r"\{\{" + "|".join([re.escape(tpl) for tpl in self.config])
             self.tpl_match_regex = re.compile(pattern)
         return bool(self.tpl_match_regex.search(text))
-
 
     def get_id(self, template):
         """

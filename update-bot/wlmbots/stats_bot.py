@@ -34,10 +34,8 @@ class TemplateCounter(object):
         '"'
     ]
 
-
     def __init__(self):
         self.templates = collections.Counter()
-
 
     def count_templates(self, pagetext):
         """ Count templates on a single page """
@@ -52,17 +50,14 @@ class TemplateCounter(object):
 class StatsOutput(object):
     """ Output statistics on templates and table headings """
 
-
     def __init__(self, output_destination, output_sample_article_titles=False, cutoff=0):
         self.out = output_destination
         self.sample_articles = []
         self.cutoff = cutoff
         self.output_sample_article_titles = output_sample_article_titles
 
-
     def add_article(self, article):
         self.sample_articles.append(article)
-
 
     def output_result(self, county_name, template_counts, num_articles):
         sample_size = len(self.sample_articles)

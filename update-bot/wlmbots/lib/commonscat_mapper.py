@@ -6,15 +6,12 @@ import json
 class CommonscatMapper(object):
     mapping = {}
 
-
     def __init__(self):
         self.category_cache = {}
-
 
     def load_mapping(self, filename):
         with open(filename, "r") as mapconf:
             self.mapping = json.load(mapconf)
-
 
     def get_commonscat_from_category_links(self, text):
         """ Get the commonscat from the Category links (which is guaranteed to
@@ -26,7 +23,6 @@ class CommonscatMapper(object):
             if title in self.mapping:
                 return self.mapping[title]
 
-
     def get_commonscat_from_weblinks_template(self, text):
         header_pos = re.search(r'=+\s+Weblinks', text, re.IGNORECASE)
         if not header_pos:
@@ -36,7 +32,6 @@ class CommonscatMapper(object):
             if template.name.matches("Commonscat"):
                 return u"Category:" + unicode(template.params[0])
         return ""
-
 
     def get_commonscat_from_table_row_template(self, template):
         """ Check mwparserfromhell template if it has a non-empty Commonscat parameter. """
@@ -52,7 +47,6 @@ class CommonscatMapper(object):
                 return ""
             else:
                 raise
-
 
     def get_commonscat(self, text, template):
         text_id = id(text)

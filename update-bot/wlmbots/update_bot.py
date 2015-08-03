@@ -16,7 +16,6 @@ from wlmbots.lib.template_replacer import TemplateReplacer
 from wlmbots.lib.pagelist import Pagelist
 from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser
 
-
 WLM_PLACEHOLDER = '<-- link to commons placeholder "#commonscat#" -->'  # TODO proper placeholder
 
 
