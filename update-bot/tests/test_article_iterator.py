@@ -16,7 +16,6 @@ class TestArticleIterator(unittest.TestCase):
         iterator.iterate_categories()
         category_callback.assert_called_once_with(category=category, counter=0, article_iterator=iterator)
 
-
     def test_article_iterator_iterates_over_articles(self):
         article_callback = Mock()
         iterator = ArticleIterator(article_callback=article_callback)
@@ -28,7 +27,6 @@ class TestArticleIterator(unittest.TestCase):
         iterator.iterate_categories()
         article_callback.assert_any_call(article=article1, category=category, counter=0, article_iterator=iterator)
         article_callback.assert_any_call(article=article2, category=category, counter=1, article_iterator=iterator)
-
 
     def test_article_iterator_with_limit_stops_at_limit(self):
         category_callback = Mock()
@@ -43,7 +41,6 @@ class TestArticleIterator(unittest.TestCase):
         category_callback.assert_called_once_with(category=category, counter=10, article_iterator=iterator)
         self.assertEqual(article_callback.call_count, 10)
 
-
     def test_article_iterator_with_multiple_categories_stops_at_limit(self):
         category_callback = Mock()
         iterator = ArticleIterator(category_callback=category_callback)
@@ -54,7 +51,6 @@ class TestArticleIterator(unittest.TestCase):
         iterator.categories = [category, category]
         iterator.iterate_categories()
         category_callback.assert_called_once_with(category=category, counter=10, article_iterator=iterator)
-
 
     def test_article_iterator_returns_correct_counter(self):
         category_callback = Mock()
@@ -90,11 +86,9 @@ class TestArticleIteratorArgumentParser(unittest.TestCase):
         self.assertTrue(parser.check_argument("-limit:5"))
         self.assertEqual(article_iterator.limit, 5)
 
-
     def test_parser_returns_false_when_no_valid_argument_is_found(self):
         parser = ArticleIteratorArgumentParser(Mock(), Mock())
         self.assertFalse(parser.check_argument("-foo"))
-
 
     def test_category_sets_pywikibot_category(self):
         article_iterator = Mock()

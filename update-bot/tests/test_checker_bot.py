@@ -10,7 +10,6 @@ from wlmbots.lib.template_checker import TemplateChecker
 class TestCheckerBot(unittest.TestCase):
     """ Integration testing for checker_bot """
 
-
     def setUp(self):
         self.config = {
             u"Denkmalliste Sachsen Tabellenzeile": {
@@ -28,7 +27,6 @@ class TestCheckerBot(unittest.TestCase):
         self.checker.config = self.config
         self.bot = checker_bot.CheckerBot(self.checker)
 
-
     def test_generate_config_table_contains_template_configuration_columns_in_alphabetic_order(
             self):
         config_table = self.bot.generate_config_table()
@@ -36,20 +34,17 @@ class TestCheckerBot(unittest.TestCase):
         self.assertIn("|[[Vorlage:Denkmalliste Bayern Tabellenzeile", config_table_lines[2])
         self.assertIn("|[[Vorlage:Denkmalliste Sachsen Tabellenzeile", config_table_lines[3])
 
-
     def test_generate_config_table_contains_a_column_id(self):
         config_table = self.bot.generate_config_table()
         config_table_lines = config_table.split("|-\n")
         self.assertIn("|Nummer", config_table_lines[2])
         self.assertIn("|ID", config_table_lines[3])
 
-
     def test_generate_config_table_contains_a_description_of_valid_ids(self):
         config_table = self.bot.generate_config_table()
         config_table_lines = config_table.split("|-\n")
         self.assertIn("|Nummer im Format D-n-nnn", config_table_lines[2])
         self.assertIn("|Nummer, mindestens vierstellig", config_table_lines[3])
-
 
     def test_generate_category_result_header_adds_category_name_as_header(self):
         category = Mock()
@@ -65,7 +60,6 @@ class TestCheckerBot(unittest.TestCase):
         header = self.bot.generate_category_result_header(results, pagelister)
         self.assertIn(u"== Baudenkmäler in Sachsen ==", header)
 
-
     def test_generate_category_result_header_dynamically_sets_header_level(self):
         category = Mock()
         category.categories.return_value = [u"Denkmäler in Sachsen"]
@@ -79,7 +73,6 @@ class TestCheckerBot(unittest.TestCase):
         }
         header = self.bot.generate_category_result_header(results, pagelister)
         self.assertIn(u"=== Baudenkmäler in Greifswald ===", header)
-
 
     def test_generate_category_result_header_adds_page_statistics(self):
         category = Mock()
@@ -96,7 +89,6 @@ class TestCheckerBot(unittest.TestCase):
         self.assertIn(u"100 Seiten geprüft", header)
         self.assertIn(u"97 Seiten unterstützt", header)
         self.assertIn(u"3 Seiten nicht unterstützt", header)
-
 
     def test_generate_category_result_table_creates_id_template_entries(self):
         results = {
@@ -118,7 +110,6 @@ class TestCheckerBot(unittest.TestCase):
         self.assertIn(u"IDs_fehlen=8", table)
         self.assertIn(u"IDs_ungueltig=7", table)
         self.assertIn(u"IDs_doppelt=42, 23", table)
-
 
     def test_generate_category_result_table_creates_missing_template_entries(self):
         results = {

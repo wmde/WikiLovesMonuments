@@ -10,7 +10,6 @@ sets them to an ArticleIterator instance.
 class ArticleIterator(object):
     """ Iterate over categories and their article pages depending on category and limit settings """
 
-
     def __init__(self, category_callback=None, article_callback=None, logging_callback=None, categories=None):
         self.limit = 0
         self.log_every_n = 100
@@ -22,7 +21,6 @@ class ArticleIterator(object):
         else:
             self.categories = []
 
-
     def iterate_categories(self):
         counter = 0
         for category in self.categories:
@@ -31,7 +29,6 @@ class ArticleIterator(object):
                 self.category_callback(category=category, counter=counter, article_iterator=self)
             if self.limit and counter >= self.limit:
                 return
-
 
     def iterate_articles(self, category, counter):
         for article in category.articles():
@@ -49,11 +46,9 @@ class ArticleIterator(object):
 class ArticleIteratorArgumentParser(object):
     """ Parse command line arguments -limit: and -category: and set to ArticleIterator """
 
-
     def __init__(self, article_iterator, pagelister):
         self.article_iterator = article_iterator
         self.pagelister = pagelister
-
 
     def check_argument(self, argument):
         if argument.find("-limit:") == 0:

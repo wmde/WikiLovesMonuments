@@ -2,7 +2,6 @@
 
 from pywikibot import family
 
-
 # Local test wiki
 
 class Family(family.Family):
@@ -13,10 +12,8 @@ class Family(family.Family):
             'de': 'de.wikimedia.dev',  # Put the hostname here.
         }
 
-
     def version(self, code):
         return "1.25.1"  # The MediaWiki version used. Not very important in most cases.
-
 
     def scriptpath(self, code):
         return '/w'  # The relative path of index.php, api.php : look at your wiki address.

@@ -12,41 +12,34 @@ class TestCommonscatMapper(unittest.TestCase):
         self.mapper = commonscat_mapper.CommonscatMapper()
         self.mapper.load_mapping(os.path.join(os.path.dirname(os.path.realpath('__file__')), "config/commonscat_mapping.json"))
 
-
     def test_category_link_mapping(self):
         commonscat = self.mapper.get_commonscat_from_category_links(
             u"Foo [[Kategorie:Liste (Kulturdenkmäler in Berlin)|Liste der Kulturdenkmäler in Berlin]] Bar")
         self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Berlin")
-
 
     def test_weblinks_commonscat_template_returns_comonscat_if_exists(self):
         commonscat = self.mapper.get_commonscat_from_weblinks_template(
             u"Foo\n== Weblinks ==\n {{Commonscat|Cultural heritage monuments in Bad Cannstatt|Kulturdenkmale in Bad Cannstatt}}\n Bar")
         self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Bad Cannstatt")
 
-
     def test_weblinks_commonscat_template_returns_empty_string_when_weblinks_header_is_missing(self):
         commonscat = self.mapper.get_commonscat_from_weblinks_template(
             u"Foo\n {{Commonscat|Cultural heritage monuments in Bad Cannstatt|Kulturdenkmale in Bad Cannstatt}} \n Bar")
         self.assertEqual(commonscat, "")
 
-
     def test_weblinks_commonscat_template_returns_empty_string_when_commonscat_is_missing(self):
         commonscat = self.mapper.get_commonscat_from_weblinks_template(u"Foo\n == Weblinks ==\n[[Some page]] Bar")
         self.assertEqual(commonscat, "")
-
 
     def test_weblinks_commonscat_template_picks_the_first_commonscat_entry(self):
         commonscat = self.mapper.get_commonscat_from_weblinks_template(
             u"Foo\n== Weblinks ==\n {{Commonscat|Cultural heritage monuments in Bad Cannstatt|Kulturdenkmale in Bad Cannstatt}} {{Commonscat|Cultural heritage monuments in Bad Wimpfen|Kulturdenkmale in Bad Wimpfen}}  Bar")
         self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Bad Cannstatt")
 
-
     def test_weblinks_commonscat_template_ignores_commonscat_entries_before_weblinks_header(self):
         commonscat = self.mapper.get_commonscat_from_weblinks_template(
             u"{{Commonscat|Cultural heritage monuments in Bad Cannstatt|Kulturdenkmale in Bad Cannstatt}} \n== Weblinks ==\n {{Commonscat|Cultural heritage monuments in Bad Wimpfen|Kulturdenkmale in Bad Wimpfen}}\n  Bar")
         self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Bad Wimpfen")
-
 
     def test_commonscat_from_table_row_template_returns_commonscat_if_it_is_not_empty(self):
         template = Mock()
@@ -55,14 +48,12 @@ class TestCommonscatMapper(unittest.TestCase):
         template.get.assert_called_once_with("Commonscat")
         self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Berlin")
 
-
     def test_commonscat_from_table_row_template_strips_whitespace_from_commonscat(self):
         template = Mock()
         template.get.return_value = u"Commonscat = Cultural heritage monuments in Berlin   \n"
         commonscat = self.mapper.get_commonscat_from_table_row_template(template)
         template.get.assert_called_once_with("Commonscat")
         self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Berlin")
-
 
     def test_commonscat_from_table_row_template_returns_empty_string_if_it_is_empty(self):
         template = Mock()
@@ -71,14 +62,12 @@ class TestCommonscatMapper(unittest.TestCase):
         template.get.assert_called_once_with("Commonscat")
         self.assertEqual(commonscat, u"")
 
-
     def test_commonscat_from_table_row_template_returns_empty_string_if_only_whitespace(self):
         template = Mock()
         template.get.return_value = u"    \n"
         commonscat = self.mapper.get_commonscat_from_table_row_template(template)
         template.get.assert_called_once_with("Commonscat")
         self.assertEqual(commonscat, u"")
-
 
     def test_commonscat_from_table_row_template_returns_empty_string_if_template_throws_error(
             self):
@@ -88,7 +77,6 @@ class TestCommonscatMapper(unittest.TestCase):
         template.get.assert_called_once_with("Commonscat")
         self.assertEqual(commonscat, u"")
 
-
     def test_get_commonscat_returns_commonscat_from_template_row_if_it_exists(self):
         template = Mock()
         template.get.return_value = u"Commonscat=Cultural heritage monuments in Meetschow"
@@ -96,14 +84,12 @@ class TestCommonscatMapper(unittest.TestCase):
         commonscat = self.mapper.get_commonscat(pagetext, template)
         self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Meetschow")
 
-
     def test_get_commonscat_returns_commonscat_from_weblinks_if_table_row_is_empty(self):
         template = Mock()
         template.get.return_value = u""
         pagetext = u"Foo\n== Weblinks ==\n{{Commonscat|Cultural heritage monuments in Gorleben|Baudenkmale in Gorleben}}  \n[[Kategorie:Liste (Baudenkmale in Niedersachsen)|Gorleben]] Bar"
         commonscat = self.mapper.get_commonscat(pagetext, template)
         self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Gorleben")
-
 
     def test_get_commonscat_returns_commonscat_from_category_links_if_row_and_commonscat_template_empty(
             self):

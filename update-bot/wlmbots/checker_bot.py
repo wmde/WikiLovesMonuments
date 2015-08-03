@@ -31,14 +31,12 @@ class CheckerBot(object):
         self.previous_count = 0
         self.checker = template_checker
 
-
     def generate_result_page(self, pagelister):
         text = u""
         for category_results in self.results:
             text += self.generate_category_result_header(category_results, pagelister)
             text += self.generate_category_result_table(category_results)
         return text
-
 
     def generate_category_result_header(self, results, pagelister):
         text = u""
@@ -65,12 +63,10 @@ class CheckerBot(object):
         text += "\n"
         return text
 
-
     def _plural_pages(self, num_pages):
         if num_pages == 1:
             return u"Seite"
         return u"Seiten"
-
 
     def generate_category_result_table(self, results):
         text = u"{{Fehler in Denkmallisten Tabellenkopf}}\n"
@@ -91,7 +87,6 @@ class CheckerBot(object):
         text += "|}\n\n"
         return text
 
-
     def generate_config_table(self):
         line_fmt = "|-\n|[[Vorlage:{}|{}]]\n|{}\n|{}\n"
         text = '{| class="wikitable"\n|-\n!Vorlage!!Bezeichner ID!!Format ID\n'
@@ -99,7 +94,6 @@ class CheckerBot(object):
             text += line_fmt.format(template_name, template_name, config["id"], config["id_check_description"])
         text += "|}\n\n"
         return text
-
 
     def cb_store_category_result(self, category, counter=0, **kwargs):
         if self.article_results:
@@ -110,7 +104,6 @@ class CheckerBot(object):
             })
         self.article_results = []
         self.previous_count = counter
-
 
     def cb_check_article(self, article, **kwargs):
         errors = self.checker.check_article_for_errors(article)
