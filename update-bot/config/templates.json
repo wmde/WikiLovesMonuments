@@ -1,8 +1,8 @@
 {
       "Denkmalliste Bayern Tabellenzeile": {
           "id": "Nummer",
-          "id_check": "D-\\d-\\d{1,3}-\\d{1,3}-\\d{1,3}",
-          "id_check_description": "Nummer im Format D-n-nnn-nnn-nnn"
+          "id_check": "[DE]-\\d-\\d{1,3}-\\d{1,3}-\\d{1,4}",
+          "id_check_description": "Nummer im Format D-n-nnn-nnn-nnnn"
       },
       "Denkmalliste Brandenburg Tabellenzeile": {
           "id": "ID",
