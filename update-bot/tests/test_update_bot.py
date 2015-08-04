@@ -4,7 +4,6 @@ import unittest
 from mock import Mock  # unittest.mock for Python >= 3.3
 
 from wlmbots import update_bot
-from wlmbots.lib.commonscat_mapper import CommonscatMapper
 from wlmbots.lib.template_checker import TemplateChecker
 
 class TestUpdateBot(unittest.TestCase):
@@ -16,40 +15,31 @@ class TestUpdateBot(unittest.TestCase):
                 "id_check": "D-\\d-\\d{3}-\\d{3}-\\d{3}",
             }
         })
-        self.bot = update_bot.UpdateBot(CommonscatMapper(), self.template_checker, Mock())
-        self.bot.current_campaign = u""
+        self.commonscat_mapper = Mock()
+        self.bot = update_bot.UpdateBot(self.commonscat_mapper, self.template_checker)
 
-    def test_replace_in_templates_does_nothing_if_image_exists(self):
+    def test_existing_commonscat_is_preserved(self):
         article_text = "{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=testcategory}}"
-        new_text = self.bot.replace_in_templates(article_text, {})
+        new_text = self.bot.replace_in_templates(article_text)
         self.assertEqual(new_text, article_text)
 
-    def test_replace_in_templates_inserts_placeholder_when_image_is_missing(self):
-        article_text = "{{Denkmalliste Bayern Tabellenzeile|Bild=|Commonscat=testcategory}}"
-        update_bot.WLM_PLACEHOLDER = "<-- test placeholder -->"
-        new_text = self.bot.replace_in_templates(article_text, {})
-        self.assertEqual(new_text,
-                         "{{Denkmalliste Bayern Tabellenzeile|Bild=<-- test placeholder -->|Commonscat=testcategory}}")
+    def test_missing_commonscat_is_added(self):
+        article_text = "{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=\n}}"
+        self.commonscat_mapper.get_commonscat.return_value = "testcategory"
+        new_text = self.bot.replace_in_templates(article_text)
+        self.assertEqual(new_text, "{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=testcategory\n}}")
 
-    def test_replace_in_templates_inserts_commoncat_in_placeholder(self):
-        article_text = "{{Denkmalliste Bayern Tabellenzeile|Bild=\n|Commonscat=testcategory\n}}"
-        update_bot.WLM_PLACEHOLDER = "<-- #commonscat# -->"
-        new_text = self.bot.replace_in_templates(article_text, {})
-        self.assertEqual(new_text,
-                         "{{Denkmalliste Bayern Tabellenzeile|Bild=<-- Category:testcategory -->\n|Commonscat=testcategory\n}}")
+    def test_inserted_commonscat_has_no_category_prefix(self):
+        article_text = "{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=\n}}"
+        self.commonscat_mapper.get_commonscat.return_value = "Category:testcategory"
+        new_text = self.bot.replace_in_templates(article_text)
+        self.assertEqual(new_text, "{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=testcategory\n}}")
 
-    def test_replace_in_templates_adds_id(self):
-        article_text = "{{Denkmalliste Bayern Tabellenzeile|Bild=\n|Commonscat=testcategory\n|Nummer=1\n}}"
-        update_bot.WLM_PLACEHOLDER = "<-- #id# -->"
-        new_text = self.bot.replace_in_templates(article_text, {})
-        self.assertEqual(new_text,
-                         "{{Denkmalliste Bayern Tabellenzeile|Bild=<-- 1 -->\n|Commonscat=testcategory\n|Nummer=1\n}}")
-
-    def test_add_placeholders_does_nothing_if_category_link_is_missing(self):
+    def test_modify_templates_does_nothing_if_category_link_is_missing(self):
         article = Mock()
         article.get.return_value = "{{Denkmalliste Bayern Tabellenzeile|Bild=}}"
         article.title.return_value = "Testseite"
-        self.bot.cb_add_placeholders(article)
+        self.bot.cb_modify_templates(article)
         article.save.assert_not_called()
 
 

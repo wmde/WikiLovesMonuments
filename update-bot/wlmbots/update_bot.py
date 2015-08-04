@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# This bot inserts placeholders to Wikimedia Commons on all the monument pages
+"""
+This bot inserts Commons Category names in all supported "Tabellenzeile" templates
+"""
 
 from __future__ import unicode_literals
 
@@ -12,24 +14,18 @@ import pywikibot
 import mwparserfromhell
 
 from wlmbots.lib.commonscat_mapper import CommonscatMapper
-from wlmbots.lib.campaign_mapper import CampaignMapper
 from wlmbots.lib.template_replacer import TemplateReplacer
 from wlmbots.lib.pagelist import Pagelist
 from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser
 from wlmbots.lib.template_checker import TemplateChecker
 
-
-WLM_PLACEHOLDER = '{{LinkToCommons|Campaign=#campaign#|categories=#commonscat#|Lat=|Lon=|ID=#id#}}'
-
 class UpdateBot(object):
 
-    def __init__(self, commonscat_mapper, template_checker, campaign_mapper):
+    def __init__(self, commonscat_mapper, template_checker):
         self.commonscat_mapper = commonscat_mapper
         self.template_checker = template_checker
-        self.campaign_mapper = campaign_mapper
-        self.current_campaign = None
 
-    def cb_add_placeholders(self, article, **kwargs):
+    def cb_modify_templates(self, article, **kwargs):
         logging.info("%s", article.title())
         if article.isRedirectPage():
             return
@@ -42,37 +38,21 @@ class UpdateBot(object):
         if not commonscat:
             logging.error("  %s has no mapped category link.", article.title())
             return
-        text_with_placeholders_in_templates = self.replace_in_templates(text, errors)
+        text_with_placeholders_in_templates = self.replace_in_templates(text)
         if text != text_with_placeholders_in_templates:
             # TODO store new text
-            logging.info("  Updated article with placeholders")
+            logging.info("  Updated article with commons category")
             logging.debug(text_with_placeholders_in_templates)
 
-    def cb_switch_campaign(self, category, **kwargs):
-        self.current_campaign = self.campaign_mapper.get_campaign(category.title())
-
-    def replace_in_templates(self, text, errors):
-        global WLM_PLACEHOLDER
+    def replace_in_templates(self, text):
         code = mwparserfromhell.parse(text)
         for template in self.template_checker.filter_allowed_templates(code.filter_templates()):
             replacer = TemplateReplacer(template)
-            if replacer.param_is_empty("Bild"):
+            if replacer.param_is_empty("Commonscat"):
                 row_commonscat = self.commonscat_mapper.get_commonscat(text, template)
-                placeholder = WLM_PLACEHOLDER.replace("#commonscat#", row_commonscat)
-                placeholder = placeholder.replace("#campaign#", self.current_campaign)
-                placeholder = placeholder.replace("#id#", self._get_id_for_placeholder(template, errors))
-                replacer.set_value('Bild', placeholder)
+                replacer.set_value('Commonscat', row_commonscat.replace("Category:", ""))
                 text = text.replace(unicode(template), unicode(replacer))
         return text
-
-
-    def _get_id_for_placeholder(self, template, errors):
-        placeholder_id = self.template_checker.get_id(template)
-        if not placeholder_id:
-            return u""
-        if TemplateChecker.ERROR_DUPLICATE_IDS in errors and placeholder_id in errors[TemplateChecker.ERROR_DUPLICATE_IDS]:
-            return u""
-        return placeholder_id
 
 
 def main(*args):
@@ -86,12 +66,9 @@ def main(*args):
     commonscat_mapper.load_subcategories_into_map(site)
     checker = TemplateChecker()
     checker.load_config("config/templates.json")
-    campaign_mapper = CampaignMapper(commonscat_mapper)
-    campaign_mapper.load_mapping("config/campaigns.json")
-    update_bot = UpdateBot(commonscat_mapper, checker, campaign_mapper)
+    update_bot = UpdateBot(commonscat_mapper, checker)
     article_iterator = ArticleIterator(
-        article_callback=update_bot.cb_add_placeholders,
-        category_callback=update_bot.cb_switch_campaign,
+        article_callback=update_bot.cb_modify_templates,
         categories=pagelister.get_county_categories()
     )
     parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
