@@ -28,7 +28,7 @@ class TestUpdateBot(unittest.TestCase):
 
     def test_add_placeholders_does_nothing_if_category_link_is_missing(self):
         article = Mock()
-        article.get.return_value = "{{Denkmalliste Bayern Tabellenzeile|Bild=}}"
+        article.get.return_value = u"{{Denkmalliste Bayern Tabellenzeile|Bild=}}"
         article.title.return_value = "Testseite"
         update_bot.cb_add_placeholders(article)
         article.save.assert_not_called()
