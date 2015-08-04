@@ -70,6 +70,11 @@ class TestTemplateReplacer(unittest.TestCase):
         replacer = template_replacer.TemplateReplacer(fixture)
         self.assertTrue(replacer.param_is_empty("a"))
 
+    def test_param_is_empty_is_true_for_missing_params(self):
+        fixture = create_template(u"{{myTest|b\t\t=Übertrag}}")
+        replacer = template_replacer.TemplateReplacer(fixture)
+        self.assertTrue(replacer.param_is_empty("a"))
+
     def test_param_is_empty_is_true_for_params_with_whitespace(self):
         fixture = create_template(u"{{myTest|a=  \n|b\t\t=Übertrag}}")
         replacer = template_replacer.TemplateReplacer(fixture)
