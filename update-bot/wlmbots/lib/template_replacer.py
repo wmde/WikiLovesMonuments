@@ -34,7 +34,10 @@ class TemplateReplacer(object):
         return [p["name_key"] for p in self.params_index]
 
     def param_is_empty(self, name):
-        return self.params_dict[name].value.strip() == ""
+        try:
+            return self.params_dict[name].value.strip() == ""
+        except KeyError:
+            return True
 
     def __unicode__(self):
         template = u"{{" + unicode(self.template.name)
