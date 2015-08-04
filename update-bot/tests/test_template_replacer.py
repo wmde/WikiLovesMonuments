@@ -40,41 +40,45 @@ class TestTemplateReplacer(unittest.TestCase):
         self.assertEqual(unicode(replacer), u"{{myTest|a=99|b =  Übertrag  }}")
 
     def test_set_value_preserves_whitespace_in_values(self):
-        fixture = create_template("{{myTest|a=5\n|b =  Übertrag  }}")
+        fixture = create_template(u"{{myTest|a=5\n|b =  Übertrag  }}")
         replacer = template_replacer.TemplateReplacer(fixture)
         replacer.set_value("a", "99")
         replacer.set_value("b", "Maximum")
         self.assertEqual(unicode(replacer), u"{{myTest|a=99\n|b =  Maximum  }}")
 
     def test_set_value_puts_newlines_at_end_of_value(self):
-        fixture = create_template("{{myTest|a=\n|b =\r\n}}")
+        fixture = create_template(u"{{myTest|a=\n|b =\r\n}}")
         replacer = template_replacer.TemplateReplacer(fixture)
         replacer.set_value("a", "99")
         replacer.set_value("b", "Maximum")
         self.assertEqual(unicode(replacer), u"{{myTest|a=99\n|b =Maximum\r\n}}")
 
     def test_set_value_puts_newlines_at_end_of_value_and_preserves_leading_whitespace(self):
-        fixture = create_template("{{myTest|a= \n|b =\t\r\n}}")
+        fixture = create_template(u"{{myTest|a= \n|b =\t\r\n}}")
         replacer = template_replacer.TemplateReplacer(fixture)
         replacer.set_value("a", "99")
         replacer.set_value("b", "Maximum")
         self.assertEqual(unicode(replacer), u"{{myTest|a= 99\n|b =\tMaximum\r\n}}")
 
     def test_get_available_params(self):
-        fixture = create_template("{{myTest|a        =5|b\t\t=Übertrag}}")
+        fixture = create_template(u"{{myTest|a        =5|b\t\t=Übertrag}}")
         replacer = template_replacer.TemplateReplacer(fixture)
         self.assertEqual(replacer.get_available_params(), [u"a", u"b"])
 
     def test_param_is_empty_is_true_for_empty_params(self):
-        fixture = create_template("{{myTest|a=|b\t\t=Übertrag}}")
+        fixture = create_template(u"{{myTest|a=|b\t\t=Übertrag}}")
         replacer = template_replacer.TemplateReplacer(fixture)
         self.assertTrue(replacer.param_is_empty("a"))
 
     def test_param_is_empty_is_true_for_params_with_whitespace(self):
-        fixture = create_template("{{myTest|a=  \n|b\t\t=Übertrag}}")
+        fixture = create_template(u"{{myTest|a=  \n|b\t\t=Übertrag}}")
         replacer = template_replacer.TemplateReplacer(fixture)
         self.assertTrue(replacer.param_is_empty("a"))
 
+    def test_to_string_preserves_empty_params(self):
+        fixture = create_template(u"{{myTest|a=  \n|\n|b\t\t=Übertrag}}")
+        replacer = template_replacer.TemplateReplacer(fixture)
+        self.assertEqual(unicode(replacer), u"{{myTest|a=  \n|\n|b\t\t=Übertrag}}")
 
 if __name__ == '__main__':
     unittest.main()

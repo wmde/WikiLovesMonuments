@@ -19,25 +19,25 @@ class TestUpdateBot(unittest.TestCase):
         self.bot = update_bot.UpdateBot(self.commonscat_mapper, self.template_checker)
 
     def test_existing_commonscat_is_preserved(self):
-        article_text = "{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=testcategory}}"
+        article_text = u"{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=testcategory}}"
         new_text = self.bot.replace_in_templates(article_text)
         self.assertEqual(new_text, article_text)
 
     def test_missing_commonscat_is_added(self):
-        article_text = "{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=\n}}"
+        article_text = u"{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=\n}}"
         self.commonscat_mapper.get_commonscat.return_value = "testcategory"
         new_text = self.bot.replace_in_templates(article_text)
         self.assertEqual(new_text, "{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=testcategory\n}}")
 
     def test_inserted_commonscat_has_no_category_prefix(self):
-        article_text = "{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=\n}}"
+        article_text = u"{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=\n}}"
         self.commonscat_mapper.get_commonscat.return_value = "Category:testcategory"
         new_text = self.bot.replace_in_templates(article_text)
         self.assertEqual(new_text, "{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=testcategory\n}}")
 
     def test_modify_templates_does_nothing_if_category_link_is_missing(self):
         article = Mock()
-        article.get.return_value = "{{Denkmalliste Bayern Tabellenzeile|Bild=}}"
+        article.get.return_value = u"{{Denkmalliste Bayern Tabellenzeile|Bild=}}"
         article.title.return_value = "Testseite"
         self.bot.cb_modify_templates(article)
         article.save.assert_not_called()
