@@ -8,6 +8,8 @@ Available command line options are:
 
 -limit:N          Only check N number of pages
 
+-limit-per-category:N Only check N number of pages per category
+
 -category:NAME    Only check pages in category NAME
 
 -outputpage:NAME  Write result to wiki page NAME instead of stdout
