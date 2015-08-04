@@ -39,7 +39,7 @@ class TemplateReplacer(object):
     def __unicode__(self):
         template = u"{{" + unicode(self.template.name)
         for param in self.params_index:
-            template += u"|" + param["name"] + u"=" + self.params_dict[param["name_key"]]
+            template += u"|{}={}".format(param["name"], self.params_dict[param["name_key"]])
         template += u"}}"
         return template
 
@@ -51,11 +51,8 @@ class TemplateReplacer(object):
             return
         self.params_index = [None] * len(self.template.params)
         for idx, parameter in enumerate(self.template.params):
-            try:
-                name, value = parameter.split("=", 1)
-            except ValueError:
-                raise ValueError(u"Could not split parameter '{}'".format(parameter))
+            name = parameter.name
             name_key = name.strip()
-            self.params_dict[name_key] = value
+            self.params_dict[name_key] = unicode(parameter.value)
             self.params_index[idx] = {"name": name, "name_key": name_key}
         self.params_parsed = True
