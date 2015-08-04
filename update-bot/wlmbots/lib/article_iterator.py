@@ -12,6 +12,7 @@ class ArticleIterator(object):
 
     def __init__(self, category_callback=None, article_callback=None, logging_callback=None, categories=None):
         self.limit = 0
+        self.articles_per_category_limit = 0
         self.log_every_n = 100
         self.category_callback = category_callback
         self.article_callback = article_callback
@@ -31,8 +32,9 @@ class ArticleIterator(object):
                 return
 
     def iterate_articles(self, category, counter):
+        category_counter = 0
         for article in category.articles():
-            if self.limit and counter >= self.limit:
+            if self._limit_reached(counter, category_counter):
                 return counter
             if self.logging_callback and counter % self.log_every_n == 0:
                 self.logging_callback(u"Fetching page {} ({})".format(counter, article.title()))
@@ -40,7 +42,17 @@ class ArticleIterator(object):
                 self.article_callback(article=article, category=category, counter=counter,
                                       article_iterator=self)
             counter += 1
+            category_counter += 1
         return counter
+
+    def _limit_reached(self, counter, category_counter):
+        """ Return True if the absolute or category limit is reached. """
+        return (
+            self.articles_per_category_limit and category_counter >= self.articles_per_category_limit
+            ) or (
+                self.limit and counter >= self.limit
+            )
+
 
 
 class ArticleIteratorArgumentParser(object):
@@ -53,6 +65,9 @@ class ArticleIteratorArgumentParser(object):
     def check_argument(self, argument):
         if argument.find("-limit:") == 0:
             self.article_iterator.limit = int(argument[7:])
+            return True
+        if argument.find("-limit-per-category:") == 0:
+            self.article_iterator.articles_per_category_limit = int(argument[20:])
             return True
         elif argument.find("-category:") == 0:
             category_names = argument[10:].split(",")
