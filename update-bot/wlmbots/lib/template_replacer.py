@@ -13,6 +13,8 @@ class TemplateReplacer(object):
         return self.template.get(name).value
 
     def set_value(self, name, value):
+        if not self.template.has(name):
+            self.template.add(name, value)
         param = self.template.get(name)
         whitespace = re.match(r"(\s*)(.*?)(\s*)$", unicode(param.value), re.UNICODE)
         if not whitespace:

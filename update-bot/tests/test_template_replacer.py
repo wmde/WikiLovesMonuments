@@ -85,5 +85,12 @@ class TestTemplateReplacer(unittest.TestCase):
         replacer = template_replacer.TemplateReplacer(fixture)
         self.assertEqual(unicode(replacer), u"{{myTest|a=  \n|\n|b\t\t=Übertrag}}")
 
+    def test_to_empty_params_are_added(self):
+        fixture = create_template(u"{{myTest|b=Übertrag}}")
+        replacer = template_replacer.TemplateReplacer(fixture)
+        replacer.set_value("a", "99")
+        self.assertEqual(unicode(replacer), u"{{myTest|b=Übertrag|a=99}}")
+
+
 if __name__ == '__main__':
     unittest.main()
