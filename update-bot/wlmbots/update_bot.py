@@ -24,6 +24,7 @@ class UpdateBot(object):
     def __init__(self, commonscat_mapper, template_checker):
         self.commonscat_mapper = commonscat_mapper
         self.template_checker = template_checker
+        self.summary = u"Bot: Commons Kategorie in Tabellenzeile Vorlagen einfügen"
 
     def cb_modify_templates(self, article, **kwargs):
         logging.info("%s", article.title())
@@ -38,11 +39,12 @@ class UpdateBot(object):
         if not commonscat:
             logging.error("  %s has no mapped category link.", article.title())
             return
-        text_with_placeholders_in_templates = self.replace_in_templates(text)
-        if text != text_with_placeholders_in_templates:
-            # TODO store new text
+        text_with_commons_cat = self.replace_in_templates(text)
+        if text != text_with_commons_cat:
+            article.text = text_with_commons_cat
+            article.save(summary=self.summary)
             logging.info("  Updated article with commons category")
-            logging.debug(text_with_placeholders_in_templates)
+            logging.debug(text_with_commons_cat)
 
     def replace_in_templates(self, text):
         code = mwparserfromhell.parse(text)
