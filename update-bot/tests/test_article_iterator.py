@@ -104,7 +104,7 @@ class TestArticleIteratorArgumentParser(unittest.TestCase):
     def test_category_limit_is_set(self):
         article_iterator = Mock()
         parser = ArticleIteratorArgumentParser(article_iterator, Mock())
-        self.assertTrue(parser.check_argument("-categorylimit:10"))
+        self.assertTrue(parser.check_argument("-limit-per-category:10"))
         self.assertEqual(article_iterator.articles_per_category_limit, 10)
 
     def test_parser_returns_false_when_no_valid_argument_is_found(self):

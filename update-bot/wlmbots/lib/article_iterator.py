@@ -66,8 +66,8 @@ class ArticleIteratorArgumentParser(object):
         if argument.find("-limit:") == 0:
             self.article_iterator.limit = int(argument[7:])
             return True
-        if argument.find("-categorylimit:") == 0:
-            self.article_iterator.articles_per_category_limit = int(argument[15:])
+        if argument.find("-limit-per-category:") == 0:
+            self.article_iterator.articles_per_category_limit = int(argument[20:])
             return True
         elif argument.find("-category:") == 0:
             category_names = argument[10:].split(",")
