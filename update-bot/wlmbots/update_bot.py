@@ -37,14 +37,13 @@ class UpdateBot(object):
         text = article.get()
         commonscat = self.commonscat_mapper.get_commonscat_from_category_links(text)
         if not commonscat:
-            logging.error("  %s has no mapped category link.", article.title())
+            logging.error("  Article has no mapped category link.")
             return
         text_with_commons_cat = self.replace_in_templates(text)
         if text != text_with_commons_cat:
             article.text = text_with_commons_cat
             article.save(summary=self.summary)
             logging.info("  Updated article with commons category")
-            logging.debug(text_with_commons_cat)
 
     def replace_in_templates(self, text):
         code = mwparserfromhell.parse(text)
@@ -54,7 +53,10 @@ class UpdateBot(object):
                 original_text = unicode(template)
                 row_commonscat = self.commonscat_mapper.get_commonscat(text, template)
                 replacer.set_value('Commonscat', row_commonscat.replace("Category:", ""))
+                logging.debug("  setting empty commonscat to '%s'", replacer.get_value("Commonscat"))
                 text = text.replace(original_text, unicode(replacer))
+            else:
+                logging.debug("  Commonscat is '%s'", replacer.get_value("Commonscat"))
         return text
 
 
