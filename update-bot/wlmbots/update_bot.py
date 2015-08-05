@@ -51,8 +51,8 @@ class UpdateBot(object):
             replacer = TemplateReplacer(template)
             if replacer.param_is_empty("Commonscat"):
                 original_text = unicode(template)
-                row_commonscat = self.commonscat_mapper.get_commonscat(text, template)
-                replacer.set_value('Commonscat', row_commonscat.replace("Category:", ""))
+                row_commonscat = self.commonscat_mapper.get_commonscat(text, template, with_prefix=False)
+                replacer.set_value('Commonscat', row_commonscat)
                 logging.debug("  setting empty commonscat to '%s'", replacer.get_value("Commonscat"))
                 text = text.replace(original_text, unicode(replacer))
             else:
