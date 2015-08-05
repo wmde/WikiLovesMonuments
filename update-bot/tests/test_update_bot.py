@@ -29,12 +29,6 @@ class TestUpdateBot(unittest.TestCase):
         new_text = self.bot.replace_in_templates(article_text)
         self.assertEqual(new_text, "{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=testcategory\n}}")
 
-    def test_inserted_commonscat_has_no_category_prefix(self):
-        article_text = u"{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=\n}}"
-        self.commonscat_mapper.get_commonscat.return_value = "Category:testcategory"
-        new_text = self.bot.replace_in_templates(article_text)
-        self.assertEqual(new_text, "{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=testcategory\n}}")
-
     def test_modify_templates_does_nothing_if_category_link_is_missing(self):
         article = Mock()
         article.get.return_value = u"{{Denkmalliste Bayern Tabellenzeile|Bild=}}"
