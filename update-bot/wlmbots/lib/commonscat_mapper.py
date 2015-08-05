@@ -11,7 +11,7 @@ class CommonscatMapper(object):
     def __init__(self):
         self.category_cache = {}
         self.subcategories_loaded = False
-
+        self.category_prefix_regex = re.compile(r"^(Category|Kategorie):")
 
     def load_subcategories_into_map(self, site):
         if self.subcategories_loaded:
@@ -58,20 +58,12 @@ class CommonscatMapper(object):
 
     def get_commonscat_from_table_row_template(self, template):
         """ Check mwparserfromhell template if it has a non-empty Commonscat parameter. """
-        try:
-            param = unicode(template.get("Commonscat")).strip()
-            if param:
-                _, commonscat = param.split("=", 1)
-                return u"Category:" + commonscat.strip()
-            else:
-                return ""
-        except ValueError as error:
-            if str(error) == "Commonscat":
-                return ""
-            else:
-                raise
+        if template.has("Commonscat"):
+            return template.get("Commonscat").value.strip()
+        else:
+            return ""
 
-    def get_commonscat(self, text, template):
+    def get_commonscat(self, text, template, with_prefix=True):
         text_id = id(text)
         if text_id not in self.category_cache:
             self.category_cache[text_id] = [
@@ -79,4 +71,11 @@ class CommonscatMapper(object):
                 self.get_commonscat_from_category_links(text)
             ]
         category_candidates = [self.get_commonscat_from_table_row_template(template)] + self.category_cache[text_id]
-        return next(category for category in category_candidates if category)  # return first non-empyt element
+        category_name = next(category for category in category_candidates if category)  # first non-empyt element
+        prefix = self.category_prefix_regex.match(category_name)
+        if with_prefix and not prefix:
+            return "Category:" + category_name
+        elif not with_prefix and prefix:
+            return category_name[prefix.end():]
+        else:
+            return category_name
