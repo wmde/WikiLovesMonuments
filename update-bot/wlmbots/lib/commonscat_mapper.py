@@ -38,9 +38,6 @@ class CommonscatMapper(object):
         """ Get the commonscat from the Category links (which is guaranteed to
             be on every page of the WLM pages)
         """
-        text_id = id(text)
-        if text_id in self.category_cache:
-            return self.category_cache[text_id][1]
         code = mwparserfromhell.parse(text)
         for link in code.filter_wikilinks():
             title = unicode(link.title)
@@ -66,11 +63,11 @@ class CommonscatMapper(object):
 
     def get_commonscat(self, text, template, with_prefix=True):
         if text != self.current_text:
-            self.current_text = text
             self.category_cache = [
                 self.get_commonscat_from_weblinks_template(text),
                 self.get_commonscat_from_category_links(text)
             ]
+            self.current_text = text
         category_candidates = [self.get_commonscat_from_table_row_template(template)] + self.category_cache
         category_name = next(category for category in category_candidates if category)  # first non-empyt element
         prefix = self.category_prefix_regex.match(category_name)
