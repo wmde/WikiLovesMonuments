@@ -9,7 +9,8 @@ class CommonscatMapper(object):
     mapping = {}
 
     def __init__(self):
-        self.category_cache = {}
+        self.category_cache = []
+        self.current_text = ""
         self.subcategories_loaded = False
         self.category_prefix_regex = re.compile(r"^(Category|Kategorie):")
 
@@ -64,13 +65,13 @@ class CommonscatMapper(object):
             return ""
 
     def get_commonscat(self, text, template, with_prefix=True):
-        text_id = id(text)
-        if text_id not in self.category_cache:
-            self.category_cache[text_id] = [
+        if text != self.current_text:
+            self.current_text = text
+            self.category_cache = [
                 self.get_commonscat_from_weblinks_template(text),
                 self.get_commonscat_from_category_links(text)
             ]
-        category_candidates = [self.get_commonscat_from_table_row_template(template)] + self.category_cache[text_id]
+        category_candidates = [self.get_commonscat_from_table_row_template(template)] + self.category_cache
         category_name = next(category for category in category_candidates if category)  # first non-empyt element
         prefix = self.category_prefix_regex.match(category_name)
         if with_prefix and not prefix:
