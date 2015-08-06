@@ -14,6 +14,7 @@ Available command line options are:
 
 from __future__ import unicode_literals
 import datetime
+import re
 import pywikibot
 
 from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser
@@ -30,6 +31,7 @@ class CommonsBot(object):
             article_iterator = ArticleIterator()
         article_iterator.article_callback = self.cb_check_article
         self.article_iterator = article_iterator
+        self.comment_pattern = re.compile(r"<-- LIST_CALLBACK_PARAMS (.+?)-->\n\n")
 
     def run_once(self, category=None):
         article_args = {
@@ -41,11 +43,22 @@ class CommonsBot(object):
         self.article_iterator.iterate_articles(category, article_arguments=article_args)
 
     def cb_check_article(self, article, **kwargs):
-        # just for testing
-        print article.title()
-        #print article.get()
-        # TODO insert image from page in wikipedia
+        text = article.get()
+        list_callback_params = self.comment_pattern.search(text)
+        if not list_callback_params:
+            return
+        try:
+            params = list_callback_params.group(1).strip()
+            lang, pagename, image_id = params.strip().split("|", 2)
+        except ValueError:
+            pywikibot.error(u"Invalid list callback param: '{}'".format(params))
+            return
+        self.insert_image(article.title(), pagename, image_id)
         # TODO remove comment from commons_page
+
+    def insert_image(self, commons_name, pagename, image_id):
+        # TODO insert image from page in wikipedia
+        pass
 
 
 def default_start_time(date=None):
