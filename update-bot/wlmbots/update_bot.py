@@ -35,17 +35,15 @@ class UpdateBot(object):
             logging.info("  No templates found, skipping")
             return
         text = article.get()
-        commonscat = self.commonscat_mapper.get_commonscat_from_category_links(text)
-        if not commonscat:
-            logging.error("  Article has no mapped category link.")
-            return
-        text_with_commons_cat = self.replace_in_templates(text)
+        article_categories = [a.title() for a in article.categories()]
+        default_commonscat = self.commonscat_mapper.get_commonscat_from_article_categories(article_categories)
+        text_with_commons_cat = self.replace_in_templates(text, default_commonscat)
         if text != text_with_commons_cat:
             article.text = text_with_commons_cat
             article.save(summary=self.summary)
             logging.info("  Updated article with commons category")
 
-    def replace_in_templates(self, text):
+    def replace_in_templates(self, text, default_commonscat):
         code = mwparserfromhell.parse(text)
         for template in self.template_checker.filter_allowed_templates(code.filter_templates()):
             replacer = TemplateReplacer(template)

@@ -20,21 +20,14 @@ class TestUpdateBot(unittest.TestCase):
 
     def test_existing_commonscat_is_preserved(self):
         article_text = u"{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=testcategory}}"
-        new_text = self.bot.replace_in_templates(article_text)
+        new_text = self.bot.replace_in_templates(article_text, u"New Category")
         self.assertEqual(new_text, article_text)
 
     def test_missing_commonscat_is_added(self):
         article_text = u"{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=\n}}"
         self.commonscat_mapper.get_commonscat.return_value = "testcategory"
-        new_text = self.bot.replace_in_templates(article_text)
+        new_text = self.bot.replace_in_templates(article_text, "Unspecific Category")
         self.assertEqual(new_text, "{{Denkmalliste Bayern Tabellenzeile|Bild=Kruzifix.jpg|Commonscat=testcategory\n}}")
-
-    def test_modify_templates_does_nothing_if_category_link_is_missing(self):
-        article = Mock()
-        article.get.return_value = u"{{Denkmalliste Bayern Tabellenzeile|Bild=}}"
-        article.title.return_value = "Testseite"
-        self.bot.cb_modify_templates(article)
-        article.save.assert_not_called()
 
 
 if __name__ == '__main__':

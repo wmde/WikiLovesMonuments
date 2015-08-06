@@ -34,15 +34,14 @@ class CommonscatMapper(object):
         with open(filename, "r") as mapconf:
             self.mapping = json.load(mapconf)
 
-    def get_commonscat_from_category_links(self, text):
-        """ Get the commonscat from the Category links (which is guaranteed to
-            be on every page of the WLM pages)
+    def get_commonscat_from_article_categories(self, article_categories):
         """
-        code = mwparserfromhell.parse(text)
-        for link in code.filter_wikilinks():
-            title = unicode(link.title)
-            if title in self.mapping:
-                return self.mapping[title]
+        Get the commonscat from pywikibot article categories
+        """
+        for category in article_categories:
+            if category in self.mapping:
+                return self.mapping[category]
+        return ""
 
     def get_commonscat_from_weblinks_template(self, text):
         header_pos = re.search(r'=+\s+Weblinks', text, re.IGNORECASE)
@@ -61,14 +60,17 @@ class CommonscatMapper(object):
         else:
             return ""
 
-    def get_commonscat(self, text, template, with_prefix=True):
+    def get_commonscat(self, text, template=None, default_category=None, with_prefix=True):
         if text != self.current_text:
             self.category_cache = [
                 self.get_commonscat_from_weblinks_template(text),
-                self.get_commonscat_from_category_links(text)
+                default_category
             ]
             self.current_text = text
-        category_candidates = [self.get_commonscat_from_table_row_template(template)] + self.category_cache
+        category_candidates = []
+        if template:
+            category_candidates.append(self.get_commonscat_from_table_row_template(template))
+        category_candidates += self.category_cache
         category_name = next(category for category in category_candidates if category)  # first non-empyt element
         prefix = self.category_prefix_regex.match(category_name)
         if with_prefix and not prefix:
