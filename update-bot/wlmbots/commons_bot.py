@@ -34,6 +34,7 @@ class CommonsBot(object):
         self.article_iterator = article_iterator
         self.template_checker = template_checker
         self.comment_pattern = re.compile(r"<-- LIST_CALLBACK_PARAMS (.+?)-->\n\n")
+        self.prefix_pattern = re.compile(r"^(?:File|Datei):")
 
     def run_once(self, category=None):
         article_args = {
@@ -81,7 +82,7 @@ class CommonsBot(object):
                 return False
             original_template = unicode(template)
             replacer = TemplateReplacer(template)
-            replacer.set_value("Bild", commons_name)
+            replacer.set_value("Bild", self.prefix_pattern.sub('', commons_name))
             article.text = text.replace(original_template, unicode(replacer))
             article.save(summary=u"Bot: Bild aus Commons eingefügt")
             return True

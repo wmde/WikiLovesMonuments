@@ -76,7 +76,7 @@ class TestCommonsBot(unittest.TestCase):
         with self.assertRaises(commons_bot.CommonsBotException):
             self.commons_bot.insert_image("File:Test Image.jpg", "Test Page", "123")
 
-    def test_insert_image_inserts_image_name_and_saves(self):
+    def test_insert_image_inserts_image_name_without_prefix_and_saves(self):
         page = Mock()
         page.exists.return_value = True
         page.get.return_value = "{{Denkmalliste Bayern Tabellenzeile|Bild=|Nummer=123}}"
@@ -84,7 +84,7 @@ class TestCommonsBot(unittest.TestCase):
         self.template_checker.get_id_name.return_value = "Nummer"
         self.commons_bot.fetch_page = Mock(return_value=page)
         self.assertTrue(self.commons_bot.insert_image("File:Test Image.jpg", "Test Page", "123"))
-        self.assertEqual(page.text, "{{Denkmalliste Bayern Tabellenzeile|Bild=File:Test Image.jpg|Nummer=123}}")
+        self.assertEqual(page.text, "{{Denkmalliste Bayern Tabellenzeile|Bild=Test Image.jpg|Nummer=123}}")
         page.save.assert_called_once()
 
     def test_insert_image_skips_image_if_image_is_not_empty(self):
