@@ -62,21 +62,44 @@ class CheckerBot(object):
         text = u""
         if results["pages_checked"] == 0:
             return text + "Es wurden keine Seiten in dieser Kategorie geprüft.\n"
-        num_errors = len(results["results"])
+        unsupported, partially_supported = self.count_error_types(results["results"])
+        num_errors = unsupported + partially_supported
         pages_ok = results["pages_checked"] - num_errors
         text += u"{} {} geprüft".format(results["pages_checked"], self._plural_pages(results["pages_checked"]))
         if num_errors == 0:
-            text += u", alle Seiten werden unterstützt."
-        elif num_errors == results["pages_checked"]:
-            text += u", keine der Seiten wird unterstützt."
+            text += u", alle Seiten werden unterstützt"
+        elif unsupported == results["pages_checked"]:
+            text += u", keine der Seiten wird unterstützt"
+        elif partially_supported == results["pages_checked"]:
+            text += u", alle Seiten werden nur teilweise unterstützt"
         else:
             divisor = float(results["pages_checked"])
-            text += u", {} {} unterstützt ({:.0%}), {} {} nicht unterstützt ({:.0%}).".format(
-                pages_ok, self._plural_pages(pages_ok), pages_ok / divisor,
-                num_errors, self._plural_pages(num_errors), num_errors / divisor
-            )
-        text += "\n"
+            if pages_ok == 0:
+                text += u", keine der Seiten voll unterstützt"
+            else:
+                text += u", {} {} unterstützt ({:.0%})".format(
+                    pages_ok, self._plural_pages(pages_ok), pages_ok / divisor
+                )
+            if partially_supported > 0:
+                text += u", {} {} teilweise unterstützt ({:.0%})".format(
+                    partially_supported, self._plural_pages(partially_supported), partially_supported / divisor
+                )
+            if unsupported > 0:
+                text += u", {} {} nicht unterstützt ({:.0%})".format(
+                    unsupported, self._plural_pages(unsupported), unsupported / divisor
+                )
+        text += ".\n"
         return text
+
+    def count_error_types(self, results):
+        unsupported = 0
+        partially_supported = 0
+        for result in results:
+            if TemplateChecker.ERROR_MISSING_TEMPLATE in result["errors"]:
+                unsupported += 1
+            else:
+                partially_supported += 1
+        return unsupported, partially_supported
 
     def _plural_pages(self, num_pages):
         if num_pages == 1:
