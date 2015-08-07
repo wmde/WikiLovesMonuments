@@ -37,7 +37,6 @@ class CheckerBot(object):
         self.site = site
         self.outputpage = None
 
-
     def generate_summary_page(self):
         text = u"\n"
         for category_results in self.results:
