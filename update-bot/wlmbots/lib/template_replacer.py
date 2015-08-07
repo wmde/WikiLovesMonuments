@@ -13,10 +13,13 @@ class TemplateReplacer(object):
         return self.template.get(name).value
 
     def set_value(self, name, value):
+        """ Set a value in the template while preserving existing whitespace. """
         param = self.template.get(name)
         whitespace = re.match(r"(\s*)(.*?)(\s*)$", unicode(param.value), re.UNICODE)
         if not whitespace:
             param.value = unicode(value)
+        # If param value consists only of whitespace, put everything except newline chars
+        # in front of the new value and the newline char at the end of the new value
         elif whitespace.group(2) == "" and whitespace.group(3) == "":
             line_end = re.search("(.*?)(\r?\n)$", whitespace.group(1))
             if line_end:
