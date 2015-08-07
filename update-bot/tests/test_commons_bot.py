@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import unittest
-import pywikibot
 from mock import Mock  # unittest.mock for Python >= 3.3
 
 from wlmbots import commons_bot
@@ -38,10 +37,8 @@ class TestCommonsBot(unittest.TestCase):
         article = Mock()
         article.get.return_value = u"Test text <-- LIST_CALLBACK_PARAMS de|Test Page -->\n\n"
         self.commons_bot.insert_image = Mock()
-        pywikibot.error = Mock()
         self.commons_bot.cb_check_article(article)
         self.commons_bot.insert_image.assert_not_called()
-        pywikibot.error.assert_called_once()
 
     def test_check_article_calls_insert_image_with_params(self):
         article = Mock()
