@@ -16,21 +16,23 @@ from __future__ import unicode_literals
 import datetime
 import re
 import pywikibot
+import mwparserfromhell
 
 from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser
+from wlmbots.lib.template_replacer import TemplateReplacer
+from wlmbots.lib.template_checker import TemplateChecker
 
 
 class CommonsBot(object):
 
-    def __init__(self, commons_site, wikipedia_site, article_iterator=None):
+    def __init__(self, commons_site, wikipedia_site, article_iterator, template_checker):
         self.commons_site = commons_site
         self.wikipedia_site = wikipedia_site
         self.category_name = u"Images from Wiki Loves Monuments 2015 in Germany"
         self.start_time = default_start_time()
-        if not article_iterator:
-            article_iterator = ArticleIterator()
         article_iterator.article_callback = self.cb_check_article
         self.article_iterator = article_iterator
+        self.template_checker = template_checker
         self.comment_pattern = re.compile(r"<-- LIST_CALLBACK_PARAMS (.+?)-->\n\n")
 
     def run_once(self, category=None):
@@ -49,16 +51,51 @@ class CommonsBot(object):
             return
         try:
             params = list_callback_params.group(1).strip()
-            lang, pagename, image_id = params.strip().split("|", 2)
+            _, pagename, image_id = params.strip().split("|", 2)
         except ValueError:
             pywikibot.error(u"Invalid list callback param: '{}'".format(params))
             return
-        self.insert_image(article.title(), pagename, image_id)
+        try:
+            self.insert_image(article.title(), pagename.strip(), image_id.strip())
+        except CommonsBotException as err:
+            pywikibot.error(err)
+            return
         # TODO remove comment from commons_page
 
     def insert_image(self, commons_name, pagename, image_id):
-        # TODO insert image from page in wikipedia
-        pass
+        """ Insert image from page in Wikipedia """
+        article = self.fetch_page(pagename)
+        if not article.exists():
+            raise CommonsBotException(u"Article is missing: '{}'".format(pagename))
+        text = article.get()
+        code = mwparserfromhell.parse(text)
+        for template in code.filter_templates():
+            if not self.template_checker.is_allowed_template:
+                continue
+            if self.template_checker.get_id(template) != image_id:
+                continue
+            if template.get("Bild").value.strip() != "":
+                pywikibot.log("Image is already filled for id '{}' on page '{}', skipping ...".format(image_id, pagename))
+                return False
+            original_template = unicode(template)
+            replacer = TemplateReplacer(template)
+            replacer.set_value("Bild", commons_name)
+            article.text = text.replace(original_template, unicode(replacer))
+            article.save(summary=u"Bot: Bild aus Commons eingefügt")
+            return True
+        raise CommonsBotException(u"No template found with id '{}' on page '{}'".format(image_id, pagename))
+
+    def fetch_page(self, pagename):
+        """
+        Helper function that returns a pywikibot article object.
+
+        This function mainly to make mocking and testing easier.
+        """
+        return pywikibot.Page(self.wikipedia_site, pagename)
+
+
+class CommonsBotException(Exception):
+    pass
 
 
 def default_start_time(date=None):
@@ -68,13 +105,15 @@ def default_start_time(date=None):
 
 
 def main(*args):
-    wikipedia_site = pywikibot.Site("de", "local") # TODO use wikipeda instead
+    wikipedia_site = pywikibot.Site("de", "local")  # TODO use wikipeda instead
     commons_site = pywikibot.Site("commons", "commons")
     article_iterator = ArticleIterator(
         logging_callback=pywikibot.log,
     )
     parser = ArticleIteratorArgumentParser(article_iterator, None)
-    commons_bot = CommonsBot(commons_site, wikipedia_site, article_iterator)
+    checker = TemplateChecker()
+    checker.load_config("config/templates.json")
+    commons_bot = CommonsBot(commons_site, wikipedia_site, article_iterator, checker)
     for argument in pywikibot.handle_args(args):
         if argument.find("-category:") == 0:
             commons_bot.category_name = argument[10:]
