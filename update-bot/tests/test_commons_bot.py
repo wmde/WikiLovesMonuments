@@ -51,6 +51,15 @@ class TestCommonsBot(unittest.TestCase):
         self.commons_bot.cb_check_article(article)
         self.commons_bot.insert_image.assert_called_once_with(u"File:Test Image.jpg", u"Test Page", "123")
 
+    def test_check_article_removes_comment_from_commons(self):
+        article = Mock()
+        article.title.return_value = u"File:Test Image.jpg"
+        article.get.return_value = u"Test text <-- LIST_CALLBACK_PARAMS de|Test Page|123 -->\n\n"
+        self.commons_bot.insert_image = Mock()
+        self.commons_bot.cb_check_article(article)
+        self.assertEquals(article.text, u"Test text ")
+        article.save.assert_called_once()
+
     def test_insert_image_checks_pagename(self):
         page = Mock()
         page.exists.return_value = False
@@ -87,6 +96,7 @@ class TestCommonsBot(unittest.TestCase):
         self.commons_bot.fetch_page = Mock(return_value=page)
         self.assertFalse(self.commons_bot.insert_image("File:Test Image.jpg", "Test Page", "123"))
         page.save.assert_not_called()
+
 
 
 if __name__ == '__main__':

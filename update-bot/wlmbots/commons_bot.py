@@ -60,7 +60,9 @@ class CommonsBot(object):
         except CommonsBotException as err:
             pywikibot.error(err)
             return
-        # TODO remove comment from commons_page
+        # remove comment from commons_page
+        article.text = text.replace(list_callback_params.group(0), '')
+        article.save("Bot: Removed comment after inserting image in Wikipedia article")
 
     def insert_image(self, commons_name, pagename, image_id):
         """ Insert image from page in Wikipedia """
