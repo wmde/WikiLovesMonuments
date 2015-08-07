@@ -153,7 +153,6 @@ class CheckerBot(object):
 
 
 def main(*args):
-    outputpage = None
     site = pywikibot.Site()
     pagelister = Pagelist(site)
     checker = TemplateChecker()
