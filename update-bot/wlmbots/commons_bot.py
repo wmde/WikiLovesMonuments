@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
-This bot checks a commons category for new entries, checks the entry pages
+This bot checks a Commons category for new entries, checks the entry pages
 for special comments and inserts links to these pages in the German Wikipedia.
 
 Available command line options are:
@@ -10,9 +10,16 @@ Available command line options are:
 
 -start-at:        Date from which to start requesting pages. Defaults to start of month. Format YYYY-MM-DD
 
+-once:            Run only once (by default it runs continously).
+
+-sleep-seconds:N  Sleep N seconds betwen runs
+
+-limit:N          Stop after N processed Commons pages
+
 """
 
 from __future__ import unicode_literals
+import time
 import datetime
 import re
 import pywikibot
@@ -35,6 +42,7 @@ class CommonsBot(object):
         self.template_checker = template_checker
         self.comment_pattern = re.compile(r"<-- LIST_CALLBACK_PARAMS (.+?)-->\n\n")
         self.prefix_pattern = re.compile(r"^(?:File|Datei):")
+        self.sleep_seconds = 30
 
     def run_once(self, category=None):
         article_args = {
@@ -44,6 +52,22 @@ class CommonsBot(object):
         if not category:
             category = pywikibot.Category(self.commons_site, self.category_name)
         self.article_iterator.iterate_articles(category, article_arguments=article_args)
+
+    def run_continous(self, category=None):
+        article_args = {
+            "sortby": "timestamp",
+            "starttime": self.start_time
+        }
+        if not category:
+            category = pywikibot.Category(self.commons_site, self.category_name)
+        counter = 0
+        while True:
+            now = pywikibot.Timestamp.now()
+            counter += self.article_iterator.iterate_articles(category, counter, article_args)
+            article_args["starttime"] = now
+            if self.article_iterator.limit_reached(counter, 0):
+                break
+            time.sleep(self.sleep_seconds)
 
     def cb_check_article(self, article, **kwargs):
         text = article.get()
@@ -117,6 +141,7 @@ def main(*args):
     checker = TemplateChecker()
     checker.load_config("config/templates.json")
     commons_bot = CommonsBot(commons_site, wikipedia_site, article_iterator, checker)
+    run_cmd = commons_bot.run_continous
     for argument in pywikibot.handle_args(args):
         if argument.find("-category:") == 0:
             commons_bot.category_name = argument[10:]
@@ -126,7 +151,11 @@ def main(*args):
         elif argument.find("-start-at:") == 0:
             start_time = argument[10:] + "T0:00:00Z"
             commons_bot.start_time = pywikibot.Timestamp.fromISOformat(start_time)
-    commons_bot.run_once()
+        elif argument.find("-sleep-seconds:") == 0 and int(argument[15:]) > 0:
+            commons_bot.sleep_seconds = int(argument[15:])
+        elif argument == "-once":
+            run_cmd = commons_bot.run_once
+    run_cmd()
 
 
 if __name__ == "__main__":

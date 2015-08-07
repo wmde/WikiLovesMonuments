@@ -32,7 +32,7 @@ class ArticleIterator(object):
         if article_arguments:
             kwargs.update(article_arguments)
         for article in category.articles(**kwargs):
-            if self._limit_reached(counter, category_counter):
+            if self.limit_reached(counter, category_counter):
                 return counter
             if self._excluded_articles and article.title() in self._excluded_articles:
                 continue
@@ -60,7 +60,7 @@ class ArticleIterator(object):
             args["total"] = self.articles_per_category_limit
         return args
 
-    def _limit_reached(self, counter, category_counter):
+    def limit_reached(self, counter, category_counter):
         """ Return True if the absolute or category limit is reached. """
         return (
             self.articles_per_category_limit and category_counter >= self.articles_per_category_limit
