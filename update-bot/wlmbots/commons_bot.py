@@ -32,6 +32,9 @@ from wlmbots.lib.template_checker import TemplateChecker
 
 class CommonsBot(object):
 
+    comment_pattern = re.compile(r"<-- LIST_CALLBACK_PARAMS (.+?)-->\n\n")
+    prefix_pattern = re.compile(r"^(?:File|Datei):")
+
     def __init__(self, commons_site, wikipedia_site, article_iterator, template_checker):
         self.commons_site = commons_site
         self.wikipedia_site = wikipedia_site
@@ -40,8 +43,6 @@ class CommonsBot(object):
         article_iterator.article_callback = self.cb_check_article
         self.article_iterator = article_iterator
         self.template_checker = template_checker
-        self.comment_pattern = re.compile(r"<-- LIST_CALLBACK_PARAMS (.+?)-->\n\n")
-        self.prefix_pattern = re.compile(r"^(?:File|Datei):")
         self.sleep_seconds = 30
 
     def run_once(self, category=None):
