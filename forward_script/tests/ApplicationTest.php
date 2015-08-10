@@ -21,9 +21,21 @@ class ApplicationTest extends WebTestCase {
     public function testIndexPage(){
         $client = $this->createClient();
         $client->request('GET', '/');
-
         $this->assertTrue($client->getResponse()->isOk());
-        
+    }
+
+    /**
+     * @expectedException        \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     */
+    public function testRedirectRequiresParameters(){
+        $client = $this->createClient();
+        $client->request('GET', '/redirect');
+    }
+
+    public function testRedirectReturnsRedirectResponse(){
+        $client = $this->createClient();
+        $client->request('GET', '/redirect/Liste_der_Baudenkmäler_in_Abtswind/123/wlm-de-by');
+        $this->assertTrue($client->getResponse()->isRedirection(), "Response is no redirect");
     }
 
 }
