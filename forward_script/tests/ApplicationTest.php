@@ -38,4 +38,12 @@ class ApplicationTest extends WebTestCase {
 		$this->assertTrue( $client->getResponse()->isRedirection(), "Response is not a redirect" );
 	}
 
+	/**
+	 * @expectedException        \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+	 */
+	public function testRedirectRejectsInvalidCampaignNames() {
+		$client = $this->createClient();
+		$client->request( 'GET', '/redirect/Liste_der_Baudenkmäler_in_Abtswind/123/foo.bar§' );
+	}
+
 }
