@@ -18,6 +18,13 @@
     ],
     "require-dev": {
         "phpunit/phpunit": "*",
-        "symfony/browser-kit": "~2.3"
-    }
+        "symfony/browser-kit": "~2.3",
+        "mediawiki/mediawiki-codesniffer": "0.3.0"
+    },
+    "scripts": {
+        "test": [
+           "phpcs --standard=vendor/mediawiki/mediawiki-codesniffer/MediaWiki --extensions=php,php5,inc --ignore=vendor -p .",
+           "phpunit -c phpunit.xml.dist"
+        ]
+  }
 }
