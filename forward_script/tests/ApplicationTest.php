@@ -34,6 +34,12 @@ class ApplicationTest extends WebTestCase {
 
 	public function testRedirectReturnsRedirectResponse() {
 		$client = $this->createClient();
+		$this->app["campaign_validator"] = $this->getMockBuilder(
+				"Wikimedia\\ForwardScript\\CampaignValidator"
+			)
+			->disableOriginalConstructor()
+			->getMock();
+		$this->app["campaign_validator"]->method( 'isValidCampaign' )->willReturn( true );
 		$client->request( 'GET', '/redirect/Liste_der_Baudenkmäler_in_Abtswind/123/wlm-de-by' );
 		$this->assertTrue( $client->getResponse()->isRedirection(), "Response is not a redirect" );
 	}
