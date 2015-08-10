@@ -1,0 +1,17 @@
+{
+    "name": "wmde/wlm_forward_script",
+    "description": "Script to forward from Wikipedia to Commons Upload Wizard campaigns",
+    "require": {
+        "silex/silex": "^1.3"
+    },
+    "authors": [
+        {
+            "name": "Gabriel Birke",
+            "email": "gabriel.birke@wikimedia.de"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "*",
+        "symfony/browser-kit": "~2.3"
+    }
+}
