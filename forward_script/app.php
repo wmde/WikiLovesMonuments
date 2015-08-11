@@ -51,7 +51,8 @@ $app->get( "/redirect/{pageName}/{campaign}/{id}/{lat}/{lon}",
 			$campaignIsValid = $app["cache"]->fetch( $campaignCacheId );
 		}
 		else {
-			$campaignIsValid = $app["campaign_validator"]->isValidCampaign( $campaign );
+			$campaignPageName = "Campaign:".preg_replace( "/^Campaign:/", "", $campaign );
+			$campaignIsValid = $app["campaign_validator"]->isValidCampaign( $campaignPageName );
 			$cacheTime = $campaignIsValid ? 604800 : 300;
 			$app["cache"]->save( $campaignCacheId, $campaignIsValid, $cacheTime );
 		}

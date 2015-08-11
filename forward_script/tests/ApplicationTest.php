@@ -47,7 +47,7 @@ class ApplicationTest extends WebTestCase {
 			)
 			->disableOriginalConstructor()
 			->getMock();
-		$info = (object) ["category" => "Cultural heritage monuments in Abtswind" ];
+		$info = (object) ["category" => "Category:Cultural heritage monuments in Abtswind" ];
 		$this->app["pageinfo"]->method( "getInformation" )->willReturn( $info );
 		$client->request( 'GET', '/redirect/Liste_der_Baudenkmäler_in_Abtswind/wlm-de-by/123' );
 		$this->assertTrue( $client->getResponse()->isRedirection(), "Response is not a redirect" );
