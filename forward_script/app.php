@@ -17,6 +17,7 @@ $app["wikipedia_api_url"] = "https://de.wikipedia.org/w/api.php";
 $app["python_path"] = realpath( __DIR__ . "/../update-bot/" );
 $app["default_categories_config"] = $app["python_path"] . "/config/commonscat_mapping.json";
 $app["pageinfo_script"] = "python -m wlmbots.pageinfo";
+$app["commons_upload_url"] = "https://commons.wikimedia.org/wiki/Special:UploadWizard?";
 
 // Services
 $app["cache"] = $app->share( function ( $app ) {
@@ -57,8 +58,12 @@ $app->get( "/redirect/{pageName}/{campaign}/{id}/{lat}/{lon}",
 		if ( !$campaignIsValid ) {
 			throw new RuntimeException( "Invalid campaign name." );
 		}
-		$pageinfo = $app["pageinfo"]->getInformation( $pageName, $id );
-		return $app->redirect( "http://example.com/", Response::HTTP_MOVED_PERMANENTLY );
+		$pageInfo = $app["pageinfo"]->getInformation( $pageName, $id );
+		$queryBuilder = new \Wikimedia\ForwardScript\QueryBuilder();
+		$redirectUrl = $app["commons_upload_url"];
+		$redirectUrl .= "campaign=".urlencode( $campaign );
+		$redirectUrl .= $queryBuilder->getQuery( $pageInfo, $pageName, $id, $lat, $lon );
+		return $app->redirect( $redirectUrl, Response::HTTP_MOVED_PERMANENTLY );
 	} )
 	->assert( 'campaign', '[-a-z]+' )
 	->value( 'id', '' )

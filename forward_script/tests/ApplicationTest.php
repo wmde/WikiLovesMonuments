@@ -47,9 +47,14 @@ class ApplicationTest extends WebTestCase {
 			)
 			->disableOriginalConstructor()
 			->getMock();
-		$this->app["pageinfo"]->method( "getInformation" )->willReturn( new stdClass() );
+		$info = (object) ["category" => "Cultural heritage monuments in Abtswind" ];
+		$this->app["pageinfo"]->method( "getInformation" )->willReturn( $info );
 		$client->request( 'GET', '/redirect/Liste_der_Baudenkmäler_in_Abtswind/wlm-de-by/123' );
 		$this->assertTrue( $client->getResponse()->isRedirection(), "Response is not a redirect" );
+		$expectedURL = "https://commons.wikimedia.org/wiki/Special:UploadWizard?campaign=wlm-de-by" .
+			"&categories=Cultural+heritage+monuments+in+Abtswind" .
+			"&objref=de%7CListe_der_Baudenkm%C3%A4ler_in_Abtswind%7C123";
+		$this->assertEquals( $expectedURL, $client->getResponse()->headers->get( "Location" ) );
 	}
 
 	/**
