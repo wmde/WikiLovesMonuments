@@ -27,7 +27,7 @@ class ApplicationTest extends WebTestCase {
 	/**
 	 * @expectedException        \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
 	 */
-	public function testRedirectRequiresParameters() {
+	public function testRedirectRequiresPageAndCampaignName() {
 		$client = $this->createClient();
 		$client->request( 'GET', '/redirect' );
 	}
@@ -48,7 +48,7 @@ class ApplicationTest extends WebTestCase {
 			->disableOriginalConstructor()
 			->getMock();
 		$this->app["pageinfo"]->method( "getInformation" )->willReturn( new stdClass() );
-		$client->request( 'GET', '/redirect/Liste_der_Baudenkmäler_in_Abtswind/123/wlm-de-by' );
+		$client->request( 'GET', '/redirect/Liste_der_Baudenkmäler_in_Abtswind/wlm-de-by/123' );
 		$this->assertTrue( $client->getResponse()->isRedirection(), "Response is not a redirect" );
 	}
 
@@ -57,7 +57,7 @@ class ApplicationTest extends WebTestCase {
 	 */
 	public function testRedirectRejectsInvalidCampaignNames() {
 		$client = $this->createClient();
-		$client->request( 'GET', '/redirect/Liste_der_Baudenkmäler_in_Abtswind/123/foo.bar§' );
+		$client->request( 'GET', '/redirect/Liste_der_Baudenkmäler_in_Abtswind/foo.bar/123§' );
 	}
 
 }

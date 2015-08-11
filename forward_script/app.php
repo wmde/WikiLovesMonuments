@@ -43,7 +43,7 @@ $app->get( "/", function() {
 	return "WLM redirect script";
 } );
 
-$app->get( "/redirect/{pageName}/{id}/{campaign}/{lat}/{lon}",
+$app->get( "/redirect/{pageName}/{campaign}/{id}/{lat}/{lon}",
 	function ( Application $app, $pageName, $id, $campaign, $lat, $lon ) {
 		$campaignCacheId = "campaign_{$campaign}";
 		if ( $app["cache"]->contains( $campaignCacheId ) ) {
@@ -61,6 +61,7 @@ $app->get( "/redirect/{pageName}/{id}/{campaign}/{lat}/{lon}",
 		return $app->redirect( "http://example.com/", Response::HTTP_MOVED_PERMANENTLY );
 	} )
 	->assert( 'campaign', '[-a-z]+' )
+	->value( 'id', '' )
 	->value( 'lat', '' )
 	->value( 'lon', '' );
 return $app;
