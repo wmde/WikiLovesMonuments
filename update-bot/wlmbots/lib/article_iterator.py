@@ -54,7 +54,6 @@ class ArticleIterator(object):
             )
 
 
-
 class ArticleIteratorArgumentParser(object):
     """ Parse command line arguments -limit: and -category: and set to ArticleIterator """
 

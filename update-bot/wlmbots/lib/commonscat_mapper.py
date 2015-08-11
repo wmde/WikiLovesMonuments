@@ -2,6 +2,7 @@
 import mwparserfromhell
 import re
 import json
+import pywikibot
 
 
 class CommonscatMapper(object):
@@ -9,6 +10,21 @@ class CommonscatMapper(object):
 
     def __init__(self):
         self.category_cache = {}
+        self.subcategories_loaded = False
+
+    def load_subcategories_into_map(self, site):
+        if self.subcategories_loaded:
+            return
+        for category_name in self.mapping.copy():
+            category = pywikibot.Category(site, category_name)
+            for subcategory in category.subcategories():
+                self._add_category_to_mapping(subcategory, self.mapping[category_name])
+        self.subcategories_loaded = True
+
+    def _add_category_to_mapping(self, category, commonscat):
+        self.mapping[category.title()] = commonscat
+        for subcategory in category.subcategories():
+            self._add_category_to_mapping(subcategory, commonscat)
 
     def load_mapping(self, filename):
         with open(filename, "r") as mapconf:
