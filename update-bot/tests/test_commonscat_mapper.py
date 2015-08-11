@@ -12,6 +12,13 @@ class TestCommonscatMapper(unittest.TestCase):
         self.mapper = commonscat_mapper.CommonscatMapper()
         self.mapper.load_mapping(os.path.join(os.path.dirname(os.path.realpath('__file__')), "config/commonscat_mapping.json"))
 
+    def get_mock_template(self, get_value=u""):
+        template = Mock()
+        param = Mock()
+        param.value = get_value
+        template.get.return_value = param
+        return template
+
     def test_category_link_mapping(self):
         commonscat = self.mapper.get_commonscat_from_category_links(
             u"Foo [[Kategorie:Liste (Kulturdenkmäler in Berlin)|Liste der Kulturdenkmäler in Berlin]] Bar")
@@ -42,29 +49,25 @@ class TestCommonscatMapper(unittest.TestCase):
         self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Bad Wimpfen")
 
     def test_commonscat_from_table_row_template_returns_commonscat_if_it_is_not_empty(self):
-        template = Mock()
-        template.get.return_value = u"Commonscat=Cultural heritage monuments in Berlin"
+        template = self.get_mock_template(u"Cultural heritage monuments in Berlin")
         commonscat = self.mapper.get_commonscat_from_table_row_template(template)
         template.get.assert_called_once_with("Commonscat")
         self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Berlin")
 
     def test_commonscat_from_table_row_template_strips_whitespace_from_commonscat(self):
-        template = Mock()
-        template.get.return_value = u"Commonscat = Cultural heritage monuments in Berlin   \n"
+        template = self.get_mock_template(u" Cultural heritage monuments in Berlin   \n")
         commonscat = self.mapper.get_commonscat_from_table_row_template(template)
         template.get.assert_called_once_with("Commonscat")
         self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Berlin")
 
     def test_commonscat_from_table_row_template_returns_empty_string_if_it_is_empty(self):
-        template = Mock()
-        template.get.return_value = u""
+        template = self.get_mock_template(u"")
         commonscat = self.mapper.get_commonscat_from_table_row_template(template)
         template.get.assert_called_once_with("Commonscat")
         self.assertEqual(commonscat, u"")
 
     def test_commonscat_from_table_row_template_returns_empty_string_if_only_whitespace(self):
-        template = Mock()
-        template.get.return_value = u"    \n"
+        template = self.get_mock_template(u"    \n")
         commonscat = self.mapper.get_commonscat_from_table_row_template(template)
         template.get.assert_called_once_with("Commonscat")
         self.assertEqual(commonscat, u"")
@@ -78,23 +81,20 @@ class TestCommonscatMapper(unittest.TestCase):
         self.assertEqual(commonscat, u"")
 
     def test_get_commonscat_returns_commonscat_from_template_row_if_it_exists(self):
-        template = Mock()
-        template.get.return_value = u"Commonscat=Cultural heritage monuments in Meetschow"
+        template = self.get_mock_template(u"Cultural heritage monuments in Meetschow")
         pagetext = u"Foo\n== Weblinks ==\n{{Commonscat|Cultural heritage monuments in Gorleben|Baudenkmale in Gorleben}}  \n[[Kategorie:Liste (Baudenkmale in Niedersachsen)|Gorleben]] Bar"
         commonscat = self.mapper.get_commonscat(pagetext, template)
         self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Meetschow")
 
     def test_get_commonscat_returns_commonscat_from_weblinks_if_table_row_is_empty(self):
-        template = Mock()
-        template.get.return_value = u""
+        template = self.get_mock_template(u"")
         pagetext = u"Foo\n== Weblinks ==\n{{Commonscat|Cultural heritage monuments in Gorleben|Baudenkmale in Gorleben}}  \n[[Kategorie:Liste (Baudenkmale in Niedersachsen)|Gorleben]] Bar"
         commonscat = self.mapper.get_commonscat(pagetext, template)
         self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Gorleben")
 
     def test_get_commonscat_returns_commonscat_from_category_links_if_row_and_commonscat_template_empty(
             self):
-        template = Mock()
-        template.get.return_value = u""
+        template = self.get_mock_template(u"")
         pagetext = u"Foo \n[[Kategorie:Liste (Baudenkmale in Niedersachsen)|Gorleben]] Bar"
         commonscat = self.mapper.get_commonscat(pagetext, template)
         self.assertEqual(commonscat, u"Category:Cultural heritage monuments in Lower Saxony")
