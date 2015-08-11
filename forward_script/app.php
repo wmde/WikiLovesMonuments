@@ -2,24 +2,43 @@
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Process\Process;
+use Wikimedia\ForwardScript\PageInformationCollector;
 
 require __DIR__.'/vendor/autoload.php';
 
 
 $app = new Application();
 
+// Settings
 $app["cache_dir"] = __DIR__."/cache";
+$app["commons_api_url"] = "https://commons.wikimedia.org/w/api.php";
+$app["wikipedia_api_url"] = "https://de.wikipedia.org/w/api.php";
+$app["python_path"] = realpath( __DIR__ . "/../update-bot/" );
+$app["default_categories_config"] = $app["python_path"] . "/config/commonscat_mapping.json";
+$app["pageinfo_script"] = "python -m wlmbots.pageinfo";
+
+// Services
 $app["cache"] = $app->share( function ( $app ) {
 	return new \Doctrine\Common\Cache\FilesystemCache( $app["cache_dir"] );
 } );
-$app["commons_api_url"] = "https://commons.wikimedia.org/w/api.php";
 $app["commons_api"] = $app->share( function ( $app ) {
 	return new \Mediawiki\Api\MediawikiApi( $app[ "commons_api_url" ] );
+} );
+$app["wikipedia_api"] = $app->share( function ( $app ) {
+	return new \Mediawiki\Api\MediawikiApi( $app[ "wikipedia_api_url" ] );
 } );
 $app["campaign_validator"] = $app->share( function ( $app ) {
 	return new \Wikimedia\ForwardScript\CampaignValidator( $app[ "commons_api" ] );
 } );
+$app["pageinfo"] = $app->share( function ( $app ) {
+	$defaultCategories = json_decode( file_get_contents( $app["default_categories_config"] ), true );
+	$process = new Process( $app["pageinfo_script"], $app["python_path"] );
+	return new PageInformationCollector( $app[ "wikipedia_api" ], $process, $defaultCategories );
+} );
 
+
+// Routes
 $app->get( "/", function() {
 	return "WLM redirect script";
 } );
@@ -38,6 +57,7 @@ $app->get( "/redirect/{pageName}/{id}/{campaign}/{lat}/{lon}",
 		if ( !$campaignIsValid ) {
 			throw new RuntimeException( "Invalid campaign name." );
 		}
+		$pageinfo = $app["pageinfo"]->getInformation( $pageName, $id );
 		return $app->redirect( "http://example.com/", Response::HTTP_MOVED_PERMANENTLY );
 	} )
 	->assert( 'campaign', '[-a-z]+' )

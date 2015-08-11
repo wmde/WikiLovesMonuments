@@ -42,6 +42,12 @@ class ApplicationTest extends WebTestCase {
 		$this->app["campaign_validator"]->method( 'isValidCampaign' )->willReturn( true );
 		$this->app["cache"] = $this->getMock( "Doctrine\\Common\\Cache\\Cache" );
 		$this->app["cache"]->method( "contains" )->willReturn( false );
+		$this->app["pageinfo"] = $this->getMockBuilder(
+				"Wikimedia\\ForwardScript\\PageInformationCollector"
+			)
+			->disableOriginalConstructor()
+			->getMock();
+		$this->app["pageinfo"]->method( "getInformation" )->willReturn( new stdClass() );
 		$client->request( 'GET', '/redirect/Liste_der_Baudenkmäler_in_Abtswind/123/wlm-de-by' );
 		$this->assertTrue( $client->getResponse()->isRedirection(), "Response is not a redirect" );
 	}
