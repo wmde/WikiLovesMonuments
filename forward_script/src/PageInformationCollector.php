@@ -64,9 +64,6 @@ class PageInformationCollector {
 	}
 
 	protected function determineCategory( $info, $pageCategories ) {
-		if ( !empty( $info->id_not_found ) ) {
-			return;
-		}
 		if ( !empty( $info->category ) ) {
 			return;
 		}

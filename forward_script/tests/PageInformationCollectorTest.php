@@ -17,6 +17,11 @@ class PageInformationCollectorTest extends PHPUnit_Framework_TestCase {
 	 */
 	protected $process;
 
+	/**
+	 * @var array
+	 */
+	protected $defaultCategories;
+
 	protected function setUp() {
 		$this->api = $this->getMockBuilder( "Mediawiki\\Api\\MediawikiApi" )
 			->disableOriginalConstructor()
@@ -25,6 +30,10 @@ class PageInformationCollectorTest extends PHPUnit_Framework_TestCase {
 		$this->process = $this->getMockBuilder( "Symfony\\Component\\Process\\Process" )
 			->disableOriginalConstructor()
 			->getMock();
+
+		$this->defaultCategories = [
+			"Kategorie:Liste (Baudenkmäler in Bayern)" => "Category:Cultural heritage monuments in Bavaria"
+		];
 	}
 
 
@@ -99,7 +108,7 @@ class PageInformationCollectorTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testProcessOutputIsReturnedAsJSONDecodedData() {
-		$pageInfo = new PageInformationCollector( $this->api, $this->process );
+		$pageInfo = new PageInformationCollector( $this->api, $this->process, $this->defaultCategories );
 		$this->api->method( "getRequest" )->willReturn( [
 			"query" => [
 				"pages" => [
@@ -116,7 +125,12 @@ class PageInformationCollectorTest extends PHPUnit_Framework_TestCase {
 		$this->process->method( "isSuccessful" )->willReturn( true );
 		$this->process->method( "getOutput" )->willReturn( '{"id_not_found":true}' );
 		$result = $pageInfo->getInformation( "Liste der Baudenkmäler in Abtswind", "D-6-75-111-7" );
-		$this->assertEquals( (object)["id_not_found" => true], $result );
+		$this->assertEquals( (object)[
+				"id_not_found" => true,
+				"category" => "Category:Cultural heritage monuments in Bavaria"
+			],
+			$result
+		);
 	}
 
 	/**
@@ -142,11 +156,8 @@ class PageInformationCollectorTest extends PHPUnit_Framework_TestCase {
 		$pageInfo->getInformation( "Liste der Baudenkmäler in Abtswind", "D-6-75-111-7" );
 	}
 
-	public function testIfTemplateIsValidAndCategoryEmptyDefaultCategoryIsUsed() {
-		$defaultCategories = [
-			"Kategorie:Liste (Baudenkmäler in Bayern)" => "Category:Cultural heritage monuments in Bavaria"
-		];
-		$pageInfo = new PageInformationCollector( $this->api, $this->process, $defaultCategories );
+	public function testIfCategoryIsEmptyDefaultCategoryIsUsed() {
+		$pageInfo = new PageInformationCollector( $this->api, $this->process, $this->defaultCategories );
 		$this->api->method( "getRequest" )->willReturn( [
 			"query" => [
 				"pages" => [
@@ -164,7 +175,7 @@ class PageInformationCollectorTest extends PHPUnit_Framework_TestCase {
 			]
 		] );
 		$this->process->method( "isSuccessful" )->willReturn( true );
-		$this->process->method( "getOutput" )->willReturn( '{"category":""}' );
+		$this->process->method( "getOutput" )->willReturn( '{}' );
 		$result = $pageInfo->getInformation( "Liste der Baudenkmäler in Abtswind", "D-6-75-111-7" );
 		$this->assertEquals(
 			(object) ["category" => "Category:Cultural heritage monuments in Bavaria"],
