@@ -58,6 +58,28 @@ class PageInformationCollectorTest extends PHPUnit_Framework_TestCase {
 		$pageInfo->getInformation( "Denkmale in Nimmerland", 123 );
 	}
 
+	/**
+	 * @expectedException \Wikimedia\ForwardScript\ApplicationException
+	 */
+	public function testInvalidPageThrowsException() {
+
+		$pageInfo = new PageInformationCollector( $this->api, $this->process );
+		$this->api->method( "getRequest" )->willReturn( [
+			"query" => [
+				"pages" => [
+					"-1" => [
+						"ns"=> 460,
+						"title" => "Denkmale in <b>Nimmerland",
+						"invalidreason" => "The requested page title contains invalid characters: \"<\".",
+						"invalid" => ""
+					]
+				]
+			]
+		] );
+		$this->process->method( "isSuccessful" )->willReturn( true );
+		$pageInfo->getInformation( "Denkmale in <b>Nimmerland", 123 );
+	}
+
 	public function testProcessInputIsSetToPageData() {
 		$pageInfo = new PageInformationCollector( $this->api, $this->process );
 		$this->api->method( "getRequest" )->willReturn( [

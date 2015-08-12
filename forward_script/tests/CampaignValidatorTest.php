@@ -43,6 +43,26 @@ class CampaignValidatorTest extends PHPUnit_Framework_TestCase {
 		$this->assertFalse( $validator->isValidCampaign( "Campaign:foobar" ) );
 	}
 
+	public function testValidatorReturnsFalseIfPageIsInvalid() {
+
+		$api = $this->getMockBuilder( "Mediawiki\\Api\\MediawikiApi" )
+			->disableOriginalConstructor()
+			->getMock();
+		$api->method( "getRequest" )->willReturn( [
+			"query" => [
+				"pages" => [
+					"-1" => [
+						"ns"=> 460,
+						"title" => "Campaign:<b>foobar",
+						"invalidreason" => "The requested page title contains invalid characters: \"<\".",
+						"invalid" => ""
+					]
+				]
+			]
+		] );
+		$validator = new \Wikimedia\ForwardScript\CampaignValidator( $api );
+		$this->assertFalse( $validator->isValidCampaign( "Campaign:<b>foobar" ) );
+	}
 
 	public function testValidatorReturnsFalseIfPageIsNotInCampaignNamespace() {
 

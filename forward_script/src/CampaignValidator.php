@@ -44,7 +44,10 @@ class CampaignValidator
 		if ( empty( $firstPage[ "ns" ] ) || $firstPage[ "ns" ] != self::CAMPAIGN_NAMESPACE ) {
 			return false;
 		}
-		if ( isset( $firstPage[ 'pageid' ] ) && !isset( $firstPage[ "missing" ] ) ) {
+		if ( isset( $firstPage[ 'invalid' ] ) || isset( $firstPage[ "missing" ] ) ) {
+			return false;
+		}
+		if ( isset( $firstPage[ 'pageid' ] ) ) {
 			return true;
 		}
 		return false;

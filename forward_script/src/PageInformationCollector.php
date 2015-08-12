@@ -46,6 +46,9 @@ class PageInformationCollector {
 		if ( isset( $firstPage[ "missing" ] ) ) {
 			throw new ApplicationException( "Page '$pageTitle' not found." );
 		}
+		if ( isset( $firstPage[ "invalid" ] ) ) {
+			throw new ApplicationException( "Page name is invalid." );
+		}
 		$firstRevision = $firstPage["revisions"][0];
 		if ( $firstRevision["contentformat"] !== "text/x-wiki" ) {
 			throw new ApplicationException( "Page is not a wiki text page." );
