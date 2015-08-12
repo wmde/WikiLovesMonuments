@@ -37,14 +37,14 @@ class CampaignValidator
 	 */
 	public function isValidCampaign( $campaignName ) {
 
-		$response = $this->api->getRequest( new SimpleRequest( "query", array(
+		$response = $this->api->getRequest( new SimpleRequest( 'query', array(
 			'titles' => $campaignName,
 		) ) );
-		$firstPage = array_values( $response[ "query" ][ "pages" ] )[ 0 ];
-		if ( empty( $firstPage[ "ns" ] ) || $firstPage[ "ns" ] != self::CAMPAIGN_NAMESPACE ) {
+		$firstPage = array_values( $response[ 'query' ][ 'pages' ] )[ 0 ];
+		if ( empty( $firstPage[ 'ns' ] ) || $firstPage[ 'ns' ] != self::CAMPAIGN_NAMESPACE ) {
 			return false;
 		}
-		if ( isset( $firstPage[ 'invalid' ] ) || isset( $firstPage[ "missing" ] ) ) {
+		if ( isset( $firstPage[ 'invalid' ] ) || isset( $firstPage[ 'missing' ] ) ) {
 			return false;
 		}
 		if ( isset( $firstPage[ 'pageid' ] ) ) {
