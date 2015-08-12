@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: gabi
- * Date: 11.08.15
- * Time: 17:26
- */
 
 use Wikimedia\ForwardScript\QueryBuilder;
 
@@ -24,9 +18,18 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase {
 
 	public function testLatAndLonAreAdded() {
 		$qb = new QueryBuilder();
-		$query = $qb->getQuery( (object) ["category" => "Test"], "Test Page", null, "1", "2.2335455" );
+		$query = $qb->getQuery( (object) ["category" => "Test"], "Test Page", null,
+			["lat" => "1", "lon" => "2.2335455"] );
 		$this->assertContains( "&lat=1", $query );
 		$this->assertContains( "&lon=2.2335455", $query );
+	}
+
+	public function testEmptyLatAndLonAreFiltered() {
+		$qb = new QueryBuilder();
+		$query = $qb->getQuery( (object) ["category" => "Test"], "Test Page", null,
+			["lat" => "", "lon" => ""] );
+		$this->assertNotContains( "&lat=", $query );
+		$this->assertNotContains( "&lon=", $query );
 	}
 
 	public function testObjRefIsAddedIfIdExists() {
@@ -53,7 +56,7 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase {
 		$qb = new QueryBuilder();
 		$info = (object) ["category" => "Test", "valid_id" => true];
 		$query = $qb->getQuery( $info, "Test Page", "123" );
-		$this->assertContains( "&fields[]=123", $query );
+		$this->assertContains( "&fields%5B%5D=123", $query );
 	}
 
 }

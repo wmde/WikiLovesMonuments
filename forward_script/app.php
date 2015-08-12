@@ -76,7 +76,8 @@ $app->get( "/redirect/{pageName}/{campaign}/{id}/{lat}/{lon}",
 		$queryBuilder = new \Wikimedia\ForwardScript\QueryBuilder();
 		$redirectUrl = $app["commons_upload_url"];
 		$redirectUrl .= "campaign=".urlencode( $campaign );
-		$redirectUrl .= $queryBuilder->getQuery( $pageInfo, $pageName, $id, $lat, $lon );
+		$redirectUrl .= $queryBuilder->getQuery( $pageInfo, $pageName, $id,
+			["lat" => $lat, "lon" => $lon] );
 		return $app->redirect( $redirectUrl, Response::HTTP_MOVED_PERMANENTLY );
 	} )
 	->assert( 'campaign', '[-a-z]+' )
