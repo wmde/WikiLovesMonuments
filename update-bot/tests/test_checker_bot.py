@@ -83,13 +83,28 @@ class TestCheckerBot(unittest.TestCase):
         pagelister.root_category = u"Denkmäler in Deutschland"
         results = {
             "category": category,
-            "results": [{}, {}, {}],
+            "results": [
+                {"errors": {TemplateChecker.ERROR_INVALID_IDS: 7}},
+                {"errors": {TemplateChecker.ERROR_INVALID_IDS: 7}},
+                {"errors": {TemplateChecker.ERROR_MISSING_TEMPLATE: True}},
+            ],
             "pages_checked": 100
         }
         header = self.bot.generate_category_result_header(results, pagelister)
         self.assertIn(u"100 Seiten geprüft", header)
         self.assertIn(u"97 Seiten unterstützt", header)
-        self.assertIn(u"3 Seiten nicht unterstützt", header)
+        self.assertIn(u"2 Seiten teilweise unterstützt", header)
+        self.assertIn(u"1 Seite nicht unterstützt", header)
+
+    def test_count_error_types(self):
+        results = [
+            {"errors": {TemplateChecker.ERROR_INVALID_IDS: 1}},
+            {"errors": {TemplateChecker.ERROR_INVALID_IDS: 2}},
+            {"errors": {TemplateChecker.ERROR_MISSING_TEMPLATE: True}},
+        ]
+        unsupported, partially_supported = self.bot.count_error_types(results)
+        self.assertEqual(unsupported, 1)
+        self.assertEqual(partially_supported, 2)
 
     def test_generate_category_result_table_creates_id_template_entries(self):
         results = {
