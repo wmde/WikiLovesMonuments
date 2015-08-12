@@ -20,11 +20,11 @@ class TestCommonsBotFunctions(unittest.TestCase):
 class TestCommonsBot(unittest.TestCase):
 
     def setUp(self):
-        self.commons_site = Mock()
         self.wikipedia_site = Mock()
         self.article_iterator = Mock()
         self.template_checker = Mock()
-        self.commons_bot = commons_bot.CommonsBot(self.commons_site, self.wikipedia_site, self.article_iterator, self.template_checker)
+        self.commons_bot = commons_bot.CommonsBot(self.wikipedia_site, self.article_iterator, self.template_checker)
+        self.commons_bot.logger = Mock()
 
     def test_check_article_does_nothing_if_params_comment_is_missing(self):
         article = Mock()
@@ -39,6 +39,7 @@ class TestCommonsBot(unittest.TestCase):
         self.commons_bot.insert_image = Mock()
         self.commons_bot.cb_check_article(article)
         self.commons_bot.insert_image.assert_not_called()
+        self.commons_bot.logger.error.assert_called_once()
 
     def test_check_article_calls_insert_image_with_params(self):
         article = Mock()
@@ -93,6 +94,7 @@ class TestCommonsBot(unittest.TestCase):
         self.commons_bot.fetch_page = Mock(return_value=page)
         self.assertFalse(self.commons_bot.insert_image("File:Test Image.jpg", "Test Page", "123"))
         page.save.assert_not_called()
+        self.commons_bot.logger.log.assert_called_once()
 
 
 
