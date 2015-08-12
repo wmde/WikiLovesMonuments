@@ -120,6 +120,12 @@ class CommonsBotException(Exception):
     pass
 
 
+def first_day_of_month(date=None):
+    if not date:
+        date = datetime.date.today()
+    return pywikibot.Timestamp(date.year, date.month, 1)
+
+
 def main(*args):
     wikipedia_site = pywikibot.Site("de", "local")  # TODO use wikipeda instead
     commons_site = pywikibot.Site("commons", "commons")
@@ -132,8 +138,7 @@ def main(*args):
     commons_bot = CommonsBot(wikipedia_site, article_iterator, checker)
     run_cmd = commons_bot.run_continous
     category_name = u"Images from Wiki Loves Monuments 2015 in Germany"
-    date = datetime.date.today()
-    start_time = pywikibot.Timestamp(date.year, date.month, 1)
+    start_time = first_day_of_month()
     for argument in pywikibot.handle_args(args):
         if argument.find("-category:") == 0:
             category_name = argument[10:]
