@@ -4,6 +4,7 @@ use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Process\Process;
 use Wikimedia\ForwardScript\PageInformationCollector;
+use Wikimedia\ForwardScript\ApplicationException;
 
 require __DIR__.'/vendor/autoload.php';
 
@@ -38,6 +39,18 @@ $app["pageinfo"] = $app->share( function ( $app ) {
 	return new PageInformationCollector( $app[ "wikipedia_api" ], $process, $defaultCategories );
 } );
 
+// Error handling
+$app->error( function ( ApplicationException $e, $code ) {
+	$response = new Response( $e->getMessage() );
+	$response->headers->set( "Content-Type", "text/plain" );
+	return $response;
+} );
+
+$app->error( function ( \Symfony\Component\Process\Exception\RuntimeException $e, $code ) {
+	$response = new Response( $e->getMessage() );
+	$response->headers->set( "Content-Type", "text/plain" );
+	return $response;
+} );
 
 // Routes
 $app->get( "/", function() {
@@ -57,7 +70,7 @@ $app->get( "/redirect/{pageName}/{campaign}/{id}/{lat}/{lon}",
 			$app["cache"]->save( $campaignCacheId, $campaignIsValid, $cacheTime );
 		}
 		if ( !$campaignIsValid ) {
-			throw new RuntimeException( "Invalid campaign name." );
+			throw new ApplicationException( "Invalid campaign name." );
 		}
 		$pageInfo = $app["pageinfo"]->getInformation( $pageName, $id );
 		$queryBuilder = new \Wikimedia\ForwardScript\QueryBuilder();

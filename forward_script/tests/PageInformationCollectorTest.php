@@ -38,7 +38,7 @@ class PageInformationCollectorTest extends PHPUnit_Framework_TestCase {
 
 
 	/**
-	 * @expectedException \RuntimeException
+	 * @expectedException \Wikimedia\ForwardScript\ApplicationException
 	 */
 	public function testMissingPageThrowsException() {
 
@@ -86,7 +86,7 @@ class PageInformationCollectorTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * @expectedException \RuntimeException
+	 * @expectedException \Wikimedia\ForwardScript\ApplicationException
 	 */
 	public function testWrongContentTypeLeadsToError() {
 		$pageInfo = new PageInformationCollector( $this->api, $this->process );
@@ -134,7 +134,7 @@ class PageInformationCollectorTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * @expectedException \RuntimeException
+	 * @expectedException \Symfony\Component\Process\Exception\RuntimeException
 	 */
 	public function testProcessErrorCausesException() {
 		$pageInfo = new PageInformationCollector( $this->api, $this->process );

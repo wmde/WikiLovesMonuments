@@ -3,8 +3,10 @@
 namespace Wikimedia\ForwardScript;
 
 use Mediawiki\Api\MediawikiApi;
-use Symfony\Component\Process\Process;
 use Mediawiki\Api\SimpleRequest;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\RuntimeException;
+use Wikimedia\ForwardScript\ApplicationException;
 
 /**
  * Get page content and categories from Wikipedia, return information about the page.
@@ -42,11 +44,11 @@ class PageInformationCollector {
 		) ) );
 		$firstPage = array_values( $response[ "query" ][ "pages" ] )[ 0 ];
 		if ( isset( $firstPage[ "missing" ] ) ) {
-			throw new \RuntimeException( "Page '$pageTitle' not found." );
+			throw new ApplicationException( "Page '$pageTitle' not found." );
 		}
 		$firstRevision = $firstPage["revisions"][0];
 		if ( $firstRevision["contentformat"] !== "text/x-wiki" ) {
-			throw new \RuntimeException( "Page is not a wiki text page." );
+			throw new ApplicationException( "Page is not a wiki text page." );
 		}
 		$this->processCommand->setInput( $firstRevision["*"] );
 		$monumentIdParam = ' ' . escapeshellarg( $monumentId );
@@ -55,7 +57,7 @@ class PageInformationCollector {
 		);
 		$this->processCommand->run();
 		if ( !$this->processCommand->isSuccessful() ) {
-			throw new \RuntimeException( $this->processCommand->getErrorOutput() );
+			throw new RuntimeException( $this->processCommand->getErrorOutput() );
 		}
 
 		$info = json_decode( $this->processCommand->getOutput() );
@@ -73,7 +75,7 @@ class PageInformationCollector {
 				return;
 			}
 		}
-		throw new \RuntimeException( "No valid category found for page" );
+		throw new ApplicationException( "No valid category found for page." );
 	}
 
 

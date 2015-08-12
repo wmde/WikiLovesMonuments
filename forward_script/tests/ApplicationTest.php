@@ -60,7 +60,7 @@ class ApplicationTest extends WebTestCase {
 	/**
 	 * @expectedException        \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
 	 */
-	public function testRedirectRejectsInvalidCampaignNames() {
+	public function testRedirectRejectsInvalidCampaignNamePatterns() {
 		$client = $this->createClient();
 		$client->request( 'GET', '/redirect/Liste_der_Baudenkmäler_in_Abtswind/foo.bar/123§' );
 	}
