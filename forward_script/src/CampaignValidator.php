@@ -41,16 +41,21 @@ class CampaignValidator
 			'titles' => $campaignName,
 		) ) );
 		$firstPage = array_values( $response[ 'query' ][ 'pages' ] )[ 0 ];
-		if ( empty( $firstPage[ 'ns' ] ) || $firstPage[ 'ns' ] != self::CAMPAIGN_NAMESPACE ) {
-			return false;
-		}
-		if ( isset( $firstPage[ 'invalid' ] ) || isset( $firstPage[ 'missing' ] ) ) {
-			return false;
-		}
-		if ( isset( $firstPage[ 'pageid' ] ) ) {
-			return true;
-		}
-		return false;
+		return $this->pageIsInCampaignNamespace( $firstPage ) &&
+			$this->pageExists( $firstPage ) &&
+			$this->pageHasAnId( $firstPage );
+	}
+
+	protected function pageIsInCampaignNamespace( $page ) {
+		return !empty( $page[ 'ns' ] ) && $page[ 'ns' ] == self::CAMPAIGN_NAMESPACE;
+	}
+
+	protected function pageExists( $page ) {
+		return !isset( $page[ 'invalid' ] ) && !isset( $page[ 'missing' ] );
+	}
+
+	protected function pageHasAnId( $page ) {
+		return isset( $page[ 'pageid' ] );
 	}
 
 }
