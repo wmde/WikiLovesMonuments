@@ -146,7 +146,7 @@ class CheckerBot(object):
                 article.save(summary=summary)
             else:
                 pywikibot.log("Result page has not changed, skipping update ...")
-        except:
+        except pywikibot.Error:
             with tempfile.NamedTemporaryFile(delete=False) as dump_file:
                 dump_file.write(page_name.encode('utf-8'))
                 pywikibot.error("Could not update result page, page dumped to {}".format(dump_file.name), exc_info=True)
