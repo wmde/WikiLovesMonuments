@@ -56,13 +56,4 @@ class ApplicationTest extends WebTestCase {
 			'&objref=de%7CListe_der_Baudenkm%C3%A4ler_in_Abtswind%7C123';
 		$this->assertEquals( $expectedURL, $client->getResponse()->headers->get( 'Location' ) );
 	}
-
-	/**
-	 * @expectedException        \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-	 */
-	public function testRedirectRejectsInvalidCampaignNamePatterns() {
-		$client = $this->createClient();
-		$client->request( 'GET', '/redirect/Liste_der_Baudenkmäler_in_Abtswind/foo.bar/123§' );
-	}
-
 }

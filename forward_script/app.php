@@ -80,7 +80,6 @@ $app->get( '/redirect/{pageName}/{campaign}/{id}/{lat}/{lon}',
 			['lat' => $lat, 'lon' => $lon] );
 		return $app->redirect( $redirectUrl, Response::HTTP_MOVED_PERMANENTLY );
 	} )
-	->assert( 'campaign', '[-a-z]+' )
 	->value( 'id', '' )
 	->value( 'lat', '' )
 	->value( 'lon', '' );
