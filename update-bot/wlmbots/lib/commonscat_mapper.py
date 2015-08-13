@@ -53,10 +53,9 @@ class CommonscatMapper(object):
     def get_commonscat_from_table_row_template(self, template):
         """ Check mwparserfromhell template if it has a non-empty Commonscat parameter. """
         try:
-            param = unicode(template.get("Commonscat")).strip()
+            param = unicode(template.get("Commonscat").value).strip()
             if param:
-                _, commonscat = param.split("=", 1)
-                return u"Category:" + commonscat.strip()
+                return u"Category:" + param
             else:
                 return ""
         except ValueError as error:
