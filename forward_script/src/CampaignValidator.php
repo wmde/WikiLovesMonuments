@@ -22,7 +22,7 @@ class CampaignValidator
 	/**
 	 * @var MediawikiApi
 	 */
-	protected $api;
+	private $api;
 
 	function __construct( MediawikiApi $api ) {
 
@@ -46,15 +46,15 @@ class CampaignValidator
 			$this->pageHasAnId( $firstPage );
 	}
 
-	protected function pageIsInCampaignNamespace( $page ) {
+	private function pageIsInCampaignNamespace( $page ) {
 		return !empty( $page[ 'ns' ] ) && $page[ 'ns' ] == self::CAMPAIGN_NAMESPACE;
 	}
 
-	protected function pageExists( $page ) {
+	private function pageExists( $page ) {
 		return !isset( $page[ 'invalid' ] ) && !isset( $page[ 'missing' ] );
 	}
 
-	protected function pageHasAnId( $page ) {
+	private function pageHasAnId( $page ) {
 		return isset( $page[ 'pageid' ] );
 	}
 

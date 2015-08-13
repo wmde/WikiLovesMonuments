@@ -18,17 +18,17 @@ class PageInformationCollector {
 	/**
 	 * @var MediawikiApi
 	 */
-	protected $api;
+	private $api;
 
 	/**
 	 * @var Process
 	 */
-	protected $processCommand;
+	private $processCommand;
 
 	/**
 	 * @var array
 	 */
-	protected $defaultCategories;
+	private $defaultCategories;
 
 	public function __construct( MediawikiApi $api, Process $processCommand, $defaultCategories=[] ) {
 		$this->api = $api;
@@ -58,7 +58,7 @@ class PageInformationCollector {
 	 * @param string $pageTitle
 	 * @return array
 	 */
-	protected function getPageContentAndCategoriesFromAPI( $pageTitle ) {
+	private function getPageContentAndCategoriesFromAPI( $pageTitle ) {
 		$response = $this->api->getRequest( new SimpleRequest( 'query', array(
 			'titles' => $pageTitle,
 			'prop' => 'categories|revisions',
@@ -79,7 +79,7 @@ class PageInformationCollector {
 	 *
 	 * @param array $page
 	 */
-	protected function validatePage( $page ) {
+	private function validatePage( $page ) {
 		if ( isset( $page[ 'missing' ] ) ) {
 			throw new ApplicationException( "Page {$page['title']} not found." );
 		}
@@ -96,7 +96,7 @@ class PageInformationCollector {
 	 * @param string $monumentId
 	 * @return object
 	 */
-	protected function getInformationFromProcess( $pageContent, $monumentId ) {
+	private function getInformationFromProcess( $pageContent, $monumentId ) {
 		$this->processCommand->setInput( $pageContent );
 		$monumentIdParam = ' ' . escapeshellarg( $monumentId );
 		$this->processCommand->setCommandLine(
@@ -118,7 +118,7 @@ class PageInformationCollector {
 	 * @param array $pageCategories
 	 * @return string
 	 */
-	protected function determineCategory( $pageCategories ) {
+	private function determineCategory( $pageCategories ) {
 		foreach ( $pageCategories as $categoryInfo ) {
 			if ( !empty( $this->defaultCategories[$categoryInfo['title']] ) ) {
 				return $this->defaultCategories[$categoryInfo['title']];
