@@ -59,7 +59,7 @@ $app->get( '/', function() {
 
 $app->get( '/redirect/{pageName}/{campaign}/{id}/{lat}/{lon}',
 	function ( Application $app, $pageName, $id, $campaign, $lat, $lon ) {
-		$campaignCacheId = 'campaign_{$campaign}';
+		$campaignCacheId = "campaign_{$campaign}";
 		if ( $app['cache']->contains( $campaignCacheId ) ) {
 			$campaignIsValid = $app['cache']->fetch( $campaignCacheId );
 		}
