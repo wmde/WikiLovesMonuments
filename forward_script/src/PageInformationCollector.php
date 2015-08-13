@@ -70,7 +70,8 @@ class PageInformationCollector {
 		if ( $firstRevision['contentformat'] !== 'text/x-wiki' ) {
 			throw new ApplicationException( 'Page is not a wiki text page.' );
 		}
-		return [$firstRevision['*'], $firstPage['categories']];
+		$categories = empty( $firstPage['categories'] ) ? [] : $firstPage['categories'];
+		return [$firstRevision['*'], $categories];
 	}
 
 	/**

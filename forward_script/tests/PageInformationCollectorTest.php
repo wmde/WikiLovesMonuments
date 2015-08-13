@@ -80,6 +80,28 @@ class PageInformationCollectorTest extends PHPUnit_Framework_TestCase {
 		$pageInfo->getInformation( 'Denkmale in <b>Nimmerland', 123 );
 	}
 
+	/**
+	 * @expectedException \Wikimedia\ForwardScript\ApplicationException
+	 */
+	public function testPagesWithoutCategoriesAreProcessed() {
+		$pageInfo = new PageInformationCollector( $this->api, $this->process, $this->defaultCategories );
+		$this->api->method( 'getRequest' )->willReturn( [
+			'query' => [
+				'pages' => [
+					'123' => [
+						'ns'=> 460,
+						'revisions' => [
+							['*' => 'Page Text', 'contentformat' => 'text/x-wiki']
+						]
+					]
+				]
+			]
+		] );
+		$this->process->method( 'isSuccessful' )->willReturn( true );
+		$this->process->method( 'getOutput' )->willReturn( '{}' );
+		$pageInfo->getInformation( 'Liste der Baudenkmäler in Abtswind', 'D-6-75-111-7' );
+	}
+
 	public function testProcessInputIsSetToPageData() {
 		$pageInfo = new PageInformationCollector( $this->api, $this->process );
 		$this->api->method( 'getRequest' )->willReturn( [
