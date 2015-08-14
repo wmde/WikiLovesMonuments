@@ -6,7 +6,6 @@ use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\SimpleRequest;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\RuntimeException;
-use Wikimedia\ForwardScript\ApplicationException;
 
 /**
  * Get page content and categories from Wikipedia, return information about the page.
@@ -41,7 +40,7 @@ class PageInformationCollector {
 	 *
 	 * @param string $pageTitle
 	 * @param string $monumentId
-	 * @return object
+	 * @return PageInformation
 	 */
 	public function getInformation( $pageTitle, $monumentId ) {
 		list( $content, $categories ) = $this->getPageContentAndCategoriesFromAPI( $pageTitle );
@@ -49,7 +48,7 @@ class PageInformationCollector {
 		if ( empty( $info->category ) ) {
 			$info->category = $this->determineCategory( $categories );
 		}
-		return $info;
+		return new PageInformation( $info );
 	}
 
 	/**

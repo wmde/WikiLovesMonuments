@@ -151,7 +151,7 @@ class PageInformationCollectorTest extends PHPUnit_Framework_TestCase {
 		$pageInfo->getInformation( 'Liste der Baudenkmäler in Abtswind', 'D-6-75-111-7' );
 	}
 
-	public function testProcessOutputIsReturnedAsJSONDecodedData() {
+	public function testProcessOutputIsConvertedToPageInformation() {
 		$pageInfo = new PageInformationCollector( $this->api, $this->process, $this->defaultCategories );
 		$this->api->method( 'getRequest' )->willReturn( [
 			'query' => [
@@ -169,12 +169,9 @@ class PageInformationCollectorTest extends PHPUnit_Framework_TestCase {
 		$this->process->method( 'isSuccessful' )->willReturn( true );
 		$this->process->method( 'getOutput' )->willReturn( '{"id_not_found":true}' );
 		$result = $pageInfo->getInformation( 'Liste der Baudenkmäler in Abtswind', 'D-6-75-111-7' );
-		$this->assertEquals( (object)[
-				'id_not_found' => true,
-				'category' => 'Category:Cultural heritage monuments in Bavaria'
-			],
-			$result
-		);
+		$this->assertInstanceOf( 'Wikimedia\\ForwardScript\\PageInformation', $result );
+		$this->assertEquals( 'Cultural heritage monuments in Bavaria', $result->getCategory() );
+		$this->assertFalse( $result->hasUsableId() );
 	}
 
 	/**
@@ -221,10 +218,7 @@ class PageInformationCollectorTest extends PHPUnit_Framework_TestCase {
 		$this->process->method( 'isSuccessful' )->willReturn( true );
 		$this->process->method( 'getOutput' )->willReturn( '{}' );
 		$result = $pageInfo->getInformation( 'Liste der Baudenkmäler in Abtswind', 'D-6-75-111-7' );
-		$this->assertEquals(
-			(object) ['category' => 'Category:Cultural heritage monuments in Bavaria'],
-			$result
-		);
+		$this->assertEquals( 'Cultural heritage monuments in Bavaria', $result->getCategory() );
 	}
 
 }
