@@ -43,12 +43,26 @@ python -m wlmbots.list_bot -family:wikipedia -lang:de -user:"WLMUploadVorlageBot
 ### list_bot.py
 Creates lists of the pages in the subcategories of "[Liste (Kulturdenkmale in Deutschland)][wlm_liste]". Can output plain page names (for pasting in the export form), wiki links (for creating a wiki page) and URLs to the articles.
 
+
 ### checker_bot.py
 Checks the pages in the in the subcategories of "[Liste (Kulturdenkmale in Deutschland)][wlm_liste]" if they use approved templates and if the templates
 have valid, unique IDs. It can create a result page from the check. The result
 page uses two MediaWiki templates, [`Fehler_in_Denkmallisten_Tabellenkopf`](wiki_templates/Fehler_in_Denkmallisten_Tabellenkopf.txt) and [`Fehler_in_Denkmallisten_Tabellenzeile`](wiki_templates/Fehler_in_Denkmallisten_Tabellenzeile.txt) which must be copied into the Wiki once.
 
 Configuration of the approved templates can be found in the file [`template_config.json`](template_config.json). It configures the names of the approved templates, the name of the ID parameter and a regular expression for validating ID parameters.
+
+
+## commons_bot.py
+Look in Wikimedia Commons in the "Wiki Loves Monuments 2015" category for comments left by the Upload Wizard. Use the comments to update the monument list pages in the German Wikipedia.
+
+You can test this bot locally (with one demo wiki, without needing Commons) as follows:
+1. Upload an image to your local wiki. The description must contain the string  
+    `<!-- LIST_CALLBACK_PARAMS de|PAGENAME|ID --> `  
+    (replace `PAGENAME` and `ID` with a page where a "Tabellenzeile" template exists and has a missing image). The description must also put the image in the right category wiith the string  
+    `[[Kategorie:Images from Wiki Loves Monuments 2015 in Germany]]`  
+2. Run the bot with the parameters `-once -local-media`.
+3. Check the image page and the monument list page. Both should now be edited: The monument list should have the image name added and the image page should have the comment removed.
+
 
 ### stats_bot.py
 Shows the template count of pages in the each of the WLM categories. This is the preparation for writing the update bot: When it's clear which templates are used for table lines, the update bot can search/replace accordingly.
