@@ -29,6 +29,7 @@ import mwparserfromhell
 from wlmbots.lib.template_checker import TemplateChecker
 from wlmbots.lib.category_fetcher import CategoryFetcher
 from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser, ArticleIteratorCallbacks
+from wlmbots.lib.article_updater import ArticleUpdater
 
 
 class CheckerBot(object):
@@ -144,10 +145,8 @@ class CheckerBot(object):
     def save_wikipage(self, page_text, page_name, summary="Bot: Update der Ergebnisliste"):
         try:
             article = pywikibot.Page(self.site, page_name)
-            if not article.exists() or article.get() != page_text:
-                article.text = page_text
-                article.save(summary=summary)
-            else:
+            updater = ArticleUpdater(article)
+            if not updater.save_text(page_text, summary):
                 pywikibot.log("Result page has not changed, skipping update ...")
         except pywikibot.Error:
             with tempfile.NamedTemporaryFile(delete=False) as dump_file:
