@@ -92,7 +92,7 @@ class CommonsBot(object):
         text = article.get()
         code = mwparserfromhell.parse(text)
         for template in code.filter_templates():
-            if not self.template_checker.is_allowed_template:
+            if not self.template_checker.is_allowed_template(template):
                 continue
             if self.template_checker.get_id(template) != image_id:
                 continue
