@@ -93,7 +93,9 @@ class CommonsBot(object):
             raise CommonsBotException(u"Article is missing: '{}'".format(pagename))
         text = article.get()
         code = mwparserfromhell.parse(text)
-        for template in self.template_checker.filter_allowed_templates(code.filter_templates()):
+        for template in code.filter_templates():
+            if not self.template_checker.is_allowed_template(template):
+                continue
             if self.template_checker.get_id(template) != image_id:
                 continue
             if template.get("Bild").value.strip() != "":
