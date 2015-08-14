@@ -10,11 +10,13 @@ Available command line options are:
 
 -start-at:        Date from which to start requesting pages. Defaults to start of month. Format YYYY-MM-DD
 
--once:            Run only once (by default it runs continously).
-
 -sleep-seconds:N  Sleep N seconds betwen runs
 
 -limit:N          Stop after N processed Commons pages
+
+-once:            Run only once (by default it runs continously)
+
+-local-media:     Use the local wiki instead of Wikimedia Commons
 
 """
 
@@ -127,7 +129,7 @@ def first_day_of_month(date=None):
 
 
 def main(*args):
-    wikipedia_site = pywikibot.Site("de", "local")  # TODO use wikipeda instead
+    wikipedia_site = pywikibot.Site()  # Use the site configured in params/user-config
     commons_site = pywikibot.Site("commons", "commons")
     article_iterator = ArticleIterator(
         logging_callback=pywikibot.log,
@@ -152,6 +154,8 @@ def main(*args):
             commons_bot.sleep_seconds = int(argument[15:])
         elif argument == "-once":
             run_cmd = commons_bot.run_once
+        elif argument == "-local-media":
+            commons_site = wikipedia_site
     category = pywikibot.Category(commons_site, category_name)
     run_cmd(start_time, category)
 
