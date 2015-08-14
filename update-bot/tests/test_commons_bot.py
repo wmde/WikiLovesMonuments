@@ -35,7 +35,7 @@ class TestCommonsBot(unittest.TestCase):
 
     def test_check_article_does_nothing_if_params_comment_has_wrong_format(self):
         article = Mock()
-        article.get.return_value = u"Test text <-- LIST_CALLBACK_PARAMS de|Test Page -->\n\n"
+        article.get.return_value = u"Test text <!-- LIST_CALLBACK_PARAMS de|Test Page -->\n\n"
         self.commons_bot.insert_image = Mock()
         self.commons_bot.cb_check_article(article)
         self.commons_bot.insert_image.assert_not_called()
@@ -44,7 +44,7 @@ class TestCommonsBot(unittest.TestCase):
     def test_check_article_calls_insert_image_with_params(self):
         article = Mock()
         article.title.return_value = u"File:Test Image.jpg"
-        article.get.return_value = u"Test text <-- LIST_CALLBACK_PARAMS de|Test Page|123 -->\n\n"
+        article.get.return_value = u"Test text <!-- LIST_CALLBACK_PARAMS de|Test Page|123 -->\n\n"
         self.commons_bot.insert_image = Mock()
         self.commons_bot.cb_check_article(article)
         self.commons_bot.insert_image.assert_called_once_with(u"File:Test Image.jpg", u"Test Page", "123")
@@ -52,7 +52,7 @@ class TestCommonsBot(unittest.TestCase):
     def test_check_article_removes_comment_from_commons(self):
         article = Mock()
         article.title.return_value = u"File:Test Image.jpg"
-        article.get.return_value = u"Test text <-- LIST_CALLBACK_PARAMS de|Test Page|123 -->\n\n"
+        article.get.return_value = u"Test text <!-- LIST_CALLBACK_PARAMS de|Test Page|123 -->\n\n"
         self.commons_bot.insert_image = Mock()
         self.commons_bot.cb_check_article(article)
         self.assertEquals(article.text, u"Test text ")

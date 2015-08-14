@@ -32,7 +32,7 @@ from wlmbots.lib.template_checker import TemplateChecker
 
 class CommonsBot(object):
 
-    comment_pattern = re.compile(r"<-- LIST_CALLBACK_PARAMS (.+?)-->\n\n")
+    comment_pattern = re.compile(r"<!-- LIST_CALLBACK_PARAMS (.+?)-->\n\n")
     prefix_pattern = re.compile(r"^(?:File|Datei):")
 
     def __init__(self, wikipedia_site, article_iterator, template_checker):
