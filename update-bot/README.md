@@ -1,6 +1,6 @@
-# Update-Bot
+# Wiki Loves Monuments Bots
 
-This bot is for updating the placeholders in lists of monuments in the German Wikipedia for the Wiki Loves Monuments 2015 competition.
+These bots support the community of the German Wikipedia for the Wiki Loves Monuments 2015 competition.
 
 ## Installation
 
