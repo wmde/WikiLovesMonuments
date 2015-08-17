@@ -9,9 +9,9 @@ class QueryBuilder {
 	 * Generate a query string from available information
 	 *
 	 * @param PageInformation $info Information about the checked
-	 * @param $pageName
-	 * @param string $id
-	 * @param array $coordinates
+	 * @param string $pageName Wikipedia page name
+	 * @param string $id Unique monument id
+	 * @param array $coordinates Contains "lat" and "lon" keys (which may be empty)
 	 * @return string
 	 */
 	public function getQuery( PageInformation $info, $pageName, $id = '', array $coordinates = [] ) {
