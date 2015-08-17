@@ -29,7 +29,7 @@ class PageInformationCollector {
 	 */
 	private $defaultCategories;
 
-	public function __construct( MediawikiApi $api, Process $processCommand, $defaultCategories=[] ) {
+	public function __construct( MediawikiApi $api, Process $processCommand, array $defaultCategories=[] ) {
 		$this->api = $api;
 		$this->processCommand = $processCommand;
 		$this->defaultCategories = $defaultCategories;
@@ -78,7 +78,7 @@ class PageInformationCollector {
 	 *
 	 * @param array $page
 	 */
-	private function validatePage( $page ) {
+	private function validatePage( array $page ) {
 		if ( isset( $page[ 'missing' ] ) ) {
 			throw new ApplicationException( "Page {$page['title']} not found." );
 		}
@@ -117,7 +117,7 @@ class PageInformationCollector {
 	 * @param array $pageCategories
 	 * @return string
 	 */
-	private function determineCategory( $pageCategories ) {
+	private function determineCategory( array $pageCategories ) {
 		foreach ( $pageCategories as $categoryInfo ) {
 			if ( !empty( $this->defaultCategories[$categoryInfo['title']] ) ) {
 				return $this->defaultCategories[$categoryInfo['title']];

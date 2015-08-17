@@ -14,7 +14,7 @@ class QueryBuilder {
 	 * @param array $coordinates
 	 * @return string
 	 */
-	public function getQuery( PageInformation $info, $pageName, $id = '', $coordinates = [] ) {
+	public function getQuery( PageInformation $info, $pageName, $id = '', array $coordinates = [] ) {
 		$query = array_merge( array_filter( $coordinates ), [ 'categories' => $info->getCategory() ] );
 		if ( $info->hasUsableId() ) {
 			$query['objref'] = implode( '|', ['de', $pageName, $id] );

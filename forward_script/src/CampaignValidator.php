@@ -46,15 +46,15 @@ class CampaignValidator
 			$this->pageHasAnId( $firstPage );
 	}
 
-	private function pageIsInCampaignNamespace( $page ) {
+	private function pageIsInCampaignNamespace( array $page ) {
 		return !empty( $page[ 'ns' ] ) && $page[ 'ns' ] == self::CAMPAIGN_NAMESPACE;
 	}
 
-	private function pageExists( $page ) {
+	private function pageExists( array $page ) {
 		return !isset( $page[ 'invalid' ] ) && !isset( $page[ 'missing' ] );
 	}
 
-	private function pageHasAnId( $page ) {
+	private function pageHasAnId( array $page ) {
 		return isset( $page[ 'pageid' ] );
 	}
 
