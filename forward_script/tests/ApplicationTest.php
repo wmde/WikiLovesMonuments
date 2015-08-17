@@ -2,6 +2,8 @@
 
 use Silex\WebTestCase;
 
+use Wikimedia\ForwardScript\PageInformation;
+
 class ApplicationTest extends WebTestCase {
 
 	/**
@@ -47,7 +49,7 @@ class ApplicationTest extends WebTestCase {
 			)
 			->disableOriginalConstructor()
 			->getMock();
-		$info = new \Wikimedia\ForwardScript\PageInformation(
+		$info = new PageInformation(
 			(object)['category' => 'Category:Cultural heritage monuments in Abtswind']
 		);
 		$this->app['pageinfo']->method( 'getInformation' )->willReturn( $info );

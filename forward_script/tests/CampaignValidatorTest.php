@@ -1,5 +1,6 @@
 <?php
 
+use Wikimedia\ForwardScript\CampaignValidator;
 
 class CampaignValidatorTest extends PHPUnit_Framework_TestCase {
 
@@ -19,7 +20,7 @@ class CampaignValidatorTest extends PHPUnit_Framework_TestCase {
 				]
 			]
 		] );
-		$validator = new \Wikimedia\ForwardScript\CampaignValidator( $api );
+		$validator = new CampaignValidator( $api );
 		$this->assertTrue( $validator->isValidCampaign( 'Campaign:wlm-de-by' ) );
 	}
 
@@ -39,7 +40,7 @@ class CampaignValidatorTest extends PHPUnit_Framework_TestCase {
 				]
 			]
 		] );
-		$validator = new \Wikimedia\ForwardScript\CampaignValidator( $api );
+		$validator = new CampaignValidator( $api );
 		$this->assertFalse( $validator->isValidCampaign( 'Campaign:foobar' ) );
 	}
 
@@ -60,7 +61,7 @@ class CampaignValidatorTest extends PHPUnit_Framework_TestCase {
 				]
 			]
 		] );
-		$validator = new \Wikimedia\ForwardScript\CampaignValidator( $api );
+		$validator = new CampaignValidator( $api );
 		$this->assertFalse( $validator->isValidCampaign( 'Campaign:<b>foobar' ) );
 	}
 
@@ -80,7 +81,7 @@ class CampaignValidatorTest extends PHPUnit_Framework_TestCase {
 				]
 			]
 		] );
-		$validator = new \Wikimedia\ForwardScript\CampaignValidator( $api );
+		$validator = new CampaignValidator( $api );
 		$this->assertFalse( $validator->isValidCampaign( 'wlm-de-by' ) );
 	}
 
