@@ -24,7 +24,7 @@ import pywikibot
 
 from wlmbots.lib.template_checker import TemplateChecker
 from wlmbots.lib.pagelist import Pagelist
-from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser
+from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser, ArticleIteratorCallbacks
 
 
 class CheckerBot(object):
