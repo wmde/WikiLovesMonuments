@@ -98,6 +98,21 @@ class TestArticleIterator(unittest.TestCase):
         log_callback.assert_any_call(u"Fetching page 0 (Foo)")
         log_callback.assert_any_call(u"Fetching page 1 (Bar)")
 
+    def test_excluded_articles_are_skipped(self):
+        article_callback = Mock()
+        callbacks = ArticleIteratorCallbacks(article_callback=article_callback)
+        iterator = ArticleIterator(callbacks)
+        article1 = Mock()
+        article2 = Mock()
+        article1.title.return_value = "Foo"
+        article2.title.return_value = "Bar"
+        category = Mock()
+        category.articles.return_value = [article1, article2]
+        iterator.categories = [category]
+        iterator.excluded_articles = ["Foo"]
+        iterator.iterate_categories()
+        article_callback.assert_called_once_with(article=article2, category=category, counter=0, article_iterator=iterator)
+
 
 class TestArticleIteratorArgumentParser(unittest.TestCase):
     def test_limit_is_set(self):
