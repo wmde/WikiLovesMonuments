@@ -15,10 +15,8 @@ class ArticleIterator(object):
         self.articles_per_category_limit = 0
         self.log_every_n = 100
         self.callbacks = callbacks
-        if categories:
-            self.categories = categories
-        else:
-            self.categories = []
+        categories = [] if categories is None else categories
+        self.categories = categories
 
     def iterate_categories(self):
         counter = 0
