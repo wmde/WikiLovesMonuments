@@ -64,6 +64,25 @@ class ArticleIterator(object):
                 self.limit and counter >= self.limit
             )
 
+class ArticleIteratorCallbacks(object):
+
+    def __init__(self, category_callback=None, article_callback=None, logging_callback=None):
+        self.category = category_callback
+        self.article = article_callback
+        self.logging = logging_callback
+
+    def has_callback(self, name):
+        return getattr(self, name) is not None
+
+    def __call__(self, name, *args, **kwargs):
+        """
+        Dispatch call to callback function or return None if no callback
+        function is configured.
+        """
+        if self.has_callback(name):
+            return getattr(self, name)(*args, **kwargs)
+        else:
+            return None
 
 class ArticleIteratorArgumentParser(object):
     """ Parse command line arguments -limit: and -category: and set to ArticleIterator """

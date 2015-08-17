@@ -3,7 +3,7 @@ import unittest
 
 from mock import Mock  # unittest.mock for Python >= 3.3
 
-from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser
+from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser, ArticleIteratorCallbacks
 
 
 class TestArticleIterator(unittest.TestCase):
@@ -137,6 +137,41 @@ class TestArticleIteratorArgumentParser(unittest.TestCase):
         parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
         self.assertTrue(parser.check_argument(u"-category:Baudenkmäler_in_Sachsen,Baudenkmäler in Bayern"))
         pagelister.get_county_categories_by_name.assert_called_once_with([u"Kategorie:Baudenkmäler in Sachsen", u"Kategorie:Baudenkmäler in Bayern"])
+
+class TestArticleIteratorCallbacks(unittest.TestCase):
+
+    def test_callback_exists_returns_correct_value(self):
+        cb = ArticleIteratorCallbacks(category_callback=Mock())
+        self.assertTrue(cb.has_callback("category"))
+        self.assertFalse(cb.has_callback("article"))
+        self.assertFalse(cb.has_callback("logging"))
+
+    def test_logging_callback_can_be_called(self):
+        logging_callback = Mock()
+        cb = ArticleIteratorCallbacks(logging_callback=logging_callback)
+        cb("logging", "foo")
+        logging_callback.assert_called_once_with("foo")
+
+    def test_article_callback_can_be_called(self):
+        article_callback = Mock()
+        article = Mock()
+        cb = ArticleIteratorCallbacks(article_callback=article_callback)
+        cb("article", article=article, counter=0)
+        article_callback.assert_called_once_with(article=article, counter=0)
+
+    def test_category_callback_can_be_called(self):
+        article_callback = Mock()
+        article = Mock()
+        cb = ArticleIteratorCallbacks(article_callback=article_callback)
+        cb("article", article=article, counter=0)
+        article_callback.assert_called_once_with(article=article, counter=0)
+
+    def test_unconfigured_callbacks_are_ignored(self):
+        # just to check if there is no exception
+        cb = ArticleIteratorCallbacks()
+        article = Mock()
+        cb("article", article=article, counter=0)
+
 
 if __name__ == '__main__':
     unittest.main()
