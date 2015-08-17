@@ -8,30 +8,31 @@ from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumen
 
 class TestArticleIterator(unittest.TestCase):
     def test_article_iterator_iterates_over_categories(self):
-        category_callback = Mock()
-        iterator = ArticleIterator(category_callback=category_callback)
+        callbacks = Mock()
+        iterator = ArticleIterator(callbacks)
         category = Mock()
         category.articles.return_value = []
         iterator.categories = [category]
         iterator.iterate_categories()
-        category_callback.assert_called_once_with(category=category, counter=0, article_iterator=iterator)
+        callbacks.assert_called_once_with("category", category=category, counter=0, article_iterator=iterator)
 
     def test_article_iterator_iterates_over_articles(self):
-        article_callback = Mock()
-        iterator = ArticleIterator(article_callback=article_callback)
+        callbacks = Mock()
+        iterator = ArticleIterator(callbacks)
         article1 = Mock()
         article2 = Mock()
         category = Mock()
         category.articles.return_value = [article1, article2]
         iterator.categories = [category]
         iterator.iterate_categories()
-        article_callback.assert_any_call(article=article1, category=category, counter=0, article_iterator=iterator)
-        article_callback.assert_any_call(article=article2, category=category, counter=1, article_iterator=iterator)
+        callbacks.assert_any_call("article", article=article1, category=category, counter=0, article_iterator=iterator)
+        callbacks.assert_any_call("article", article=article2, category=category, counter=1, article_iterator=iterator)
 
     def test_article_iterator_with_limit_stops_at_limit(self):
         category_callback = Mock()
         article_callback = Mock()
-        iterator = ArticleIterator(category_callback=category_callback, article_callback=article_callback)
+        callbacks = ArticleIteratorCallbacks(category_callback=category_callback, article_callback=article_callback)
+        iterator = ArticleIterator(callbacks)
         iterator.limit = 10
         articles = [Mock()] * 20
         category = Mock()
@@ -43,7 +44,8 @@ class TestArticleIterator(unittest.TestCase):
 
     def test_article_iterator_with_multiple_categories_stops_at_limit(self):
         category_callback = Mock()
-        iterator = ArticleIterator(category_callback=category_callback)
+        callbacks = ArticleIteratorCallbacks(category_callback=category_callback)
+        iterator = ArticleIterator(callbacks)
         iterator.limit = 10
         articles = [Mock()] * 10
         category = Mock()
@@ -55,7 +57,8 @@ class TestArticleIterator(unittest.TestCase):
     def test_category_limit_is_respected_together_with_limit(self):
         category_callback = Mock()
         article_callback = Mock()
-        iterator = ArticleIterator(category_callback=category_callback, article_callback=article_callback)
+        callbacks = ArticleIteratorCallbacks(category_callback=category_callback, article_callback=article_callback)
+        iterator = ArticleIterator(callbacks)
         iterator.limit = 5
         iterator.articles_per_category_limit = 3
         articles = [Mock()] * 10
@@ -69,7 +72,8 @@ class TestArticleIterator(unittest.TestCase):
 
     def test_article_iterator_returns_correct_counter(self):
         category_callback = Mock()
-        iterator = ArticleIterator(category_callback=category_callback)
+        callbacks = ArticleIteratorCallbacks(category_callback=category_callback)
+        iterator = ArticleIterator(callbacks)
         articles = [Mock()] * 10
         category = Mock()
         category.articles.return_value = articles
@@ -80,7 +84,8 @@ class TestArticleIterator(unittest.TestCase):
 
     def test_article_iterator_logs_every_n_articles(self):
         log_callback = Mock()
-        iterator = ArticleIterator(logging_callback=log_callback)
+        callbacks = ArticleIteratorCallbacks(logging_callback=log_callback)
+        iterator = ArticleIterator(callbacks)
         iterator.log_every_n = 1
         article1 = Mock()
         article2 = Mock()
@@ -141,36 +146,36 @@ class TestArticleIteratorArgumentParser(unittest.TestCase):
 class TestArticleIteratorCallbacks(unittest.TestCase):
 
     def test_callback_exists_returns_correct_value(self):
-        cb = ArticleIteratorCallbacks(category_callback=Mock())
-        self.assertTrue(cb.has_callback("category"))
-        self.assertFalse(cb.has_callback("article"))
-        self.assertFalse(cb.has_callback("logging"))
+        callbacks = ArticleIteratorCallbacks(category_callback=Mock())
+        self.assertTrue(callbacks.has_callback("category"))
+        self.assertFalse(callbacks.has_callback("article"))
+        self.assertFalse(callbacks.has_callback("logging"))
 
     def test_logging_callback_can_be_called(self):
         logging_callback = Mock()
-        cb = ArticleIteratorCallbacks(logging_callback=logging_callback)
-        cb("logging", "foo")
+        callbacks = ArticleIteratorCallbacks(logging_callback=logging_callback)
+        callbacks("logging", "foo")
         logging_callback.assert_called_once_with("foo")
 
     def test_article_callback_can_be_called(self):
         article_callback = Mock()
         article = Mock()
-        cb = ArticleIteratorCallbacks(article_callback=article_callback)
-        cb("article", article=article, counter=0)
+        callbacks = ArticleIteratorCallbacks(article_callback=article_callback)
+        callbacks("article", article=article, counter=0)
         article_callback.assert_called_once_with(article=article, counter=0)
 
     def test_category_callback_can_be_called(self):
         article_callback = Mock()
         article = Mock()
-        cb = ArticleIteratorCallbacks(article_callback=article_callback)
-        cb("article", article=article, counter=0)
+        callbacks = ArticleIteratorCallbacks(article_callback=article_callback)
+        callbacks("article", article=article, counter=0)
         article_callback.assert_called_once_with(article=article, counter=0)
 
     def test_unconfigured_callbacks_are_ignored(self):
         # just to check if there is no exception
-        cb = ArticleIteratorCallbacks()
+        callbacks = ArticleIteratorCallbacks()
         article = Mock()
-        cb("article", article=article, counter=0)
+        callbacks("article", article=article, counter=0)
 
 
 if __name__ == '__main__':

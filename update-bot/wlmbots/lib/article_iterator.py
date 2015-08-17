@@ -10,13 +10,11 @@ sets them to an ArticleIterator instance.
 class ArticleIterator(object):
     """ Iterate over categories and their article pages depending on category and limit settings """
 
-    def __init__(self, category_callback=None, article_callback=None, logging_callback=None, categories=None):
+    def __init__(self, callbacks, categories=None):
         self.limit = 0
         self.articles_per_category_limit = 0
         self.log_every_n = 100
-        self.category_callback = category_callback
-        self.article_callback = article_callback
-        self.logging_callback = logging_callback
+        self.callbacks = callbacks
         if categories:
             self.categories = categories
         else:
@@ -26,8 +24,7 @@ class ArticleIterator(object):
         counter = 0
         for category in self.categories:
             counter = self.iterate_articles(category, counter)
-            if self.category_callback:
-                self.category_callback(category=category, counter=counter, article_iterator=self)
+            self.callbacks("category", category=category, counter=counter, article_iterator=self)
             if self.limit and counter >= self.limit:
                 return
 
@@ -39,11 +36,10 @@ class ArticleIterator(object):
         for article in category.articles(**kwargs):
             if self._limit_reached(counter, category_counter):
                 return counter
-            if self.logging_callback and counter % self.log_every_n == 0:
-                self.logging_callback(u"Fetching page {} ({})".format(counter, article.title()))
-            if self.article_callback:
-                self.article_callback(article=article, category=category, counter=counter,
-                                      article_iterator=self)
+            if counter % self.log_every_n == 0:
+                self.callbacks("logging", u"Fetching page {} ({})".format(counter, article.title()))
+            self.callbacks("article", article=article, category=category, counter=counter,
+                           article_iterator=self)
             counter += 1
             category_counter += 1
         return counter
