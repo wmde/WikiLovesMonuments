@@ -7,3 +7,5 @@ update-bot/Denkmallistenliste.txt
 update-bot/local_family.py
 update-bot/user-config.py
 **pywikibot.lwp
+forward_script/vendor
+forward_script/cache

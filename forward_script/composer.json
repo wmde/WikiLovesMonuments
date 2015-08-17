@@ -1,0 +1,32 @@
+{
+    "name": "wmde/wlm_forward_script",
+    "description": "Script to forward from Wikipedia to Commons Upload Wizard campaigns",
+    "autoload": {
+        "psr-4": {
+             "Wikimedia\\ForwardScript\\": "src"
+        }
+    },
+    "require": {
+        "silex/silex": "^1.3",
+        "addwiki/mediawiki-api-base": "~0.3.0",
+        "doctrine/cache": "~1.0",
+        "symfony/process": "^2.7"
+    },
+    "authors": [
+        {
+            "name": "Gabriel Birke",
+            "email": "gabriel.birke@wikimedia.de"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "*",
+        "symfony/browser-kit": "~2.3",
+        "mediawiki/mediawiki-codesniffer": "0.3.0"
+    },
+    "scripts": {
+        "test": [
+           "phpcs --standard=vendor/mediawiki/mediawiki-codesniffer/MediaWiki --extensions=php,php5,inc --ignore=vendor -p .",
+           "phpunit -c phpunit.xml.dist"
+        ]
+  }
+}

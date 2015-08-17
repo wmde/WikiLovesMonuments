@@ -20,6 +20,11 @@ Prerequisites: Python, pip.
 5. To run tests install dev libraries (optional)
    `pip install -r dev-requirements.txt`
 
+If calling pip directly does not work, use the following commands:
+
+    python -m pip install -r requirements.txt
+    python -m pip install -r dev-requirements.txt
+
 ## General usage information
 
 You can get information on each bot by calling it with the `-help` parameter like this:
