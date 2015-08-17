@@ -24,7 +24,7 @@ class CampaignValidator
 	 */
 	private $api;
 
-	function __construct( MediawikiApi $api ) {
+	public function __construct( MediawikiApi $api ) {
 
 		$this->api = $api;
 	}
