@@ -22,6 +22,7 @@ $app['python_path'] = realpath( __DIR__ . '/../update-bot/' );
 $app['default_categories_config'] = $app['python_path'] . '/config/commonscat_mapping.json';
 $app['pageinfo_script'] = 'python -m wlmbots.pageinfo';
 $app['commons_upload_url'] = 'https://commons.wikimedia.org/wiki/Special:UploadWizard?';
+$app['additional_categories'] = ['Uploaded with UploadWizard via delists'];
 
 // Services
 $app['cache'] = $app->share( function ( $app ) {
@@ -80,7 +81,9 @@ $app->get( '/redirect/{pageName}/{campaign}',
 		$queryBuilder = new \Wikimedia\ForwardScript\QueryBuilder();
 		$redirectUrl = $app['commons_upload_url'];
 		$redirectUrl .= 'campaign='.urlencode( $campaign );
-		$redirectUrl .= $queryBuilder->getQuery( $pageInfo, $pageName, $id, $coordinates );
+		$redirectUrl .= $queryBuilder->getQuery( $pageInfo, $pageName, $id, $coordinates,
+			$app['additional_categories']
+		);
 		return $app->redirect( $redirectUrl, Response::HTTP_MOVED_PERMANENTLY );
 	} );
 
