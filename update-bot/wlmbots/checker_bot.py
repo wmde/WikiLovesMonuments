@@ -14,6 +14,8 @@ Available command line options are:
 
 -outputpage:NAME  Write result to wiki page NAME instead of stdout
 
+-exclude-articles:NAME Ignore all pages that are linked to on page NAME
+
 """
 
 from __future__ import unicode_literals
@@ -21,6 +23,7 @@ from __future__ import unicode_literals
 import tempfile
 
 import pywikibot
+import mwparserfromhell
 
 from wlmbots.lib.template_checker import TemplateChecker
 from wlmbots.lib.pagelist import Pagelist
@@ -175,6 +178,13 @@ class CheckerBot(object):
             })
 
 
+def load_excluded_articles_from_wiki(page):
+    if not page.exists():
+        return []
+    text = page.get()
+    code = mwparserfromhell.parse(text)
+    return [unicode(link.title) for link in code.filter_wikilinks()]
+
 def main(*args):
     site = pywikibot.Site()
     pagelister = Pagelist(site)
@@ -194,7 +204,9 @@ def main(*args):
             continue
         elif argument.find("-outputpage:") == 0:
             checker_bot.outputpage = argument[12:]
-
+        elif argument.find("-exclude-articles:") == 0:
+            page = pywikibot.Page(site, argument[18:])
+            article_iterator.excluded_articles = load_excluded_articles_from_wiki(page)
     article_iterator.iterate_categories()
 
     if article_iterator.categories != all_categories:   # Don't update summary page if only single categories were crawled
