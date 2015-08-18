@@ -189,7 +189,7 @@ def main(*args):
         categories=all_categories
     )
     parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
-    for argument in pywikibot.handle_args(args):
+    for argument in pywikibot.handle_args(list(args)):
         if parser.check_argument(argument):
             continue
         elif argument.find("-outputpage:") == 0:
