@@ -80,7 +80,7 @@ class PageInformationCollector {
 	 */
 	private function validatePage( array $page ) {
 		if ( isset( $page[ 'missing' ] ) ) {
-			throw new ApplicationException( "Page {$page['title']} not found." );
+			throw new ApplicationException( "Page was not found." );
 		}
 		if ( isset( $page[ 'invalid' ] ) ) {
 			throw new ApplicationException( 'Page name is invalid.' );
