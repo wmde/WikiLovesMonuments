@@ -97,7 +97,7 @@ class PageInformationCollector {
 	 */
 	private function getInformationFromProcess( $pageContent, $monumentId ) {
 		$this->processCommand->setInput( $pageContent );
-		$monumentIdParam = ' ' . escapeshellarg( $monumentId );
+		$monumentIdParam = $monumentId ? ' -i ' . escapeshellarg( $monumentId ) : '';
 		$this->processCommand->setCommandLine(
 			$this->processCommand->getCommandLine() . $monumentIdParam
 		);

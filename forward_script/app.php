@@ -58,8 +58,8 @@ $app->get( '/', function() {
 	return 'WLM redirect script';
 } );
 
-$app->get( '/redirect/{pageName}/{campaign}/{id}',
-	function ( Application $app, Request $request, $pageName, $campaign, $id ) {
+$app->get( '/redirect/{pageName}/{campaign}',
+	function ( Application $app, Request $request, $pageName, $campaign ) {
 		$campaignCacheId = "campaign_{$campaign}";
 		if ( $app['cache']->contains( $campaignCacheId ) ) {
 			$campaignIsValid = $app['cache']->fetch( $campaignCacheId );
@@ -73,6 +73,7 @@ $app->get( '/redirect/{pageName}/{campaign}/{id}',
 		if ( !$campaignIsValid ) {
 			throw new ApplicationException( 'Invalid campaign name.' );
 		}
+		$id = $request->get( 'id', '' );
 		$pageInfo = $app['pageinfo']->getInformation( $pageName, $id );
 		$coordinates = [
 			'lat' => $request->get( 'lat', '' ),
@@ -83,6 +84,6 @@ $app->get( '/redirect/{pageName}/{campaign}/{id}',
 		$redirectUrl .= 'campaign='.urlencode( $campaign );
 		$redirectUrl .= $queryBuilder->getQuery( $pageInfo, $pageName, $id, $coordinates );
 		return $app->redirect( $redirectUrl, Response::HTTP_MOVED_PERMANENTLY );
-	} )
-	->value( 'id', '' );
+	} );
+
 return $app;
