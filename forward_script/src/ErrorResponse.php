@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: gabi
- * Date: 19.08.15
- * Time: 12:55
- */
 
 namespace Wikimedia\ForwardScript;
-
 
 use Symfony\Component\HttpFoundation\Response;
 
@@ -34,6 +27,4 @@ class ErrorResponse extends Response {
 		);
 		parent::__construct( $content, $status, $headers );
 	}
-
-
 }
