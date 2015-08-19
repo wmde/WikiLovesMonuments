@@ -24,7 +24,7 @@ class ArticleIterator(object):
         counter = 0
         for category in self.categories:
             counter = self.iterate_articles(category, counter)
-            self.callbacks("category", category=category, counter=counter, article_iterator=self)
+            self.callbacks.category(category=category, counter=counter, article_iterator=self)
             if self.limit and counter >= self.limit:
                 return
 
@@ -37,9 +37,9 @@ class ArticleIterator(object):
             if self._limit_reached(counter, category_counter):
                 return counter
             if counter % self.log_every_n == 0:
-                self.callbacks("logging", u"Fetching page {} ({})".format(counter, article.title()))
-            self.callbacks("article", article=article, category=category, counter=counter,
-                           article_iterator=self)
+                self.callbacks.logging(u"Fetching page {} ({})".format(counter, article.title()))
+            self.callbacks.article(article=article, category=category, counter=counter,
+                                   article_iterator=self)
             counter += 1
             category_counter += 1
         return counter
@@ -60,25 +60,24 @@ class ArticleIterator(object):
                 self.limit and counter >= self.limit
             )
 
+
 class ArticleIteratorCallbacks(object):
 
-    def __init__(self, category_callback=None, article_callback=None, logging_callback=None):
-        self.category = category_callback
-        self.article = article_callback
-        self.logging = logging_callback
+    def __init__(self, **kwargs):
+        self.category = self.cb_do_nothing
+        self.article = self.cb_do_nothing
+        self.logging = self.cb_do_nothing
+        for attr in ['category', 'article', 'logging']:
+            callback_name = attr + "_callback"
+            if callback_name in kwargs and kwargs[callback_name]:
+                setattr(self, attr, kwargs[callback_name])
 
-    def has_callback(self, name):
-        return getattr(self, name) is not None
+    def cb_do_nothing(self, *args, **kwargs):
+        """
+        Placeholder function that returns None
+        """
+        return None
 
-    def __call__(self, name, *args, **kwargs):
-        """
-        Dispatch call to callback function or return None if no callback
-        function is configured.
-        """
-        if self.has_callback(name):
-            return getattr(self, name)(*args, **kwargs)
-        else:
-            return None
 
 class ArticleIteratorArgumentParser(object):
     """ Parse command line arguments -limit: and -category: and set to ArticleIterator """

@@ -14,7 +14,7 @@ class TestArticleIterator(unittest.TestCase):
         category.articles.return_value = []
         iterator.categories = [category]
         iterator.iterate_categories()
-        callbacks.assert_called_once_with("category", category=category, counter=0, article_iterator=iterator)
+        callbacks.category.assert_called_once_with(category=category, counter=0, article_iterator=iterator)
 
     def test_article_iterator_iterates_over_articles(self):
         callbacks = Mock()
@@ -25,8 +25,8 @@ class TestArticleIterator(unittest.TestCase):
         category.articles.return_value = [article1, article2]
         iterator.categories = [category]
         iterator.iterate_categories()
-        callbacks.assert_any_call("article", article=article1, category=category, counter=0, article_iterator=iterator)
-        callbacks.assert_any_call("article", article=article2, category=category, counter=1, article_iterator=iterator)
+        callbacks.article.assert_any_call(article=article1, category=category, counter=0, article_iterator=iterator)
+        callbacks.article.assert_any_call(article=article2, category=category, counter=1, article_iterator=iterator)
 
     def test_article_iterator_with_limit_stops_at_limit(self):
         category_callback = Mock()
@@ -143,39 +143,34 @@ class TestArticleIteratorArgumentParser(unittest.TestCase):
         self.assertTrue(parser.check_argument(u"-category:Baudenkmäler_in_Sachsen,Baudenkmäler in Bayern"))
         pagelister.get_county_categories_by_name.assert_called_once_with([u"Kategorie:Baudenkmäler in Sachsen", u"Kategorie:Baudenkmäler in Bayern"])
 
-class TestArticleIteratorCallbacks(unittest.TestCase):
 
-    def test_callback_exists_returns_correct_value(self):
-        callbacks = ArticleIteratorCallbacks(category_callback=Mock())
-        self.assertTrue(callbacks.has_callback("category"))
-        self.assertFalse(callbacks.has_callback("article"))
-        self.assertFalse(callbacks.has_callback("logging"))
+class TestArticleIteratorCallbacks(unittest.TestCase):
 
     def test_logging_callback_can_be_called(self):
         logging_callback = Mock()
         callbacks = ArticleIteratorCallbacks(logging_callback=logging_callback)
-        callbacks("logging", "foo")
+        callbacks.logging("foo")
         logging_callback.assert_called_once_with("foo")
 
     def test_article_callback_can_be_called(self):
         article_callback = Mock()
         article = Mock()
         callbacks = ArticleIteratorCallbacks(article_callback=article_callback)
-        callbacks("article", article=article, counter=0)
+        callbacks.article(article=article, counter=0)
         article_callback.assert_called_once_with(article=article, counter=0)
 
     def test_category_callback_can_be_called(self):
-        article_callback = Mock()
+        category_callback = Mock()
         article = Mock()
-        callbacks = ArticleIteratorCallbacks(article_callback=article_callback)
-        callbacks("article", article=article, counter=0)
-        article_callback.assert_called_once_with(article=article, counter=0)
+        callbacks = ArticleIteratorCallbacks(category_callback=category_callback)
+        callbacks.category(article=article, counter=0)
+        category_callback.assert_called_once_with(article=article, counter=0)
 
     def test_unconfigured_callbacks_are_ignored(self):
         # just to check if there is no exception
         callbacks = ArticleIteratorCallbacks()
         article = Mock()
-        callbacks("article", article=article, counter=0)
+        callbacks.article(article=article, counter=0)
 
 
 if __name__ == '__main__':
