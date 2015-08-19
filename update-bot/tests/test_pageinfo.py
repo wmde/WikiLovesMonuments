@@ -27,6 +27,13 @@ class TestPageinfo(unittest.TestCase):
         info = pageinfo.get_template_info(self.checker, self.mapper, text, "123")
         self.assertEqual(info, {"id_not_found": True, "category": "Weblink Category"})
 
+    def test_get_info_accepts_empty_id(self):
+        self.checker.is_allowed_template.return_value = False
+        self.mapper.get_commonscat_from_weblinks_template.return_value = "Weblink Category"
+        text = "{{Denkmalliste Sachsen Tabellenzeile|ID=1}}"
+        info = pageinfo.get_template_info(self.checker, self.mapper, text, "")
+        self.assertEqual(info, {"id_not_found": True, "category": "Weblink Category"})
+
     def test_get_info_returns_info(self):
         self.checker.is_allowed_template.return_value = True
         self.checker.get_id.return_value = "1"
