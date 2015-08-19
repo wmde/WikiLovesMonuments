@@ -3,8 +3,10 @@
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\RuntimeException as ProcessException;
 use Wikimedia\ForwardScript\PageInformationCollector;
 use Wikimedia\ForwardScript\ApplicationException;
+use Wikimedia\ForwardScript\ErrorResponse;
 
 require __DIR__.'/vendor/autoload.php';
 
@@ -40,16 +42,12 @@ $app['pageinfo'] = $app->share( function ( $app ) {
 } );
 
 // Error handling
-$app->error( function ( ApplicationException $e, $code ) {
-	$response = new Response( $e->getMessage() );
-	$response->headers->set( 'Content-Type', 'text/plain' );
-	return $response;
+$app->error( function ( ApplicationException $e, $code ) use ( $app ) {
+	return new ErrorResponse( $e->getMessage() );
 } );
 
-$app->error( function ( \Symfony\Component\Process\Exception\RuntimeException $e, $code ) {
-	$response = new Response( $e->getMessage() );
-	$response->headers->set( 'Content-Type', 'text/plain' );
-	return $response;
+$app->error( function ( ProcessException $e, $code ) use ( $app ) {
+	return new ErrorResponse( $e->getMessage() );
 } );
 
 // Routes
