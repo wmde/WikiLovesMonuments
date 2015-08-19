@@ -40,6 +40,10 @@ $app['pageinfo'] = $app->share( function ( $app ) {
 	$process = new Process( $app['pageinfo_script'], $app['python_path'] );
 	return new PageInformationCollector( $app[ 'wikipedia_api' ], $process, $defaultCategories );
 } );
+$app->register( new Silex\Provider\MonologServiceProvider(), array(
+	'monolog.logfile' => __DIR__.'/app_errors.log',
+	'monolog.level' => 'WARNING'
+) );
 
 // Error handling
 $app->error( function ( ApplicationException $e, $code ) use ( $app ) {
