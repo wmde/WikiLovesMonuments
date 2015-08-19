@@ -1,6 +1,7 @@
 <?php
 
 use Silex\Application;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Process\Process;
 use Wikimedia\ForwardScript\PageInformationCollector;
@@ -57,8 +58,8 @@ $app->get( '/', function() {
 	return 'WLM redirect script';
 } );
 
-$app->get( '/redirect/{pageName}/{campaign}/{id}/{lat}/{lon}',
-	function ( Application $app, $pageName, $id, $campaign, $lat, $lon ) {
+$app->get( '/redirect/{pageName}/{campaign}/{id}',
+	function ( Application $app, Request $request, $pageName, $campaign, $id ) {
 		$campaignCacheId = "campaign_{$campaign}";
 		if ( $app['cache']->contains( $campaignCacheId ) ) {
 			$campaignIsValid = $app['cache']->fetch( $campaignCacheId );
@@ -73,14 +74,15 @@ $app->get( '/redirect/{pageName}/{campaign}/{id}/{lat}/{lon}',
 			throw new ApplicationException( 'Invalid campaign name.' );
 		}
 		$pageInfo = $app['pageinfo']->getInformation( $pageName, $id );
+		$coordinates = [
+			'lat' => $request->get( 'lat', '' ),
+			'lon' => $request->get( 'lon', '' ),
+		];
 		$queryBuilder = new \Wikimedia\ForwardScript\QueryBuilder();
 		$redirectUrl = $app['commons_upload_url'];
 		$redirectUrl .= 'campaign='.urlencode( $campaign );
-		$redirectUrl .= $queryBuilder->getQuery( $pageInfo, $pageName, $id,
-			['lat' => $lat, 'lon' => $lon] );
+		$redirectUrl .= $queryBuilder->getQuery( $pageInfo, $pageName, $id, $coordinates );
 		return $app->redirect( $redirectUrl, Response::HTTP_MOVED_PERMANENTLY );
 	} )
-	->value( 'id', '' )
-	->value( 'lat', '' )
-	->value( 'lon', '' );
+	->value( 'id', '' );
 return $app;
