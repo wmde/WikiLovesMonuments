@@ -63,10 +63,12 @@ You will be asked to enter the password of the WLMUploadVorlageBot account. This
 #### Set up the web server
 1. Set up composer like described at https://getcomposer.org/ and do a `composer install` in the `forward_script` folder.
 2. Create a symbolic link:
-```bash
-rm -r public_html
-ln -s WikiLovesMonuments/forward_script/web public_html
-```
+
+    ```bash
+    rm -r public_html
+    ln -s WikiLovesMonuments/forward_script/web public_html
+    ```
+
 3. Copy the file [`.lighttpd.conf`](wlm-de-utils/.lighttpd.conf) to the home folder.
 4. Start the web server with the command
 
