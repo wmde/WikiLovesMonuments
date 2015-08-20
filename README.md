@@ -15,17 +15,20 @@ Generally, the [`WikiLovesMonuments`][wlmrepo] repository is checked out in the 
 Whenever you want to deploy a new version, just do a `git pull` in the repository folder. However, there are some things that must be done afterwards:
 
 1. Update the `wlmbots` module:
-   ```
-   cd WikiLovesMonuments/update-bot
-   pip install --update -e .
-   ```
+
+ ```bash
+ cd WikiLovesMonuments/update-bot
+ pip install --update -e .
+ ```
+
    If the installer displays a message that the module doesn't need to be updated, make sure that there were no changes in the Python code. If there were changes, change the version in `update-bot/setup.py`, commit, pull and install again.
 2. Restart the commons bot:
-   ```
-   cd WikiLovesMonuments/update-bot
-   jstop commons_bot
-   jstart -l release=trusty -N commons_bot -cwd python -m wlmbots.commons_bot
-   ```
+
+ ```bash
+ cd WikiLovesMonuments/update-bot
+ jstop commons_bot
+ jstart -l release=trusty -N commons_bot -cwd python -m wlmbots.commons_bot
+ ```
 
 ### First time initializations
 The following steps have been taken manually on the Tool Labs server and *only* need to be done again if the account was somehow deleted/destroyed.
@@ -51,15 +54,18 @@ Follow the install instructions in the [README file for the bot](update-bot/READ
 #### Set up the web server
 1. Set up composer like described at https://getcomposer.org/ and do a `composer install` in the `forward_script` folder.
 2. Create a symbolic link:
-    ```
-    rm -r public_html
-    ln -s WikiLovesMonuments/forward_script/web public_html
-    ```
+
+```bash
+rm -r public_html
+ln -s WikiLovesMonuments/forward_script/web public_html
+```
+
 3. Copy the file [`.lighttpd.conf`](wlm-de-utils/.lighttpd.conf) to the home folder.
 4. Start the web server with the command
-    ```
-    webservice start
-    ```
+
+```
+webservice start
+```
 
 [wlmrepo]: https://github.com/wmde/WikiLovesMonuments/
 [virtualenv]: https://virtualenv.pypa.io/en/latest/
