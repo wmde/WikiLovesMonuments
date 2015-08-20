@@ -51,6 +51,15 @@ source $HOME/env/bin/activate
 #### Set up the bot environment
 Follow the install instructions in the [README file for the bot](update-bot/README.md).
 
+Run checker-bot once with the following command:
+
+```bash
+cd update-bot
+python -m wlmbots.checker_bot -limit:5 -outputpage:'Benutzer:WLMUploadVorlageBot/Testseite'
+```
+
+You will be asked to enter the password of the WLMUploadVorlageBot account. This run will create the cookie file `pywikibot.lwp` that contains the credentials. Subsequent runs of checker_bot and commons_bot will use that file and will not require keyboard interaction, which is important for running the bots with the [Grid system][tools_grid].
+
 #### Set up the web server
 1. Set up composer like described at https://getcomposer.org/ and do a `composer install` in the `forward_script` folder.
 2. Create a symbolic link:
@@ -67,3 +76,4 @@ webservice start
 
 [wlmrepo]: https://github.com/wmde/WikiLovesMonuments/
 [virtualenv]: https://virtualenv.pypa.io/en/latest/
+[tools_grid]: https://wikitech.wikimedia.org/wiki/Help:Tool_Labs/Grid
