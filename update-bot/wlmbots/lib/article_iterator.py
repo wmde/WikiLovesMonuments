@@ -15,8 +15,7 @@ class ArticleIterator(object):
         self.articles_per_category_limit = 0
         self.log_every_n = 100
         self.callbacks = callbacks
-        categories = [] if categories is None else categories
-        self.categories = categories
+        self.categories = [] if categories is None else categories
         self._excluded_articles = {}
 
     def iterate_categories(self):
