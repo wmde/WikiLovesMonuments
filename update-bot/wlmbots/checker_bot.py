@@ -19,6 +19,7 @@ Available command line options are:
 from __future__ import unicode_literals
 
 import tempfile
+from string import Template
 
 import pywikibot
 
@@ -39,10 +40,14 @@ class CheckerBot(object):
 
     def generate_summary_page(self):
         text = u"\n"
+        if self.outputpage:
+            template = Template(u"; [[$outputpage/$category_title|$category_title]]\n: $result_summary")
+        else:
+            template = Template(u"[[$category_title]]\n$result_summary")
         for category_results in self.results:
             _, category_title = category_results["category"].title().split(":", 1)
-            text += u"; [[{}|{}]]\n".format(self.outputpage + u"/" + category_title, category_title)
-            text += u": " + self.get_result_summary(category_results)
+            text += template.substitute(outputpage=self.outputpage, category_title=category_title,
+                                        result_summary=self.get_result_summary(category_results))
         return text
 
     def generate_category_result_header(self, results, pagelister=None):
@@ -141,7 +146,7 @@ class CheckerBot(object):
                 article.save(summary=summary)
             else:
                 pywikibot.log("Result page has not changed, skipping update ...")
-        except:
+        except pywikibot.Error:
             with tempfile.NamedTemporaryFile(delete=False) as dump_file:
                 dump_file.write(page_name.encode('utf-8'))
                 pywikibot.error("Could not update result page, page dumped to {}".format(dump_file.name), exc_info=True)
@@ -203,6 +208,8 @@ def main(*args):
     if checker_bot.outputpage:
         checker_bot.save_wikipage(summary, checker_bot.outputpage + u"/Zusammenfassung")
     else:
+        pywikibot.output(u"Zusammenfassung")
+        pywikibot.output(u"===============")
         pywikibot.output(summary)
         pywikibot.output(checker_bot.generate_config_table())
 
