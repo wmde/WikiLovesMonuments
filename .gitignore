@@ -2,6 +2,7 @@
 update-bot/apicache
 update-bot/logs
 *.pyc
+*.egg-info
 update-bot/throttle.ctrl
 update-bot/Denkmallistenliste.txt
 update-bot/local_family.py

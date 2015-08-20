@@ -15,8 +15,9 @@ Prerequisites: Python, pip.
     ```
     cp local_family.template.py local_family.py
     ```
-4. Install the necessary libraries:
-   `pip install -r requirements.txt`
+4. Install wlmbots as a local library:
+   `pip install -e .`
+   This will also install the dependencies. It is strongly advised to use [virtualenv][virtualenv-docs].
 5. To run tests install dev libraries (optional)
    `pip install -r dev-requirements.txt`
 
@@ -70,3 +71,4 @@ You can also run individual tests like this:
    python tests/test_commonscat_mapper.py
 
 [wlm_liste]: https://de.wikipedia.org/wiki/Kategorie:Liste_(Kulturdenkmale_in_Deutschland)
+[virtualenv-docs]: https://virtualenv.pypa.io/en/latest/
