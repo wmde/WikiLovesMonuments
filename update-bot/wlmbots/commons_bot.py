@@ -10,11 +10,11 @@ Available command line options are:
 
 -start-at:        Date from which to start requesting pages. Defaults to start of month. Format YYYY-MM-DD
 
--sleep-seconds:N  Sleep N seconds betwen runs
+-sleep-seconds:N  Sleep N seconds between runs
 
 -limit:N          Stop after N processed Commons pages
 
--once:            Run only once (by default it runs continously)
+-once:            Run only once (by default it runs continuously)
 
 -local-media:     Use the local wiki instead of Wikimedia Commons
 
@@ -52,7 +52,7 @@ class CommonsBot(object):
         }
         self.article_iterator.iterate_articles(category, article_arguments=article_args)
 
-    def run_continous(self, start_time, category):
+    def run_continuously(self, start_time, category):
         article_args = {
             "sortby": "timestamp",
             "starttime": start_time
@@ -138,7 +138,7 @@ def main(*args):
     checker = TemplateChecker()
     checker.load_config("config/templates.json")
     commons_bot = CommonsBot(wikipedia_site, article_iterator, checker)
-    run_cmd = commons_bot.run_continous
+    run_cmd = commons_bot.run_continuously
     category_name = u"Images from Wiki Loves Monuments 2015 in Germany"
     start_time = first_day_of_month()
     for argument in pywikibot.handle_args(args):
