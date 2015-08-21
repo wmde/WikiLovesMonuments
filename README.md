@@ -11,8 +11,8 @@ The tool name is `wlm-de-utils`. All following instructions must be carried out 
 
     become wlm-de-utils
 
-Generally, the [`WikiLovesMonuments`][wlmrepo] repository is checked out in the tool home folder.
-Whenever you want to deploy a new version, just do a `git pull` in the repository folder. However, there are some things that must be done afterwards:
+Generally, the [`WikiLovesMonuments`][wlmrepo] repository is checked out in the tool home directory.
+Whenever you want to deploy a new version, just do a `git pull` in the repository directory. However, there are some things that must be done afterwards:
 
 1. Update the `wlmbots` module:
 
@@ -33,14 +33,14 @@ Whenever you want to deploy a new version, just do a `git pull` in the repositor
 ### First time initializations
 The following steps have been taken manually on the Tool Labs server and *only* need to be done again if the account was somehow deleted/destroyed.
 
-The relevant configuration files are in the folder [wlm-de-utils](wlm-de-utils/). All the files there must be placed in the home directory of the `wlm-de-utils` tool account.
+The relevant configuration files are in the directory [wlm-de-utils](wlm-de-utils/). All the files there must be placed in the home directory of the `wlm-de-utils` tool account.
 
 #### Create a Python virtual environment
 The command
 
     virtualenv ~/env
 
-creates a [Python virtual environment][virtualenv] where modules can be installed without root permissions and without affecting the rest of the system. Copy the files [`.bashrc`](wlm-de-utils/.bashrc) and [`.bash_profile`](wlm-de-utils/.bash_profile) to the tool home folder to ensure that the virtual environment is activated whenever the tool account is used.
+creates a [Python virtual environment][virtualenv] where modules can be installed without root permissions and without affecting the rest of the system. Copy the files [`.bashrc`](wlm-de-utils/.bashrc) and [`.bash_profile`](wlm-de-utils/.bash_profile) to the tool home directory to ensure that the virtual environment is activated whenever the tool account is used.
 
 To manually activate the environment without logging out, use the command
 
@@ -61,7 +61,7 @@ python -m wlmbots.checker_bot -limit:5 -outputpage:'Benutzer:WLMUploadVorlageBot
 You will be asked to enter the password of the WLMUploadVorlageBot account. This run will create the cookie file `pywikibot.lwp` that contains the credentials. Subsequent runs of checker_bot and commons_bot will use that file and will not require keyboard interaction, which is important for running the bots with the [Grid system][tools_grid].
 
 #### Set up the web server
-1. Set up composer like described at https://getcomposer.org/ and do a `composer install` in the `forward_script` folder.
+1. Set up composer like described at https://getcomposer.org/ and do a `composer install` in the `forward_script` directory.
 2. Create a symbolic link:
 
     ```bash
@@ -69,7 +69,7 @@ You will be asked to enter the password of the WLMUploadVorlageBot account. This
     ln -s WikiLovesMonuments/forward_script/web public_html
     ```
 
-3. Copy the file [`.lighttpd.conf`](wlm-de-utils/.lighttpd.conf) to the home folder.
+3. Copy the file [`.lighttpd.conf`](wlm-de-utils/.lighttpd.conf) to the home directory.
 4. Start the web server with the command
 
 ```
