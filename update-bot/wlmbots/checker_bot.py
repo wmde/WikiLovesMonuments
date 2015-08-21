@@ -25,7 +25,7 @@ import pywikibot
 
 from wlmbots.lib.template_checker import TemplateChecker
 from wlmbots.lib.pagelist import Pagelist
-from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser
+from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser, ArticleIteratorCallbacks
 
 
 class CheckerBot(object):
@@ -187,12 +187,12 @@ def main(*args):
     checker.load_config("config/templates.json")
     checker_bot = CheckerBot(checker, site)
     all_categories = pagelister.get_county_categories()
-    article_iterator = ArticleIterator(
+    callbacks = ArticleIteratorCallbacks(
         category_callback=checker_bot.cb_store_category_result,
         article_callback=checker_bot.cb_check_article,
         logging_callback=pywikibot.log,
-        categories=all_categories
     )
+    article_iterator = ArticleIterator(callbacks, categories=all_categories)
     parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
     for argument in pywikibot.handle_args(list(args)):
         if parser.check_argument(argument):
