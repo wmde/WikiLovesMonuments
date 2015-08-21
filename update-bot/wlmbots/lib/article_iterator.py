@@ -15,10 +15,8 @@ class ArticleIterator(object):
         self.articles_per_category_limit = 0
         self.log_every_n = 100
         self.callbacks = callbacks
-        if categories:
-            self.categories = categories
-        else:
-            self.categories = []
+        self.categories = [] if categories is None else categories
+        self._excluded_articles = {}
 
     def iterate_categories(self):
         counter = 0
@@ -36,6 +34,8 @@ class ArticleIterator(object):
         for article in category.articles(**kwargs):
             if self._limit_reached(counter, category_counter):
                 return counter
+            if self._excluded_articles and article.title() in self._excluded_articles:
+                continue
             if counter % self.log_every_n == 0:
                 self.callbacks.logging(u"Fetching page {} ({})".format(counter, article.title()))
             self.callbacks.article(article=article, category=category, counter=counter,
@@ -43,6 +43,14 @@ class ArticleIterator(object):
             counter += 1
             category_counter += 1
         return counter
+
+    @property
+    def excluded_articles(self):
+        return self._excluded_articles.keys()
+
+    @excluded_articles.setter
+    def excluded_articles(self, value):
+        self._excluded_articles = {i : True for i in value}
 
     def _get_default_article_arguments(self):
         args = {}

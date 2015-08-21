@@ -146,6 +146,19 @@ class TestCheckerBot(unittest.TestCase):
         self.assertIn(u"IDs_ungueltig=|", table)
         self.assertIn(u"IDs_doppelt=|", table)
 
+    def test_exluded_articles_returns_empty_list_if_page_does_not_exist(self):
+        page = Mock()
+        page.exists.return_value = False
+        self.assertEqual(checker_bot.load_excluded_articles_from_wiki(page), [])
+
+    def test_exluded_articles_returns_list_of_page_names_in_lines(self):
+        page = Mock()
+        page.exists.return_value = True
+        page.get.return_value = u"[[Foo]] This is a test\r\n[[Bar]]\n[[Baz|Description text]]"
+        self.assertEqual(checker_bot.load_excluded_articles_from_wiki(page), [
+            u"Foo", u"Bar", u"Baz"
+        ])
+
 
 if __name__ == '__main__':
     unittest.main()
