@@ -12,15 +12,12 @@ use Symfony\Component\HttpFoundation\Response;
  * see the default Tool Labs error page.
  * See https://wikitech.wikimedia.org/wiki/Help:Tool_Labs/Web#Error_pages
  *
- * It uses text/plain content type to avoid the need for HTML escaping.
- *
  * @package Wikimedia\ForwardScript
  */
 class ErrorResponse extends Response {
 	public function __construct( $content = '', $status = 200, $headers = array() ) {
 		$headers = array_merge(
 			[
-				'Content-Type' => 'text/plain',
 				' X-Wikimedia-Debug' => '1'
 			],
 			$headers

@@ -48,11 +48,7 @@ $app->register( new Silex\Provider\MonologServiceProvider(), array(
 
 // Error handling
 $app->error( function ( ApplicationException $e, $code ) use ( $app ) {
-	return new ErrorResponse( $e->getMessage() );
-} );
-
-$app->error( function ( ProcessException $e, $code ) use ( $app ) {
-	return new ErrorResponse( $e->getMessage() );
+	return new ErrorResponse( $e->getMessage(), $code );
 } );
 
 // Routes
