@@ -122,7 +122,7 @@ class PageInformationCollectorTest extends PHPUnit_Framework_TestCase {
 			$this->equalTo( 'Page Text' )
 		);
 		$this->process->expects( $this->once() )->method( 'setCommandLine' )->with(
-			$this->equalTo( 'pythonscript \'D-6-75-111-7\'' )
+			$this->equalTo( 'pythonscript -i \'D-6-75-111-7\'' )
 		);
 		$this->process->method( 'isSuccessful' )->willReturn( true );
 		$this->process->method( 'getOutput' )->willReturn( '{"category":"test"}' );

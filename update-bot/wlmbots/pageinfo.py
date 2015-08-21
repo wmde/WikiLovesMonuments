@@ -11,7 +11,13 @@ import mwparserfromhell
 from wlmbots.lib.template_checker import TemplateChecker
 from wlmbots.lib.commonscat_mapper import CommonscatMapper
 
-def get_template_info(template_checker, commonscat_mapper, text, monument_id):
+
+def get_template_info(template_checker, commonscat_mapper, text, monument_id=''):
+    if not monument_id:
+        return {
+            "id_not_found": True,
+            "category": commonscat_mapper.get_commonscat_from_weblinks_template(text)
+        }
     id_count = 0
     info = {}
     for template in mwparserfromhell.parse(text).filter_templates():
@@ -33,11 +39,14 @@ def get_template_info(template_checker, commonscat_mapper, text, monument_id):
         info["duplicate_ids"] = id_count > 1
     else:
         info["id_not_found"] = True
+        info["category"] = commonscat_mapper.get_commonscat_from_weblinks_template(text)
     return info
+
 
 def main():
     parser = argparse.ArgumentParser(description='Generate JSON info about monument data in wiki text.')
-    parser.add_argument('monument_id', help='Unique ID of the monument. Validity will be checked.')
+    parser.add_argument('--monument_id', '-i', help='Unique ID of the monument. Validity will be checked.',
+                        default='', metavar='ID')
     parser.add_argument('infile', nargs='?', type=argparse.FileType('r'), default=sys.stdin)
     args = parser.parse_args()
     checker = TemplateChecker()

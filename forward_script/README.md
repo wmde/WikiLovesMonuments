@@ -17,10 +17,10 @@ Go to the `forward_script` directory and run the command
 
 You can then test it with URLs like
 
-`http://localhost:8080/redirect/Liste_der_Baudenkmäler_in_Abtswind/wlm-de-by/D-6-75-111-5/49.77168/10.37051`
+`http://localhost:8080/redirect/Liste_der_Baudenkmäler_in_Abtswind/wlm-de-by?id=D-6-75-111-5&lat=49.77168&lon=10.37051`
 
 The general structure of the URL is
 
-`http://localhost:8080/redirect/WIKIPEDIA_PAGENAME/COMMONS_CAMPAIGN_NAME/MONUMENT_ID/LATITUDE/LONGITUDE`
+`http://localhost:8080/redirect/WIKIPEDIA_PAGENAME/COMMONS_CAMPAIGN_NAME?id=MONUMENT_ID&lat=LATITUDE&lon=LONGITUDE`
 
 Only `WIKIPEDIA_PAGENAME` and `COMMONS_CAMPAIGN_NAME` are required parameters.
