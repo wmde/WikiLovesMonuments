@@ -10,3 +10,5 @@ update-bot/user-config.py
 **pywikibot.lwp
 forward_script/vendor
 forward_script/cache
+forward_script/app_errors.log
+

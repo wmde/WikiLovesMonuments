@@ -10,7 +10,8 @@
         "silex/silex": "^1.3",
         "addwiki/mediawiki-api-base": "~0.3.0",
         "doctrine/cache": "~1.0",
-        "symfony/process": "^2.7"
+        "symfony/process": "^2.7",
+        "monolog/monolog": "^1.16"
     },
     "authors": [
         {
