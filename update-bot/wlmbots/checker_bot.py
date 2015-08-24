@@ -175,6 +175,32 @@ class CheckerBot(object):
             })
 
 
+def get_article_iterator(categories, checker_bot, commandline_arguments, pagelister):
+    callbacks = ArticleIteratorCallbacks(
+        category_callback=checker_bot.cb_store_category_result,
+        article_callback=checker_bot.cb_check_article,
+        logging_callback=pywikibot.log,
+    )
+    article_iterator = ArticleIterator(callbacks, categories=categories)
+    unhandled_arguments = []
+    parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
+    for argument in commandline_arguments:
+        if parser.check_argument(argument):
+            continue
+        else:
+            unhandled_arguments.append(argument)
+    return article_iterator, unhandled_arguments
+
+
+def iterate_over_articles(article_iterator):
+    article_iterator.iterate_categories()
+
+
+def summary_page_is_needed(article_iterator, all_categories):
+    # Don't update summary page if only single categories were crawled
+    return article_iterator.categories == all_categories
+
+
 def main(*args):
     site = pywikibot.Site()
     pagelister = Pagelist(site)
@@ -182,23 +208,16 @@ def main(*args):
     checker.load_config("config/templates.json")
     checker_bot = CheckerBot(checker, site)
     all_categories = pagelister.get_county_categories()
-    callbacks = ArticleIteratorCallbacks(
-        category_callback=checker_bot.cb_store_category_result,
-        article_callback=checker_bot.cb_check_article,
-        logging_callback=pywikibot.log,
-    )
-    article_iterator = ArticleIterator(callbacks, categories=all_categories)
-    parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
-    for argument in pywikibot.handle_args(args):
-        if parser.check_argument(argument):
-            continue
-        elif argument.find("-outputpage:") == 0:
+    commandline_arguments = pywikibot.handle_args(args)
+    article_iterator, unhandled_arguments = get_article_iterator(checker_bot, all_categories, commandline_arguments, pagelister)
+    for argument in unhandled_arguments:
+        if argument.find("-outputpage:") == 0:
             checker_bot.outputpage = argument[12:]
 
-    article_iterator.iterate_categories()
-
-    if article_iterator.categories != all_categories:   # Don't update summary page if only single categories were crawled
+    iterate_over_articles(article_iterator)
+    if not summary_page_is_needed(article_iterator, all_categories):
         return
+
     summary = checker_bot.generate_summary_page()
     if checker_bot.outputpage:
         checker_bot.save_wikipage(summary, checker_bot.outputpage + u"/Zusammenfassung")

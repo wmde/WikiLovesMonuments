@@ -147,5 +147,53 @@ class TestCheckerBot(unittest.TestCase):
         self.assertIn(u"IDs_doppelt=|", table)
 
 
+class TestCheckerBotFunctions(unittest.TestCase):
+    """ Integration testing for checker_bot functions """
+
+    def setUp(self):
+        self.checker_bot = Mock()
+        self.checker_bot.cb_store_category_result = Mock()
+        self.checker_bot.cb_check_article = Mock()
+
+    def test_get_article_iterator_builds_iterator_with_callbacks_and_categories(self):
+        categories = Mock()
+        article_iterator, _ = checker_bot.get_article_iterator(categories, self.checker_bot, [], Mock())
+        self.assertEqual(article_iterator.callbacks.category, self.checker_bot.cb_store_category_result)
+        self.assertEqual(article_iterator.callbacks.article, self.checker_bot.cb_check_article)
+        self.assertEqual(article_iterator.categories, categories)
+
+    def test_get_article_iterator_filters_out_supported_params(self):
+        args = ["-limit:50", "-outputpage:foo"]
+        _, remaining_params = checker_bot.get_article_iterator(Mock(), self.checker_bot, args, Mock())
+        self.assertEqual(remaining_params, ["-outputpage:foo"])
+
+    def test_get_article_iterator_sets_limits(self):
+        args = ["-limit:50", "-limit-per-category:10"]
+        article_iterator, _ = checker_bot.get_article_iterator(Mock(), self.checker_bot, args, Mock())
+        self.assertEqual(article_iterator.limit, 50)
+        self.assertEqual(article_iterator.articles_per_category_limit, 10)
+
+    def test_get_article_iterator_sets_categories(self):
+        args = ["-category:Baudenkmale in Sachsen"]
+        pagelister = Mock()
+        county_categories = Mock()
+        pagelister.get_county_categories_by_name.return_value = county_categories
+        article_iterator, _ = checker_bot.get_article_iterator(Mock(), self.checker_bot, args, pagelister)
+        self.assertEqual(article_iterator.categories, county_categories)
+
+    @patch("wlmbots.lib.article_iterator.ArticleIterator")
+    def test_iterate_categories(self, article_iterator):
+        checker_bot.iterate_over_articles(article_iterator)
+        article_iterator.iterate_categories.assert_called_once()
+
+    @patch("wlmbots.lib.article_iterator.ArticleIterator")
+    def test_summary_page_is_needed(self, article_iterator):
+        article_iterator.categories = Mock()
+        all_categories = Mock()
+        self.assertFalse(checker_bot.summary_page_is_needed(article_iterator, all_categories))
+        article_iterator.categories = all_categories
+        self.assertTrue(checker_bot.summary_page_is_needed(article_iterator, all_categories))
+
+
 if __name__ == '__main__':
     unittest.main()
