@@ -12,7 +12,7 @@ import collections
 import pywikibot
 import mwparserfromhell
 
-from wlmbots.lib.pagelist import Pagelist
+from wlmbots.lib.category_fetcher import CategoryFetcher
 
 
 class TemplateCounter(object):
@@ -100,8 +100,8 @@ def main():
     sample_size = 100
 
     site = pywikibot.Site()
-    lister = Pagelist(site)
-    counties = lister.get_county_categories()
+    fetcher = CategoryFetcher(site)
+    counties = fetcher.get_categories()
     for county in counties:
         sample_county(county, sample_size, output_destination)
 

@@ -90,9 +90,9 @@ class ArticleIteratorCallbacks(object):
 class ArticleIteratorArgumentParser(object):
     """ Parse command line arguments -limit: and -category: and set to ArticleIterator """
 
-    def __init__(self, article_iterator, pagelister):
+    def __init__(self, article_iterator, category_fetcher):
         self.article_iterator = article_iterator
-        self.pagelister = pagelister
+        self.category_fetcher = category_fetcher
 
     def check_argument(self, argument):
         if argument.find("-limit:") == 0:
@@ -104,7 +104,7 @@ class ArticleIteratorArgumentParser(object):
         elif argument.find("-category:") == 0:
             category_names = argument[10:].split(",")
             category_names = [self._format_category(n) for n in category_names]
-            self.article_iterator.categories = self.pagelister.get_county_categories_by_name(category_names)
+            self.article_iterator.categories = self.category_fetcher.get_categories_filtered_by_name(category_names)
             return True
         else:
             return False

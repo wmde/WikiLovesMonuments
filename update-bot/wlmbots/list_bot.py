@@ -26,7 +26,8 @@ import codecs
 import sys
 
 import pywikibot
-from wlmbots.lib.pagelist import Pagelist
+from wlmbots.lib.category_fetcher import CategoryFetcher
+from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorCallbacks
 
 
 def export_to_file(outfile, items, formatstring=u"{}\n"):
@@ -36,6 +37,17 @@ def export_to_file(outfile, items, formatstring=u"{}\n"):
     """
     for article in items:
         outfile.write(formatstring.format(article.title()))
+
+
+class ArticleCollection(object):
+    """
+    Primitive collection object with callback to add entries.
+    """
+    def __init__(self):
+        self.article_list = []
+
+    def cb_add_article(self, article=None, **kwargs):
+        self.article_list.append(article)
 
 
 def main(*args):
@@ -57,18 +69,22 @@ def main(*args):
             categories_only = True
 
     site = pywikibot.Site()
-    page_list = Pagelist(site)
+    fetcher = CategoryFetcher(site)
 
     if categories_only and not single_categories:
-        export_to_file(output_destination, page_list.get_county_categories(False), formatstring)
+        export_to_file(output_destination, fetcher.get_categories(False), formatstring)
         return
 
     if single_categories:
-        for category in page_list.get_county_categories():
+        for category in fetcher.get_categories():
             with codecs.open(category.title() + u".txt", "w", 'utf-8') as outfile:
                 export_to_file(outfile, category.articles(), formatstring)
     else:
-        export_to_file(output_destination, page_list.get_list_articles(), formatstring)
+        collection = ArticleCollection()
+        callbacks = ArticleIteratorCallbacks(article_callback=collection.cb_add_article)
+        article_iterator = ArticleIterator(callbacks, fetcher.get_categories())
+        article_iterator.iterate_categories()
+        export_to_file(output_destination, collection.article_list, formatstring)
 
 
 if __name__ == "__main__":
