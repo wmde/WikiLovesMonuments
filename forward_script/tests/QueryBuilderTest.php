@@ -19,6 +19,13 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase {
 		$this->assertContains( '&categories=Test', $query );
 	}
 
+	public function testAdditionalCategoriesAreAdded() {
+		$qb = new QueryBuilder();
+		$this->pageInfo->method( "getCategory" )->willReturn( "Test" );
+		$query = $qb->getQuery( $this->pageInfo, 'Test Page', null, [], ["Foo", "Bar"] );
+		$this->assertContains( '&categories=Test%7CFoo%7CBar', $query );
+	}
+
 	public function testLatAndLonAreAdded() {
 		$qb = new QueryBuilder();
 		$query = $qb->getQuery( $this->pageInfo, 'Test Page', null,
