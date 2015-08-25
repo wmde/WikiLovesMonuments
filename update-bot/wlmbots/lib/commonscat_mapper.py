@@ -65,11 +65,19 @@ class CommonscatMapper(object):
                 raise
 
     def get_commonscat(self, text, template):
-        text_id = id(text)
-        if text_id not in self.category_cache:
-            self.category_cache[text_id] = [
+        category_candidates = [self.get_commonscat_from_table_row_template(template)]
+        category_candidates += self.get_commonscat_list_from_links(text)
+        return next(category for category in category_candidates if category)  # return first non-empty element
+
+    def get_commonscat_list_from_links(self, text):
+        """
+        Get Commons category from category links on page and "Commonscat" template in the page text.
+        :param text: Page text
+        :return:
+        """
+        if text not in self.category_cache:
+            self.category_cache[text] = [
                 self.get_commonscat_from_weblinks_template(text),
                 self.get_commonscat_from_category_links(text)
             ]
-        category_candidates = [self.get_commonscat_from_table_row_template(template)] + self.category_cache[text_id]
-        return next(category for category in category_candidates if category)  # return first non-empyt element
+        return self.category_cache[text]
