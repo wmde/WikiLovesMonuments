@@ -58,7 +58,7 @@ class TemplateChecker(object):
         Returns:
             Unique ID or empty string.
         """
-        id_name = self.template_config(template)["id"]
+        id_name = self.get_id_name(template)
         try:
             id_param = unicode(template.get(id_name)).strip()
             if not id_param:
@@ -70,6 +70,9 @@ class TemplateChecker(object):
                 return ""
             else:
                 raise
+
+    def get_id_name(self, template):
+        return self.template_config(template)["id"]
 
     def has_valid_id(self, template):
         """
