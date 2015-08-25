@@ -60,13 +60,13 @@ Follow the install instructions in the [README file for the bot](update-bot/READ
 
 Create a password file named `WikiLovesMonuments/update-bot/secretsfile`. The contents of the file should look like this:
 
-("WLMUploadVorlageBot", "password-of-the-bot")
+    ("WLMUploadVorlageBot", "password-of-the-bot")
 
 Replace the password and set the file access to only the user (chmod 600).
 
 Add the following line to the user-config.py:
 
-password_file = "secretsfile"
+    password_file = "secretsfile"
 
 #### Set up the web server
 1. Set up composer like described at https://getcomposer.org/ and do a `composer install` in the `forward_script` directory.
