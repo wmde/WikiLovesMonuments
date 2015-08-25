@@ -4,7 +4,7 @@ import unittest
 from mock import Mock  # unittest.mock for Python >= 3.3
 
 from wlmbots.lib.article_iterator import ArticlesInCategoriesIterator, ArticleIteratorArgumentParser, \
-    ArticleIteratorCallbacks
+    ArticleIteratorCallbacks, CallbackIterator
 
 
 class TestMultiCallbackIterator(unittest.TestCase):
@@ -185,6 +185,18 @@ class TestArticleIteratorCallbacks(unittest.TestCase):
         callbacks = ArticleIteratorCallbacks()
         article = Mock()
         callbacks.article(article=article, counter=0)
+
+
+class TestCallbackIterator(unittest.TestCase):
+
+    def test_callback_is_called_for_every_item(self):
+        callback = Mock()
+        iterable = CallbackIterator(iter([1, 2, 3]), callback)
+        _ = [item for item in iterable]
+        self.assertEqual(callback.call_count, 3)
+        callback.assert_any_call(1)
+        callback.assert_any_call(2)
+        callback.assert_any_call(3)
 
 
 if __name__ == '__main__':

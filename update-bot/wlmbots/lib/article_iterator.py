@@ -1,9 +1,5 @@
 """
-The class ArticleIterator iterats over categories and their article pages,
-depending on category and limit settings.
-
-The class ArticleIteratorArgumentParser takes arguments form the command line and
-sets them to an ArticleIterator instance.
+Iterators for Categories and Articles
 """
 
 
@@ -19,24 +15,27 @@ class ArticleIterator(object):
         self._excluded_articles = {}
         if config is not None:
             self.configure(config)
+        self.counter_offset = 0
 
-    def iterate_articles(self, counter_start=0, article_arguments=None):
-        counter = counter_start
+    def __iter__(self):
+        return self.iterate_articles()
+
+    def iterate_articles(self, article_arguments=None):
+        counter = self.counter_offset
         category_counter = 0
         kwargs = self._get_default_article_arguments()
         if article_arguments:
             kwargs.update(article_arguments)
         for article in self.category.articles(**kwargs):
             if self._limit_reached(counter, category_counter):
-                return counter
+                return
             if self._excluded_articles and article.title() in self._excluded_articles:
                 continue
             if counter % self.log_every_n == 0:
                 self.callbacks.logging(u"Fetching page {} ({})".format(counter, article.title()))
-            self.callbacks.article(article=article, category=self.category, counter=counter)
+            yield article, self.category, counter
             counter += 1
             category_counter += 1
-        return counter
 
     def configure(self, config):
         """
@@ -80,6 +79,26 @@ class ArticleIteratorConfiguration(object):
         self.excluded_articles = [] if excluded_articles is None else excluded_articles
 
 
+class CallbackIterator(object):
+    """
+    Iterator class that calls the callback for every item.
+
+    Returns every item unchanged.
+    """
+
+    def __init__(self, iterable, callback_function):
+        self.iterable = iter(iterable)
+        self.callback = callback_function
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        item = self.iterable.next()
+        self.callback(item)
+        return item
+
+
 class CategoryIterator(object):
 
     def __init__(self, categories):
@@ -117,10 +136,21 @@ class ArticlesInCategoriesIterator(object):
         config = ArticleIteratorConfiguration(self.limit, self.articles_per_category_limit, self.excluded_articles)
         for article_iterator in category_iterator.get_article_iterators(self.callbacks, config):
             article_iterator.log_every_n = self.log_every_n
-            counter = article_iterator.iterate_articles(counter)
+            article_iterator.counter_offset = counter
+            wrapped_iterator = self._wrap_article_iterator(article_iterator)
+            for _ in wrapped_iterator:
+                counter += 1
             self.callbacks.category(category=article_iterator.category, counter=counter)
             if self.limit and counter >= self.limit:
-                return
+                break
+
+    def _wrap_article_iterator(self, article_iterator):
+        callback = CallbackIterator(article_iterator, self._tuple_result_to_callback)
+        return callback
+
+    def _tuple_result_to_callback(self, tuple_result):
+        article, category, counter = tuple_result
+        self.callbacks.article(article=article, category=category, counter=counter)
 
 
 class ArticleIteratorCallbacks(object):
