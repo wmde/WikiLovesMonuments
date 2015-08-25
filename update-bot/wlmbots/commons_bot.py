@@ -27,7 +27,7 @@ import re
 import pywikibot
 import mwparserfromhell
 
-from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser
+from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser, ArticleIteratorCallbacks
 from wlmbots.lib.template_replacer import TemplateReplacer
 from wlmbots.lib.template_checker import TemplateChecker
 
@@ -131,9 +131,10 @@ def first_day_of_month(date=None):
 def main(*args):
     wikipedia_site = pywikibot.Site()  # Use the site configured in params/user-config
     commons_site = pywikibot.Site("commons", "commons")
-    article_iterator = ArticleIterator(
+    callbacks = ArticleIteratorCallbacks(
         logging_callback=pywikibot.log,
     )
+    article_iterator = ArticleIterator(callbacks)
     parser = ArticleIteratorArgumentParser(article_iterator, None)
     checker = TemplateChecker()
     checker.load_config("config/templates.json")
