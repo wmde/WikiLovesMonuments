@@ -4,7 +4,7 @@ import unittest
 from mock import Mock  # unittest.mock for Python >= 3.3
 
 from wlmbots.lib.article_iterator import ArticlesInCategoriesIterator, ArticleIteratorArgumentParser, \
-    ArticleIteratorCallbacks, CallbackIterator
+    ArticleIteratorCallbacks, CallbackIterator, LoggingIterator
 
 
 class TestMultiCallbackIterator(unittest.TestCase):
@@ -81,22 +81,6 @@ class TestMultiCallbackIterator(unittest.TestCase):
         iterator.iterate_categories()
         category_callback.assert_called_once_with(category=category, counter=10)
 
-    def test_article_iterator_logs_every_n_articles(self):
-        log_callback = Mock()
-        callbacks = ArticleIteratorCallbacks(logging_callback=log_callback)
-        iterator = ArticlesInCategoriesIterator(callbacks)
-        iterator.log_every_n = 1
-        article1 = Mock()
-        article2 = Mock()
-        article1.title.return_value = "Foo"
-        article2.title.return_value = "Bar"
-        category = Mock()
-        category.articles.return_value = [article1, article2]
-        iterator.categories = [category]
-        iterator.iterate_categories()
-        log_callback.assert_any_call(u"Fetching page 0 (Foo)")
-        log_callback.assert_any_call(u"Fetching page 1 (Bar)")
-
     def test_excluded_articles_are_skipped(self):
         article_callback = Mock()
         callbacks = ArticleIteratorCallbacks(article_callback=article_callback)
@@ -111,6 +95,21 @@ class TestMultiCallbackIterator(unittest.TestCase):
         iterator.excluded_articles = ["Foo"]
         iterator.iterate_categories()
         article_callback.assert_called_once_with(article=article2, category=category, counter=0)
+
+
+class TestLoggingIterator(unittest.TestCase):
+    def test_logs_every_n_articles(self):
+        log_callback = Mock()
+        article1 = Mock()
+        article2 = Mock()
+        article1.title.return_value = "Foo"
+        article2.title.return_value = "Bar"
+        results = [(article1, None, 0), (article2, None, 1)]
+        iterator = LoggingIterator(results, log_callback, 1)
+        for _ in iterator:
+            pass
+        log_callback.assert_any_call(u"Fetching page 0 (Foo)")
+        log_callback.assert_any_call(u"Fetching page 1 (Bar)")
 
 
 class TestArticleIteratorArgumentParser(unittest.TestCase):
