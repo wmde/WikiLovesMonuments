@@ -9,17 +9,17 @@ class CommonscatMapper(object):
     mapping = {}
 
     def __init__(self):
-        self.category_cache = {}
-        self.subcategories_loaded = False
+        self._category_cache = {}
+        self._subcategories_loaded = False
 
     def load_subcategories_into_map(self, site):
-        if self.subcategories_loaded:
+        if self._subcategories_loaded:
             return
         for category_name in self.mapping.copy():
             category = pywikibot.Category(site, category_name)
             for subcategory in category.subcategories():
                 self._add_category_to_mapping(subcategory, self.mapping[category_name])
-        self.subcategories_loaded = True
+        self._subcategories_loaded = True
 
     def _add_category_to_mapping(self, category, commonscat):
         self.mapping[category.title()] = commonscat
@@ -75,9 +75,9 @@ class CommonscatMapper(object):
         :param text: Page text
         :return:
         """
-        if text not in self.category_cache:
-            self.category_cache[text] = [
+        if text not in self._category_cache:
+            self._category_cache[text] = [
                 self.get_commonscat_from_weblinks_template(text),
                 self.get_commonscat_from_category_links(text)
             ]
-        return self.category_cache[text]
+        return self._category_cache[text]
