@@ -69,7 +69,6 @@ class TestArticleIterator(unittest.TestCase):
         self.assertEqual(article_callback.call_count, 5)
         self.assertEqual(category_callback.call_count, 2)
 
-
     def test_article_iterator_returns_correct_counter(self):
         category_callback = Mock()
         callbacks = ArticleIteratorCallbacks(category_callback=category_callback)
@@ -80,7 +79,6 @@ class TestArticleIterator(unittest.TestCase):
         iterator.categories = [category]
         iterator.iterate_categories()
         category_callback.assert_called_once_with(category=category, counter=10, article_iterator=iterator)
-
 
     def test_article_iterator_logs_every_n_articles(self):
         log_callback = Mock()
@@ -133,30 +131,30 @@ class TestArticleIteratorArgumentParser(unittest.TestCase):
 
     def test_category_sets_pywikibot_category(self):
         article_iterator = Mock()
-        pagelister = Mock()
+        category_fetcher = Mock()
         category = Mock()
-        pagelister.get_county_categories_by_name.return_value = [category]
-        parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
+        category_fetcher.get_categories_filtered_by_name.return_value = [category]
+        parser = ArticleIteratorArgumentParser(article_iterator, category_fetcher)
         self.assertTrue(parser.check_argument(u"-category:Baudenkmäler in Sachsen"))
         self.assertEqual(article_iterator.categories, [category])
 
     def test_category_is_cleaned_up(self):
         article_iterator = Mock()
-        pagelister = Mock()
+        category_fetcher = Mock()
         category = Mock()
-        pagelister.get_county_categories_by_name.return_value = [category]
-        parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
+        category_fetcher.get_categories_filtered_by_name.return_value = [category]
+        parser = ArticleIteratorArgumentParser(article_iterator, category_fetcher)
         self.assertTrue(parser.check_argument(u"-category:Baudenkmäler_in_Sachsen"))
-        pagelister.get_county_categories_by_name.assert_called_once_with([u"Kategorie:Baudenkmäler in Sachsen"])
+        category_fetcher.get_categories_filtered_by_name.assert_called_once_with([u"Kategorie:Baudenkmäler in Sachsen"])
 
     def test_multiple_categories_are_supported(self):
         article_iterator = Mock()
-        pagelister = Mock()
+        category_fetcher = Mock()
         category = Mock()
-        pagelister.get_county_categories_by_name.return_value = [category]
-        parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
+        category_fetcher.get_categories_filtered_by_name.return_value = [category]
+        parser = ArticleIteratorArgumentParser(article_iterator, category_fetcher)
         self.assertTrue(parser.check_argument(u"-category:Baudenkmäler_in_Sachsen,Baudenkmäler in Bayern"))
-        pagelister.get_county_categories_by_name.assert_called_once_with([u"Kategorie:Baudenkmäler in Sachsen", u"Kategorie:Baudenkmäler in Bayern"])
+        category_fetcher.get_categories_filtered_by_name.assert_called_once_with([u"Kategorie:Baudenkmäler in Sachsen", u"Kategorie:Baudenkmäler in Bayern"])
 
 
 class TestArticleIteratorCallbacks(unittest.TestCase):
