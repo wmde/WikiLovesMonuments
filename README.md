@@ -30,6 +30,13 @@ Whenever you want to deploy a new version, just do a `git pull` in the repositor
  jstart -l release=trusty -N commons_bot -cwd python -m wlmbots.commons_bot
  ```
 
+ 3. Update PHP libraries/autoloader
+
+ ```bash
+ cd WikiLovesMonuments/forward_script
+ php ~/bin/composer.phar install --no-dev -o
+ ```
+
 ### First-time initialization
 The following steps have been taken manually on the Tool Labs server and *only* need to be done again if the account was somehow deleted/destroyed.
 
