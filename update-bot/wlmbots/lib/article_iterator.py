@@ -8,38 +8,30 @@ sets them to an ArticleIterator instance.
 
 
 class ArticleIterator(object):
-    """ Iterate over categories and their article pages depending on category and limit settings """
+    """ Iterate over articles in a category, limiting the number of articles returned """
 
-    def __init__(self, callbacks, categories=None):
+    def __init__(self, callbacks, category):
         self.limit = 0
         self.articles_per_category_limit = 0
         self.log_every_n = 100
         self.callbacks = callbacks
-        self.categories = [] if categories is None else categories
+        self.category = category
         self._excluded_articles = {}
 
-    def iterate_categories(self):
-        counter = 0
-        for category in self.categories:
-            counter = self.iterate_articles(category, counter)
-            self.callbacks.category(category=category, counter=counter, article_iterator=self)
-            if self.limit and counter >= self.limit:
-                return
-
-    def iterate_articles(self, category, counter=0, article_arguments=None):
+    def iterate_articles(self, counter_start=0, article_arguments=None):
+        counter = counter_start
         category_counter = 0
         kwargs = self._get_default_article_arguments()
         if article_arguments:
             kwargs.update(article_arguments)
-        for article in category.articles(**kwargs):
+        for article in self.category.articles(**kwargs):
             if self._limit_reached(counter, category_counter):
                 return counter
             if self._excluded_articles and article.title() in self._excluded_articles:
                 continue
             if counter % self.log_every_n == 0:
                 self.callbacks.logging(u"Fetching page {} ({})".format(counter, article.title()))
-            self.callbacks.article(article=article, category=category, counter=counter,
-                                   article_iterator=self)
+            self.callbacks.article(article=article, category=self.category, counter=counter)
             counter += 1
             category_counter += 1
         return counter
@@ -50,7 +42,7 @@ class ArticleIterator(object):
 
     @excluded_articles.setter
     def excluded_articles(self, value):
-        self._excluded_articles = {i : True for i in value}
+        self._excluded_articles = {i: True for i in value}
 
     def _get_default_article_arguments(self):
         args = {}
@@ -67,6 +59,51 @@ class ArticleIterator(object):
             ) or (
                 self.limit and counter >= self.limit
             )
+
+
+class CategoryIterator(object):
+
+    def __init__(self, categories):
+        self.categories = categories
+
+    def __iter__(self):
+        return self.categories
+
+    def get_article_iterators(self, callbacks, config):
+        article_iterators = []
+        for category in self.categories:
+            article_iterators.append(ArticleIterator(callbacks, category, config))
+        return article_iterators
+
+
+class ArticlesInCategoriesIterator(object):
+    """
+    Iterate over Articles in Categories.
+
+    Ultimately, this class will probably be discarded.
+
+    """
+
+    def __init__(self, callbacks, categories=None):
+        self.limit = 0
+        self.articles_per_category_limit = 0
+        self.log_every_n = 100
+        self.callbacks = callbacks
+        self.categories = [] or categories
+        self.excluded_articles = {}
+
+    def iterate_categories(self):
+        counter = 0
+        category_iterator = CategoryIterator(self.categories)
+        for article_iterator in category_iterator.get_article_iterators(self.callbacks):
+            article_iterator.limit = self.limit
+            article_iterator.articles_per_category_limit = self.articles_per_category_limit
+            article_iterator.log_every_n = self.log_every_n
+            article_iterator.excluded_articles = self.excluded_articles
+            counter = article_iterator.iterate_articles(counter)
+            self.callbacks.category(category=article_iterator.category, counter=counter)
+            if self.limit and counter >= self.limit:
+                return
 
 
 class ArticleIteratorCallbacks(object):

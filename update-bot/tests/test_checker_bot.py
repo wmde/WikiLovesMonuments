@@ -193,12 +193,12 @@ class TestCheckerBotFunctions(unittest.TestCase):
         article_iterator, _ = checker_bot.get_article_iterator(Mock(), self.checker_bot, args, pagelister)
         self.assertEqual(article_iterator.categories, county_categories)
 
-    @patch("wlmbots.lib.article_iterator.ArticleIterator")
+    @patch("wlmbots.lib.article_iterator.ArticlesInCategoriesIterator")
     def test_iterate_categories(self, article_iterator):
         checker_bot.iterate_over_articles(article_iterator)
         article_iterator.iterate_categories.assert_called_once()
 
-    @patch("wlmbots.lib.article_iterator.ArticleIterator")
+    @patch("wlmbots.lib.article_iterator.ArticlesInCategoriesIterator")
     def test_summary_page_is_needed(self, article_iterator):
         article_iterator.categories = Mock()
         all_categories = Mock()

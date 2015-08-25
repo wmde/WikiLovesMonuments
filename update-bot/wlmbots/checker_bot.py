@@ -28,7 +28,7 @@ import mwparserfromhell
 
 from wlmbots.lib.template_checker import TemplateChecker
 from wlmbots.lib.category_fetcher import CategoryFetcher
-from wlmbots.lib.article_iterator import ArticleIterator, ArticleIteratorArgumentParser, ArticleIteratorCallbacks
+from wlmbots.lib.article_iterator import ArticlesInCategoriesIterator, ArticleIteratorArgumentParser, ArticleIteratorCallbacks
 
 
 class CheckerBot(object):
@@ -197,7 +197,7 @@ def get_article_iterator(categories, checker_bot, commandline_arguments, pagelis
         article_callback=checker_bot.cb_check_article,
         logging_callback=pywikibot.log,
     )
-    article_iterator = ArticleIterator(callbacks, categories=categories)
+    article_iterator = ArticlesInCategoriesIterator(callbacks, categories=categories)
     unhandled_arguments = []
     arg_parser = ArticleIteratorArgumentParser(article_iterator, pagelister)
     for arg in commandline_arguments:
