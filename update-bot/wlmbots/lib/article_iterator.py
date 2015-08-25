@@ -10,13 +10,15 @@ sets them to an ArticleIterator instance.
 class ArticleIterator(object):
     """ Iterate over articles in a category, limiting the number of articles returned """
 
-    def __init__(self, callbacks, category):
+    def __init__(self, callbacks, category, config=None):
         self.limit = 0
         self.articles_per_category_limit = 0
         self.log_every_n = 100
         self.callbacks = callbacks
         self.category = category
         self._excluded_articles = {}
+        if config is not None:
+            self.configure(config)
 
     def iterate_articles(self, counter_start=0, article_arguments=None):
         counter = counter_start
@@ -35,6 +37,14 @@ class ArticleIterator(object):
             counter += 1
             category_counter += 1
         return counter
+
+    def configure(self, config):
+        """
+        :param config: Configuration settings
+        :type config: ArticleIteratorConfiguration
+        """
+        for prop in ["limit", "articles_per_category_limit", "excluded_articles"]:
+            setattr(self, prop, getattr(config, prop))
 
     @property
     def excluded_articles(self):
@@ -59,6 +69,15 @@ class ArticleIterator(object):
             ) or (
                 self.limit and counter >= self.limit
             )
+
+
+class ArticleIteratorConfiguration(object):
+    """ Store configuration options for ArticleIterator
+    """
+    def __init__(self, limit=0, articles_per_category_limit=0, excluded_articles=None):
+        self.limit = limit
+        self.articles_per_category_limit = articles_per_category_limit
+        self.excluded_articles = [] if excluded_articles is None else excluded_articles
 
 
 class CategoryIterator(object):
@@ -95,11 +114,9 @@ class ArticlesInCategoriesIterator(object):
     def iterate_categories(self):
         counter = 0
         category_iterator = CategoryIterator(self.categories)
-        for article_iterator in category_iterator.get_article_iterators(self.callbacks):
-            article_iterator.limit = self.limit
-            article_iterator.articles_per_category_limit = self.articles_per_category_limit
+        config = ArticleIteratorConfiguration(self.limit, self.articles_per_category_limit, self.excluded_articles)
+        for article_iterator in category_iterator.get_article_iterators(self.callbacks, config):
             article_iterator.log_every_n = self.log_every_n
-            article_iterator.excluded_articles = self.excluded_articles
             counter = article_iterator.iterate_articles(counter)
             self.callbacks.category(category=article_iterator.category, counter=counter)
             if self.limit and counter >= self.limit:
