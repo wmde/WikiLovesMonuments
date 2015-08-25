@@ -57,7 +57,7 @@ Look in Wikimedia Commons in the "Wiki Loves Monuments 2015" category for commen
 
 You can test this bot locally (with one demo wiki, without needing Commons) as follows:
 1. Upload an image to your local wiki. The description must contain the string  
-    `<!-- LIST_CALLBACK_PARAMS de|PAGENAME|ID --> `  
+    `<!-- WIKIPAGE_UPDATE_PARAMS de|PAGENAME|ID --> `  
     (replace `PAGENAME` and `ID` with a page where a "Tabellenzeile" template exists and has a missing image). The description must also put the image in the right category wiith the string  
     `[[Kategorie:Images from Wiki Loves Monuments 2015 in Germany]]`  
 2. Run the bot with the parameters `-once -local-media`.

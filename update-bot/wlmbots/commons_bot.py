@@ -34,7 +34,7 @@ from wlmbots.lib.template_checker import TemplateChecker
 
 class CommonsBot(object):
 
-    comment_pattern = re.compile(r"<!-- LIST_CALLBACK_PARAMS (.+?)-->\n\n")
+    comment_pattern = re.compile(r"<!-- WIKIPAGE_UPDATE_PARAMS (.+?)-->\n\n")
     prefix_pattern = re.compile(r"^(?:File|Datei):")
 
     def __init__(self, wikipedia_site, article_iterator, template_checker):
@@ -68,11 +68,11 @@ class CommonsBot(object):
 
     def cb_check_article(self, article, **kwargs):
         text = article.get()
-        list_callback_params = self.comment_pattern.search(text)
-        if not list_callback_params:
+        wikipage_update_params = self.comment_pattern.search(text)
+        if not wikipage_update_params:
             return
         try:
-            params = list_callback_params.group(1).strip()
+            params = wikipage_update_params.group(1).strip()
             _, pagename, image_id = params.strip().split("|", 2)
         except ValueError:
             self.logger.error(u"Invalid list callback param: '{}'".format(params))
@@ -83,7 +83,7 @@ class CommonsBot(object):
             self.logger.error(err)
             return
         # remove comment from commons_page
-        article.text = text.replace(list_callback_params.group(0), '')
+        article.text = text.replace(wikipage_update_params.group(0), '')
         article.save("Bot: Removed comment after inserting image in Wikipedia article")
 
     def insert_image(self, commons_name, pagename, image_id):
