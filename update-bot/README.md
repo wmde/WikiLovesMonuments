@@ -53,7 +53,7 @@ Configuration of the approved templates can be found in the file [`template_conf
 
 
 ## commons_bot.py
-Look in Wikimedia Commons in the "Wiki Loves Monuments 2015" category for comments left by the Upload Wizard. Use the comments to update the monument list pages in the German Wikipedia.
+Looks in Wikimedia Commons in the "Wiki Loves Monuments 2015" category for comments left by the Upload Wizard. Uses the comments to update the monument list pages in the German Wikipedia.
 
 You can test this bot locally (with one demo wiki, without needing Commons) as follows:
 1. Upload an image to your local wiki. The description must contain the string  
