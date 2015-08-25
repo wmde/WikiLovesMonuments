@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='wlmbots',
-      version='0.1',
+      version='0.2',
       description='Bots and scripts for the Wiki Loves Monuments contents',
       url='https://github.com/wmde/WikiLovesMonuments',
       author='Wikimedia DE',
