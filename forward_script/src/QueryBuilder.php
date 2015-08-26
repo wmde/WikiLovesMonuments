@@ -28,7 +28,7 @@ class QueryBuilder {
 			$query['fields[]'] = $id;
 		}
 		if ( $info->hasImage() ) {
-			$query['updateImage'] = "1";
+			$query['updateList'] = "1";
 		}
 		return '&' . http_build_query( $query );
 	}
