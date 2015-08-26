@@ -23,9 +23,9 @@ class PageInformation {
 			'',
 			$info->category
 		);
-		$this->idWasFound = !isset( $info->id_not_found );
+		$this->idWasFound = empty( $info->id_not_found );
 		$this->idIsValid = !empty( $info->valid_id );
-		$this->hasDuplicateIds = isset( $info->duplicate_ids );
+		$this->hasDuplicateIds = !empty( $info->duplicate_ids );
 	}
 
 	/**
