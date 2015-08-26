@@ -30,6 +30,13 @@ Whenever you want to deploy a new version, just do a `git pull` in the repositor
  jstart -l release=trusty -N commons_bot -cwd python -m wlmbots.commons_bot
  ```
 
+ 3. Update PHP libraries/autoloader
+
+ ```bash
+ cd WikiLovesMonuments/forward_script
+ php ~/bin/composer.phar install --no-dev -o
+ ```
+
 ### First-time initialization
 The following steps have been taken manually on the Tool Labs server and *only* need to be done again if the account was somehow deleted/destroyed.
 
@@ -51,16 +58,15 @@ source $HOME/env/bin/activate
 #### Set up the bot environment
 Follow the install instructions in the [README file for the bot](update-bot/README.md).
 
-Run checker-bot once with the following command:
+Create a password file named `WikiLovesMonuments/update-bot/secretsfile`. The contents of the file should look like this:
 
-```bash
-cd update-bot
-python -m wlmbots.checker_bot -limit:1 -categories:'Liste (Baudenkmäler in Bayern)' -outputpage:'Benutzer:WLMUploadVorlageBot/Testseite'
-```
+    ("WLMUploadVorlageBot", "password-of-the-bot")
 
-You will be asked to enter the password of the WLMUploadVorlageBot account. This run will create the cookie file `pywikibot.lwp` that contains the credentials. This is not a full run of checker_bot, just a "setup run". "Testseite" is used not to destroy the official output page of the checker_bot.
+Replace the password and set the file access to only the user (chmod 600).
 
-Subsequent runs of checker_bot and commons_bot will use the created cookie file and will not require keyboard interaction, which is important for running the bots with the [Grid system][tools_grid].
+Add the following line to the user-config.py:
+
+    password_file = "secretsfile"
 
 #### Set up the web server
 1. Set up composer like described at https://getcomposer.org/ and do a `composer install` in the `forward_script` directory.
