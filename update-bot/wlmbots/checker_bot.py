@@ -138,6 +138,8 @@ class CheckerBot(object):
         text = "== Unterstützte Vorlagen ==\nDie Seiten wurden mit folgenden Vorlagen und Einstellungen geprüft:\n"
         text += '{| class="wikitable"\n|-\n!Vorlage!!Bezeichner ID!!Format offizielle ID\n'
         for template_name, config in sorted(self.checker.config.items()):
+            if config.get("skip_display"):
+                continue
             text += line_fmt.format(template_name, template_name, config["id"], config["id_check_description"])
         text += "|}\n\n"
         return text

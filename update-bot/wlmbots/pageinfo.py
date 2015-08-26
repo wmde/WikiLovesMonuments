@@ -16,13 +16,13 @@ def get_template_info(template_checker, commonscat_mapper, text, monument_id='')
     if not monument_id:
         return {
             "id_not_found": True,
-            "category": get_most_specific_category(commonscat_mapper, text)
+            "category": get_most_specific_category(commonscat_mapper, text),
+            "missing_monument_id": True
         }
     id_count = 0
     info = {}
-    for template in mwparserfromhell.parse(text).filter_templates():
-        if not template_checker.is_allowed_template(template):
-            continue
+    templates = mwparserfromhell.parse(text).filter_templates()
+    for template in template_checker.filter_allowed_templates(templates):
         if template_checker.get_id(template) != monument_id:
             continue
         if id_count:
@@ -43,7 +43,11 @@ def get_template_info(template_checker, commonscat_mapper, text, monument_id='')
 
 
 def get_most_specific_category(commonscat_mapper, text):
-    return next(category for category in commonscat_mapper.get_commonscat_list_from_links(text) if category)  # return first non-empty element
+    try:
+        # return first non-empty element or fail
+        return next(category for category in commonscat_mapper.get_commonscat_list_from_links(text) if category)
+    except StopIteration:
+        return ""
 
 
 def main():

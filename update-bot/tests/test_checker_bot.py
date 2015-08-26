@@ -46,6 +46,12 @@ class TestCheckerBot(unittest.TestCase):
         self.assertIn("|Nummer im Format D-n-nnn", config_table_lines[2])
         self.assertIn("|Nummer, mindestens vierstellig", config_table_lines[3])
 
+    def test_generate_config_table_honors_skip_display(self):
+        self.checker.config[u"Denkmalliste Sachsen Tabellenzeile"][u"skip_display"] = True
+        config_table = self.bot.generate_config_table()
+        self.assertIn("|[[Vorlage:Denkmalliste Bayern Tabellenzeile", config_table)
+        self.assertNotIn("|[[Vorlage:Denkmalliste Sachsen Tabellenzeile", config_table)
+
     @patch("wlmbots.lib.category_fetcher.CategoryFetcher")
     def test_generate_category_result_header_adds_category_name_as_header(self, fetcher):
         category = Mock()
