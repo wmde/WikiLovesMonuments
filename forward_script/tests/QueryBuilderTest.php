@@ -70,15 +70,16 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase {
 		$this->assertNotContains( '&fields%5B%5D=123', $query );
 	}
 
-	public function testUpdateListIsAddedIfImageExists() {
+	public function testUpdateListIsAddedIfNoImageExists() {
 		$qb = new QueryBuilder();
-		$this->pageInfo->method( "hasImage" )->willReturn( true );
+		$this->pageInfo->method( "hasImage" )->willReturn( false );
 		$query = $qb->getQuery( $this->pageInfo, 'Test Page', '123' );
 		$this->assertContains( '&updateList=1', $query );
 	}
 
-	public function testUpdateListLeftOutIfNoImageExists() {
+	public function testUpdateListLeftOutIfImageExists() {
 		$qb = new QueryBuilder();
+		$this->pageInfo->method( "hasImage" )->willReturn( true );
 		$query = $qb->getQuery( $this->pageInfo, 'Test Page', '123' );
 		$this->assertNotContains( '&updateList=1', $query );
 	}

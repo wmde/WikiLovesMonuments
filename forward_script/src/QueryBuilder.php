@@ -27,7 +27,7 @@ class QueryBuilder {
 		if ( $info->hasValidId() ) {
 			$query['fields[]'] = $id;
 		}
-		if ( $info->hasImage() ) {
+		if ( !$info->hasImage() ) {
 			$query['updateList'] = "1";
 		}
 		return '&' . http_build_query( $query );
