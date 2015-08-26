@@ -93,7 +93,7 @@ class TestPageinfo(unittest.TestCase):
         self.assertEqual(category, u"Category:Cultural heritage ensembles in Bavaria")
 
     def test_get_info_recognizes_existing_images(self):
-        self.checker.is_allowed_template.return_value = True
+        self.checker.filter_allowed_templates = Mock(side_effect=lambda x: x)
         self.checker.get_id.return_value = "1"
         self.checker.has_valid_id.return_value = True
         self.mapper.get_commonscat_list_from_links.return_value = [u"Category:Cultural heritage ensembles in Saxony"]
