@@ -17,7 +17,7 @@ class PageInformation {
 
 	private $hasDuplicateIds = false;
 
-	private $hasImage = false;
+	private $imageExists = false;
 
 	public function __construct( \stdClass $info ) {
 		$this->category = empty( $info->category ) ? "" : preg_replace(
@@ -28,7 +28,7 @@ class PageInformation {
 		$this->idWasFound = empty( $info->id_not_found );
 		$this->idIsValid = !empty( $info->valid_id );
 		$this->hasDuplicateIds = !empty( $info->duplicate_ids );
-		$this->hasImage = !empty( $info->image_exists );
+		$this->imageExists = !empty( $info->image_exists );
 	}
 
 	/**
@@ -63,6 +63,6 @@ class PageInformation {
 	 * @return boolean
 	 */
 	public function hasImage() {
-		return $this->hasImage;
+		return $this->imageExists;
 	}
 }
