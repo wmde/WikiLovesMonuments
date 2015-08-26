@@ -73,6 +73,7 @@ $app->get( '/redirect/{pageName}/{campaign}',
 			throw new ApplicationException( 'Invalid campaign name.' );
 		}
 		$id = $request->get( 'id', '' );
+		$pageName = strtr( $pageName, '+', '_' );
 		$pageInfo = $app['pageinfo']->getInformation( $pageName, $id );
 		$coordinates = [
 			'lat' => $request->get( 'lat', '' ),
@@ -85,6 +86,8 @@ $app->get( '/redirect/{pageName}/{campaign}',
 			$app['additional_categories']
 		);
 		return $app->redirect( $redirectUrl, Response::HTTP_MOVED_PERMANENTLY );
-	} );
+	} )
+	->assert( 'pageName', '.+' )
+;
 
 return $app;
