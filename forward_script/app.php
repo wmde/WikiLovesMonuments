@@ -16,13 +16,17 @@ $app = new Application();
 
 // Settings
 $app['cache_dir'] = __DIR__.'/cache';
-$app['commons_api_url'] = 'https://commons.wikimedia.org/w/api.php';
+$app['commons_base_url'] = 'https://commons.wikimedia.org/';
+$app['commons_api_url'] = $app['commons_base_url'] . 'w/api.php';
+$app['commons_upload_url'] = $app['commons_base_url'] . 'wiki/Special:UploadWizard?';
 $app['wikipedia_api_url'] = 'https://de.wikipedia.org/w/api.php';
 $app['python_path'] = realpath( __DIR__ . '/../update-bot/' );
 $app['default_categories_config'] = $app['python_path'] . '/config/commonscat_mapping.json';
 $app['pageinfo_script'] = 'python -m wlmbots.pageinfo';
-$app['commons_upload_url'] = 'https://commons.wikimedia.org/wiki/Special:UploadWizard?';
 $app['additional_categories'] = ['Uploaded with UploadWizard via delists'];
+
+// include local settings
+include ( __DIR__ . '/app_settings.local.php' );
 
 // Services
 $app['cache'] = $app->share( function ( $app ) {
