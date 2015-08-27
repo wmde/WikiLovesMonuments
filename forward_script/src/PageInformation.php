@@ -17,6 +17,8 @@ class PageInformation {
 
 	private $hasDuplicateIds = false;
 
+	private $imageExists = false;
+
 	public function __construct( \stdClass $info ) {
 		$this->category = empty( $info->category ) ? "" : preg_replace(
 			'/^(:?Category|Kategorie):/',
@@ -26,6 +28,7 @@ class PageInformation {
 		$this->idWasFound = empty( $info->id_not_found );
 		$this->idIsValid = !empty( $info->valid_id );
 		$this->hasDuplicateIds = !empty( $info->duplicate_ids );
+		$this->imageExists = !empty( $info->image_exists );
 	}
 
 	/**
@@ -52,5 +55,14 @@ class PageInformation {
 	 */
 	public function getCategory() {
 		return $this->category;
+	}
+
+	/**
+	 * When the template has a usable ID and an image is already inserted.
+	 *
+	 * @return boolean
+	 */
+	public function hasImage() {
+		return $this->imageExists;
 	}
 }

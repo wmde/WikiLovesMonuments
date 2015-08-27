@@ -32,7 +32,8 @@ def get_template_info(template_checker, commonscat_mapper, text, monument_id='')
         info = {
             "template": unicode(template),
             "category": get_most_specific_category(commonscat_mapper, text),
-            "valid_id": template_checker.has_valid_id(template)
+            "valid_id": template_checker.has_valid_id(template),
+            "image_exists": image_exists(template)
         }
     if info:
         info["duplicate_ids"] = id_count > 1
@@ -48,6 +49,13 @@ def get_most_specific_category(commonscat_mapper, text):
         return next(category for category in commonscat_mapper.get_commonscat_list_from_links(text) if category)
     except StopIteration:
         return ""
+
+
+def image_exists(template):
+    try:
+        return template.get("Bild").value.strip() != ""
+    except ValueError:
+        return False
 
 
 def main():

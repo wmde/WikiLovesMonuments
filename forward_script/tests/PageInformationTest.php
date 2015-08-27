@@ -32,6 +32,19 @@ class PageInformationTest extends PHPUnit_Framework_TestCase {
 		$this->assertTrue( $pageInformation->hasValidId() );
 	}
 
+	public function testImageExistsCanBeSet() {
+		$pageInformation = new PageInformation( new stdClass() );
+		$this->assertFalse( $pageInformation->hasImage() );
+		$pageInformation = new PageInformation( (object)[
+			"image_exists" => false
+		] );
+		$this->assertFalse( $pageInformation->hasImage() );
+		$pageInformation = new PageInformation( (object)[
+			"image_exists" => true
+		] );
+		$this->assertTrue( $pageInformation->hasImage() );
+	}
+
 	public function testCategoryNameIsNormalized() {
 		$pageInformation = new PageInformation( (object)[
 			"category" => "Kategorie:Test"
