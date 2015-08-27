@@ -42,7 +42,7 @@ class TestPageinfo(unittest.TestCase):
         self.checker.filter_allowed_templates = Mock(side_effect=lambda x: x)
         self.checker.get_id.return_value = "1"
         self.checker.has_valid_id.return_value = True
-        self.mapper.get_commonscat_list_from_links.return_value = [u"Category:Cultural heritage ensembles in Saxony"]
+        self.mapper.get_commonscat.return_value = u"Category:Cultural heritage ensembles in Saxony"
         text = u"{{Denkmalliste Sachsen Tabellenzeile|ID=1}}"
         info = pageinfo.get_template_info(self.checker, self.mapper, text, "1")
         self.assertEqual(info, {
@@ -57,7 +57,7 @@ class TestPageinfo(unittest.TestCase):
         self.checker.filter_allowed_templates = Mock(side_effect=lambda x: x)
         self.checker.get_id.return_value = "1"
         self.checker.has_valid_id.return_value = False
-        self.mapper.get_commonscat_list_from_links.return_value = [u"Category:Cultural heritage ensembles in Saxony"]
+        self.mapper.get_commonscat.return_value = u"Category:Cultural heritage ensembles in Saxony"
         text = u"{{Denkmalliste Sachsen Tabellenzeile|ID=1}}"
         info = pageinfo.get_template_info(self.checker, self.mapper, text, "1")
         self.assertEqual(info, {
@@ -72,7 +72,7 @@ class TestPageinfo(unittest.TestCase):
         self.checker.filter_allowed_templates = Mock(side_effect=lambda x: x)
         self.checker.get_id.return_value = "1"
         self.checker.has_valid_id.return_value = True
-        self.mapper.get_commonscat_list_from_links.return_value = [u"Category:Cultural heritage ensembles in Saxony"]
+        self.mapper.get_commonscat.return_value = u"Category:Cultural heritage ensembles in Saxony"
         text = u"{{Denkmalliste Sachsen Tabellenzeile|ID=1}}{{Denkmalliste Sachsen Tabellenzeile|ID=1}}"
         info = pageinfo.get_template_info(self.checker, self.mapper, text, "1")
         self.assertEqual(info, {
@@ -96,7 +96,7 @@ class TestPageinfo(unittest.TestCase):
         self.checker.filter_allowed_templates = Mock(side_effect=lambda x: x)
         self.checker.get_id.return_value = "1"
         self.checker.has_valid_id.return_value = True
-        self.mapper.get_commonscat_list_from_links.return_value = [u"Category:Cultural heritage ensembles in Saxony"]
+        self.mapper.get_commonscat.return_value = u"Category:Cultural heritage ensembles in Saxony"
         text = u"{{Denkmalliste Sachsen Tabellenzeile|ID=1|Bild=Denkmal.jpg}}"
         info = pageinfo.get_template_info(self.checker, self.mapper, text, "1")
         self.assertEqual(info, {
@@ -106,3 +106,10 @@ class TestPageinfo(unittest.TestCase):
             "duplicate_ids": False,
             "image_exists": True
         })
+
+    def test_get_most_specific_category_from_template(self):
+        self.mapper.get_commonscat.return_value = u"Category:Cultural heritage monuments in Munich"
+        text = u"{{Denkmalliste Sachsen Tabellenzeile|ID=1|Commonscat=Cultural heritage monuments in Munich}}"
+        category = pageinfo.get_most_specific_category(self.mapper, text, Mock())
+        self.assertEqual(category, u"Category:Cultural heritage monuments in Munich")
+

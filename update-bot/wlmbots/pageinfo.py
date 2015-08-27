@@ -31,7 +31,7 @@ def get_template_info(template_checker, commonscat_mapper, text, monument_id='')
         id_count = 1
         info = {
             "template": unicode(template),
-            "category": get_most_specific_category(commonscat_mapper, text),
+            "category": get_most_specific_category(commonscat_mapper, text, template),
             "valid_id": template_checker.has_valid_id(template),
             "image_exists": image_exists(template)
         }
@@ -43,10 +43,13 @@ def get_template_info(template_checker, commonscat_mapper, text, monument_id='')
     return info
 
 
-def get_most_specific_category(commonscat_mapper, text):
+def get_most_specific_category(commonscat_mapper, text, template=None):
     try:
-        # return first non-empty element or fail
-        return next(category for category in commonscat_mapper.get_commonscat_list_from_links(text) if category)
+        if template:
+            return commonscat_mapper.get_commonscat(text, template)
+        else:
+            # return first non-empty element or fail
+            return next(category for category in commonscat_mapper.get_commonscat_list_from_links(text) if category)
     except StopIteration:
         return ""
 
