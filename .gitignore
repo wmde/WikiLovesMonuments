@@ -11,4 +11,5 @@ update-bot/user-config.py
 forward_script/vendor
 forward_script/cache
 forward_script/app_errors.log
+forward_script/app_settings.local.php
 

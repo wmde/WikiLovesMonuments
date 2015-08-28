@@ -80,9 +80,12 @@ Add the following line to the user-config.py:
 3. Copy the file [`.lighttpd.conf`](wlm-de-utils/.lighttpd.conf) to the home directory.
 4. Start the web server with the command
 
-```
-webservice start
-```
+    ```bash
+    webservice start
+    ```
+
+5. Copy the file `WikiLovesMonuments/forward_script/app_settings.local.php.dist` to `WikiLovesMonuments/forward_script/app_settings.local.php` and edit the file to accommodate for the local environment. In case of Tool Labs, this means uncommenting the line for the pageinfo script.
+
 
 [wlmrepo]: https://github.com/wmde/WikiLovesMonuments/
 [virtualenv]: https://virtualenv.pypa.io/en/latest/

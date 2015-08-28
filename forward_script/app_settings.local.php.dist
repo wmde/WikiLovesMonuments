@@ -1,0 +1,9 @@
+<?php
+
+// Define different python interpreter path
+// $app['pageinfo_script'] = '/data/project/wlm-de-utils/env/bin/python -m wlmbots.pageinfo';
+
+// Beta commons instead of commons
+// $app['commons_base_url'] = 'http://commons.wikimedia.beta.wmflabs.org/';
+// $app['commons_api_url'] = $app['commons_base_url'] . 'w/api.php';
+// $app['commons_upload_url'] = $app['commons_base_url'] . 'wiki/Special:UploadWizard?';
