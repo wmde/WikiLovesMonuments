@@ -7,5 +7,3 @@
 // $app['commons_base_url'] = 'http://commons.wikimedia.beta.wmflabs.org/';
 // $app['commons_api_url'] = $app['commons_base_url'] . 'w/api.php';
 // $app['commons_upload_url'] = $app['commons_base_url'] . 'wiki/Special:UploadWizard?';
-
-return $app;

@@ -26,7 +26,7 @@ $app['pageinfo_script'] = 'python -m wlmbots.pageinfo';
 $app['additional_categories'] = ['Uploaded with UploadWizard via delists'];
 
 // include local settings
-include ( __DIR__ . '/app_settings.local.php' );
+include __DIR__ . '/app_settings.local.php';
 
 // Services
 $app['cache'] = $app->share( function ( $app ) {
