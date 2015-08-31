@@ -7,7 +7,7 @@ setup(name='forward_script',
       author='Wikimedia DE',
       author_email='kasia.odrozek@wikimedia.de',
       license='GPL2',
-      packages=['forward_Script'],
+      packages=['forward_script'],
       install_requires=[
         'httplib2',
         'wlmbots',
