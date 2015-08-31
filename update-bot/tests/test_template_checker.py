@@ -75,6 +75,20 @@ class TestTemplateChecker(unittest.TestCase):
         template.name = u"Denkmalliste Kleinkleckersdorf Tabellenzeile"
         self.assertFalse(self.checker.is_allowed_template(template))
 
+    def test_is_allowed_template_normalizes_underscores(self):
+        template = Mock()
+        template.name = u"Denkmalliste_Sachsen_Tabellenzeile"
+        self.assertTrue(self.checker.is_allowed_template(template), "Template not found")
+        # Check if config is normalized
+        self.config[u"Denkmalliste_Brandenburg_Tabellenzeile"] = {
+            "id": "ID",
+            "id_check": "\\d{4,}",
+            "id_check_description": u"Nummer, mindestens vierstellig"
+        }
+        self.checker = TemplateChecker(self.config)
+        template.name = u"Denkmalliste Brandenburg Tabellenzeile"
+        self.assertTrue(self.checker.is_allowed_template(template), "Template not found")
+
     def test_check_for_errors_skips_redirect_pages(self):
         article = Mock()
         article.isRedirectPage.return_value = True
