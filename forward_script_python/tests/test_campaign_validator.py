@@ -10,7 +10,7 @@ class TestCampaignChecker(unittest.TestCase):
 
     def setUp(self):
         self.pywikibot = Mock()
-        self.checker = CampaignValidator(self.pywikibot)
+        self.checker = CampaignValidator(self.pywikibot, site=Mock())
 
     def test_page_must_exist_to_be_valid(self):
         page = Mock()
@@ -22,19 +22,10 @@ class TestCampaignChecker(unittest.TestCase):
         self.pywikibot.Page.return_value = page
         self.assertEqual(self.checker.is_valid_campaign("Test Campaign"), False)
 
-    def test_page_must_be_in_campaign_namespace(self):
-        page = Mock()
-        page.exists.return_value = True
-        page.isRedirectPage.return_value = False
-        page.namespace.return_value = 0
-        self.pywikibot.Page.return_value = page
-        self.assertEqual(self.checker.is_valid_campaign("Test Campaign"), False)
-
     def test_valid_campaign_page(self):
         page = Mock()
         page.exists.return_value = True
         page.isRedirectPage.return_value = False
-        page.namespace.return_value = 460
         self.pywikibot.Page.return_value = page
         self.assertTrue(self.checker.is_valid_campaign("Test Campaign"))
 
