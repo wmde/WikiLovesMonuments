@@ -21,15 +21,15 @@ class QueryBuilder(object):
             additional_categories = []
 
         query = {}
-        categories = '|' . join([info.get_category()] + additional_categories)
+        categories = '|' . join([info.category] + additional_categories)
         query['categories'] = categories
         if 'lat' in coordinates and coordinates['lat'] and 'lon' in coordinates and coordinates['lon']:
             query['lat'] = coordinates['lat']
             query['lon'] = coordinates['lon']
-        if info.has_usable_id():
+        if info.has_usable_id:
             query['objref'] = '|' . join(['de', page_name, object_id])
-        if info.has_valid_id():
+        if info.has_valid_id:
             query['fields[]'] = object_id
-        if not info.has_image():
+        if not info.has_image:
             query['updateList'] = "1"
         return "&" + urllib.urlencode(query)
