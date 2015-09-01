@@ -10,6 +10,7 @@ setup(name='forward_script',
       packages=['forward_script'],
       install_requires=[
         'httplib2',
+        'mwparserfromhell',
         'wlmbots',
         'pywikibot'
       ],
