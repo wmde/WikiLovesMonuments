@@ -9,6 +9,7 @@ setup(name='forward_script',
       license='GPL2',
       packages=['forward_script'],
       install_requires=[
+        'flask',
         'httplib2',
         'mwparserfromhell',
         'wlmbots',
