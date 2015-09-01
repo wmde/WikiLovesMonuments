@@ -101,6 +101,14 @@ class TestTemplateChecker(unittest.TestCase):
         errors = self.checker.check_article_for_errors(article)
         self.assertEqual({TemplateChecker.ERROR_DUPLICATE_IDS: {u"1234": 2}}, errors)
 
+    def test_check_for_errors_reports_too_many_templates(self):
+        article = self.create_article_with_text(u"{{Denkmalliste Sachsen Tabellenzeile|ID=1234}}" * 600)
+        errors = self.checker.check_article_for_errors(article)
+        self.assertEqual({
+            TemplateChecker.ERROR_DUPLICATE_IDS: {u"1234": 600},
+            TemplateChecker.ERROR_TOO_MANY_TEMPLATES: 600
+        }, errors)
+
     def test_check_for_errors_can_report_multiple_errors(self):
         article = self.create_article_with_text(
             u"{{Denkmalliste Sachsen Tabellenzeile|ID=1}}{{Denkmalliste Sachsen Tabellenzeile|ID=1}}{{Denkmalliste Sachsen Tabellenzeile|}}")

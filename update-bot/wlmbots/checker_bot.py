@@ -105,6 +105,9 @@ class CheckerBot(object):
         for result in results:
             if TemplateChecker.ERROR_MISSING_TEMPLATE in result["errors"]:
                 unsupported += 1
+            elif TemplateChecker.ERROR_TOO_MANY_TEMPLATES in result["errors"] and \
+                    result["errors"] > TemplateChecker.TEMPLATE_LIMIT_HARD:
+                unsupported += 1
             else:
                 partially_supported += 1
         return unsupported, partially_supported
@@ -121,14 +124,18 @@ class CheckerBot(object):
                 TemplateChecker.ERROR_MISSING_TEMPLATE: "",
                 TemplateChecker.ERROR_MISSING_IDS: "",
                 TemplateChecker.ERROR_INVALID_IDS: "",
-                TemplateChecker.ERROR_DUPLICATE_IDS: ""
+                TemplateChecker.ERROR_DUPLICATE_IDS: "",
+                TemplateChecker.ERROR_TOO_MANY_TEMPLATES: ""
             }
             severity = min(result["errors"].keys())
             errors.update(result["errors"])
+            if severity == 2 and errors[TemplateChecker.ERROR_TOO_MANY_TEMPLATES] > TemplateChecker.TEMPLATE_LIMIT_HARD:
+                severity = 1
             duplicate_ids = ", ".join(errors[TemplateChecker.ERROR_DUPLICATE_IDS])
-            text += u"{{{{Fehler in Denkmallisten Tabellenzeile|Titel={}|Kein_Template={}|IDs_fehlen={}|IDs_ungueltig={}|IDs_doppelt={}|Level={}}}}}\n".format(
+            text += u"{{{{Fehler in Denkmallisten Tabellenzeile|Titel={}|Kein_Template={}|IDs_fehlen={}|IDs_ungueltig={}|IDs_doppelt={}|Viele_Templates={}|Level={}}}}}\n".format(
                 result["title"], errors[TemplateChecker.ERROR_MISSING_TEMPLATE], errors[TemplateChecker.ERROR_MISSING_IDS],
-                errors[TemplateChecker.ERROR_INVALID_IDS], duplicate_ids, severity
+                errors[TemplateChecker.ERROR_INVALID_IDS], duplicate_ids, errors[TemplateChecker.ERROR_TOO_MANY_TEMPLATES],
+                severity
             )
         text += "|}\n\n"
         return text

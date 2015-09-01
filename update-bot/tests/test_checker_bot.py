@@ -119,7 +119,8 @@ class TestCheckerBot(unittest.TestCase):
                     "errors": {
                         TemplateChecker.ERROR_INVALID_IDS: 7,
                         TemplateChecker.ERROR_DUPLICATE_IDS: [u"42", u"23"],
-                        TemplateChecker.ERROR_MISSING_IDS: 8
+                        TemplateChecker.ERROR_MISSING_IDS: 8,
+                        TemplateChecker.ERROR_TOO_MANY_TEMPLATES: 700
                     }
                 }
             ]
@@ -131,6 +132,7 @@ class TestCheckerBot(unittest.TestCase):
         self.assertIn(u"IDs_fehlen=8", table)
         self.assertIn(u"IDs_ungueltig=7", table)
         self.assertIn(u"IDs_doppelt=42, 23", table)
+        self.assertIn(u"Viele_Templates=700", table)
 
     def test_generate_category_result_table_creates_missing_template_entries(self):
         results = {
@@ -150,6 +152,7 @@ class TestCheckerBot(unittest.TestCase):
         self.assertIn(u"IDs_fehlen=|", table)
         self.assertIn(u"IDs_ungueltig=|", table)
         self.assertIn(u"IDs_doppelt=|", table)
+        self.assertIn(u"Viele_Templates=|", table)
 
     def test_exluded_articles_returns_empty_list_if_page_does_not_exist(self):
         page = Mock()
