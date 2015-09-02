@@ -131,11 +131,20 @@ class TemplateChecker(object):
         return self._get_template_name(template) in self.config
 
     def compile_id_check_patterns(self, config):
+        """ Convert ID patterns in template configuration into compiled regular expression objects. """
         retype = type(re.compile("test"))
         for tpl in config:
             if "id_check" in config[tpl] and not isinstance(config[tpl]["id_check"], retype):
                 config[tpl]["id_check"] = re.compile(config[tpl]["id_check"])
         return config
+
+    @staticmethod
+    def _normalize_config_names(config):
+        """ Replace underscores in template names with spaces """
+        new_config = {}
+        for template_name in config:
+            new_config[template_name.replace("_", " ")] = config[template_name]
+        return new_config
 
     def template_config(self, template):
         """
@@ -144,7 +153,7 @@ class TemplateChecker(object):
         return self.config[self._get_template_name(template)]
 
     def _get_template_name(self, template):
-        return unicode(template.name).strip()
+        return unicode(template.name).strip().replace("_", " ")
 
     @property
     def config(self):
@@ -152,5 +161,6 @@ class TemplateChecker(object):
 
     @config.setter
     def config(self, config):
+        config = self._normalize_config_names(config)
         self._config = self.compile_id_check_patterns(config)
         self.tpl_match_regex = None
