@@ -17,13 +17,13 @@ class TestCommonsBotFunctions(unittest.TestCase):
         self.assertEqual(first_day_of_month.month, 9)
         self.assertEqual(first_day_of_month.day, 1)
 
+
 class TestCommonsBot(unittest.TestCase):
 
     def setUp(self):
         self.wikipedia_site = Mock()
-        self.article_iterator = Mock()
         self.template_checker = Mock()
-        self.commons_bot = commons_bot.CommonsBot(self.wikipedia_site, self.article_iterator, self.template_checker)
+        self.commons_bot = commons_bot.CommonsBot(self.wikipedia_site, self.template_checker)
         self.commons_bot.logger = Mock()
 
     def test_check_article_does_nothing_if_params_comment_is_missing(self):

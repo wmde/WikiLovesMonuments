@@ -37,22 +37,20 @@ class CommonsBot(object):
     comment_pattern = re.compile(r"<!-- WIKIPAGE_UPDATE_PARAMS (.+?)-->\n\n")
     prefix_pattern = re.compile(r"^(?:File|Datei):")
 
-    def __init__(self, wikipedia_site, article_iterator, template_checker):
+    def __init__(self, wikipedia_site, template_checker):
         self.wikipedia_site = wikipedia_site
-        article_iterator.article_callback = self.cb_check_article
-        self.article_iterator = article_iterator
         self.template_checker = template_checker
         self.sleep_seconds = 30
         self.logger = pywikibot
 
-    def run_once(self, start_time, category):
+    def run_once(self, article_iterator, start_time, category):
         article_args = {
             "sortby": "timestamp",
             "starttime": start_time
         }
-        self.article_iterator.iterate_articles(category, article_arguments=article_args)
+        article_iterator.iterate_articles(category, article_arguments=article_args)
 
-    def run_continuously(self, start_time, category):
+    def run_continuously(self, article_iterator, start_time, category):
         article_args = {
             "sortby": "timestamp",
             "starttime": start_time
@@ -60,9 +58,9 @@ class CommonsBot(object):
         counter = 0
         while True:
             now = pywikibot.Timestamp.now()
-            counter += self.article_iterator.iterate_articles(category, counter, article_args)
+            counter = article_iterator.iterate_articles(category, counter, article_args)
             article_args["starttime"] = now
-            if self.article_iterator.limit_reached(counter, 0):
+            if article_iterator.limit_reached(counter, 0):
                 break
             time.sleep(self.sleep_seconds)
 
@@ -131,14 +129,16 @@ def first_day_of_month(date=None):
 def main(*args):
     wikipedia_site = pywikibot.Site()  # Use the site configured in params/user-config
     commons_site = pywikibot.Site("commons", "commons")
-    callbacks = ArticleIteratorCallbacks(
-        logging_callback=pywikibot.log,
-    )
-    article_iterator = ArticleIterator(callbacks)
-    parser = ArticleIteratorArgumentParser(article_iterator, None)
     checker = TemplateChecker()
     checker.load_config("config/templates.json")
-    commons_bot = CommonsBot(wikipedia_site, article_iterator, checker)
+    commons_bot = CommonsBot(wikipedia_site, checker)
+    callbacks = ArticleIteratorCallbacks(
+        logging_callback=pywikibot.log,
+        article_callback=commons_bot.cb_check_article
+    )
+    article_iterator = ArticleIterator(callbacks)
+    article_iterator.log_every_n = 1
+    parser = ArticleIteratorArgumentParser(article_iterator, None)
     run_cmd = commons_bot.run_continuously
     category_name = u"Images from Wiki Loves Monuments 2015 in Germany"
     start_time = first_day_of_month()
@@ -158,7 +158,7 @@ def main(*args):
         elif argument == "-local-media":
             commons_site = wikipedia_site
     category = pywikibot.Category(commons_site, category_name)
-    run_cmd(start_time, category)
+    run_cmd(article_iterator, start_time, category)
 
 
 if __name__ == "__main__":
