@@ -1,6 +1,7 @@
 import pywikibot
 
 from flask import Flask, request, g, redirect, render_template_string
+from werkzeug.contrib.cache import SimpleCache, RedisCache
 
 import logging
 
@@ -18,9 +19,12 @@ COMMONS_API_URL = COMMONS_BASE_URL + 'w/api.php'
 COMMONS_UPLOAD_URL = COMMONS_BASE_URL + 'wiki/Special:UploadWizard?'
 WIKIPEDIA_API_URL = 'https://de.wikipedia.org/w/api.php'
 ADDITIONAL_CATEGORIES = ['Uploaded with UploadWizard via delists']
+REDIS_CACHE_PREFIX = ""
+
 
 app = Flask(__name__)
 app.config.from_object(__name__)
+app.config.from_envvar('FORWARD_SCRIPT_SETTINGS', True)
 
 # Set up Logging
 file_handler = logging.FileHandler("app_errors.log", encoding="utf-8")
@@ -37,6 +41,23 @@ def setup_instances():
     mapper = CommonscatMapper()
     mapper.load_mapping("config/commonscat_mapping.json")
     g.page_information_collector = PageInformationCollector(checker, mapper)
+    if app.config["REDIS_CACHE_PREFIX"]:
+        g.campaign_cache = RedisCache(key_prefix=app.config["REDIS_CACHE_PREFIX"])
+    else:
+        g.campaign_cache = SimpleCache()
+
+
+def check_if_valid_campaign(campaign_name):
+    cache_key = "campaign-" + campaign_name
+    valid_campaign = g.campaign_cache.get(cache_key)
+    if valid_campaign is None:
+        valid_campaign = g.campaign_validator.is_valid_campaign(campaign_name)
+        if valid_campaign:
+            timeout = 604800
+        else:
+            timeout = 300
+        g.campaign_cache.set(cache_key, valid_campaign, timeout)
+    return valid_campaign
 
 
 @app.route('/')
@@ -47,7 +68,7 @@ def index():
 @app.route('/redirect/<path:page_name>/<campaign_name>')
 def redirect_to_commons(page_name, campaign_name):
     setup_instances()
-    if not g.campaign_validator.is_valid_campaign(campaign_name):
+    if not check_if_valid_campaign(campaign_name):
         return render_template_string("Invalid campaign_name.")
     page_name = page_name.replace("+", "_")
     article = pywikibot.Page(g.site_wikipedia, page_name)
