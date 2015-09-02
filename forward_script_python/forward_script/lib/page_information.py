@@ -13,6 +13,7 @@ class PageInformation(object):
         self.id_was_found = False
         self.has_image = False
         self.has_valid_id = False
+        self.meta = {}
 
     @property
     def has_usable_id(self):
@@ -34,13 +35,19 @@ class PageInformationCollector(object):
 
     def get_information(self, article, monument_id):
         info = PageInformation()
+        if not article.exists():
+            info.meta["article_not_found"] = True
+            return info
         text = article.get()
         info.category = self.get_most_specific_category(text)
         if not monument_id:
+            info.meta["no_monument_id"] = True
             return info
         id_count = 0
         templates = mwparserfromhell.parse(text).filter_templates()
+        template_count = 0
         for template in self.template_checker.filter_allowed_templates(templates):
+            template_count += 1
             if self.template_checker.get_id(template) != monument_id:
                 continue
             if id_count:
@@ -50,6 +57,7 @@ class PageInformationCollector(object):
             info.category = self.get_most_specific_category(text, template)
             info.id = monument_id
             info.has_valid_id = self.template_checker.has_valid_id(template)
+        info.meta["template_count"] = template_count
         if info.id:
             info.has_duplicate_ids = id_count > 1
         return info
