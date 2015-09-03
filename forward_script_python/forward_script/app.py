@@ -7,6 +7,7 @@ import logging
 
 from lib.campaign_validator import CampaignValidator
 from lib.page_information import PageInformationCollector
+from lib.prefix_remover import PrefixRemover
 from lib import query_builder
 
 from wlmbots.lib.commonscat_mapper import CommonscatMapper
@@ -83,6 +84,9 @@ def redirect_to_commons(page_name, campaign_name):
                                     coordinates, app.config["ADDITIONAL_CATEGORIES"])
     return redirect(app.config["COMMONS_UPLOAD_URL"] + query[1:])
 
+
+# This variable can later be used by wsgi
+app_without_prefix = PrefixRemover(app)
 
 if __name__ == '__main__':
     app.run()
