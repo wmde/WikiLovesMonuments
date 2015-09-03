@@ -32,4 +32,12 @@ def get_query(campaign, info, page_name, object_id='', coordinates=None, additio
         query['fields[]'] = object_id
     if not info.has_image and info.has_usable_id:
         query['updateList'] = "1"
+    query = _encode_unicode_params(query)
     return "&" + urllib.urlencode(query)
+
+
+def _encode_unicode_params(query):
+    for param in query:
+        if isinstance(query[param], unicode):
+            query[param] = query[param].encode('utf-8')
+    return query

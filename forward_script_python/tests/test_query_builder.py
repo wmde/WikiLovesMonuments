@@ -44,6 +44,12 @@ class TestQueryBuilder(unittest.TestCase):
         query = query_builder.get_query('', self._page_info, 'Test Page', '123')
         self.assertFalse('&objref=de%7CTest+Page%7C123' in query)
 
+    def test_objref_encodes_as_utf_8(self):
+        self._page_info.category = ''
+        self._page_info.has_usable_id = True
+        query = query_builder.get_query('', self._page_info, u'Baudenkmäler', '123')
+        self.assertTrue('&objref=de%7CBaudenkm%C3%A4ler%7C123' in query)
+
     def test_fields_are_added_if_id_is_valid(self):
         self._page_info.category = ''
         self._page_info.has_valid_id = True
