@@ -20,12 +20,9 @@ class TemplateChecker(object):
     ERROR_DUPLICATE_IDS = 16
 
     # How many templates on a page are ok. If more templates are on the page,
-    # the Bilderwunsch/ListeneintragWLM template will break the text expansion limit
-    # See 
-    TEMPLATE_LIMIT_SOFT = 350
-
-    # How many templates break the page, even with a simple link
-    TEMPLATE_LIMIT_HARD = 550
+    # the Bilderwunsch/ListeneintragWLM template may break the text expansion limit
+    # See https://de.wikipedia.org/wiki/Hilfe:Vorlagenbeschr%C3%A4nkungen
+    TEMPLATE_LIMIT = 350
 
     def __init__(self, config=None):
         self._config = {}
@@ -132,7 +129,7 @@ class TemplateChecker(object):
             if not self.has_valid_id(template):
                 errors[self.ERROR_INVALID_IDS] += 1
         errors[self.ERROR_DUPLICATE_IDS] = {row_id: count for row_id, count in ids.iteritems() if count > 1}
-        if template_count > self.TEMPLATE_LIMIT_SOFT:
+        if template_count > self.TEMPLATE_LIMIT:
             errors[self.ERROR_TOO_MANY_TEMPLATES] = template_count
         errors = {e: v for e, v in errors.iteritems() if v}
         return errors
