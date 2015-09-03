@@ -14,9 +14,15 @@ class TemplateChecker(object):
     """ Check templates for allowed ID patterns """
 
     ERROR_MISSING_TEMPLATE = 1
-    ERROR_MISSING_IDS = 2
-    ERROR_INVALID_IDS = 4
-    ERROR_DUPLICATE_IDS = 8
+    ERROR_TOO_MANY_TEMPLATES = 2
+    ERROR_MISSING_IDS = 4
+    ERROR_INVALID_IDS = 8
+    ERROR_DUPLICATE_IDS = 16
+
+    # How many templates on a page are ok. If more templates are on the page,
+    # the Bilderwunsch/ListeneintragWLM template may break the text expansion limit
+    # See https://de.wikipedia.org/wiki/Hilfe:Vorlagenbeschr%C3%A4nkungen
+    TEMPLATE_LIMIT = 350
 
     def __init__(self, config=None):
         self._config = {}
@@ -112,8 +118,10 @@ class TemplateChecker(object):
             self.ERROR_INVALID_IDS: 0
         }
         ids = collections.Counter()
+        template_count = 0
         for template in self.filter_allowed_templates(templates):
             row_id = self.get_id(template)
+            template_count += 1
             if not row_id:
                 errors[self.ERROR_MISSING_IDS] += 1
                 continue
@@ -121,6 +129,8 @@ class TemplateChecker(object):
             if not self.has_valid_id(template):
                 errors[self.ERROR_INVALID_IDS] += 1
         errors[self.ERROR_DUPLICATE_IDS] = {row_id: count for row_id, count in ids.iteritems() if count > 1}
+        if template_count > self.TEMPLATE_LIMIT:
+            errors[self.ERROR_TOO_MANY_TEMPLATES] = template_count
         errors = {e: v for e, v in errors.iteritems() if v}
         return errors
 
