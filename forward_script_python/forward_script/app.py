@@ -20,6 +20,7 @@ COMMONS_API_URL = COMMONS_BASE_URL + 'w/api.php'
 COMMONS_UPLOAD_URL = COMMONS_BASE_URL + 'wiki/Special:UploadWizard?'
 WIKIPEDIA_API_URL = 'https://de.wikipedia.org/w/api.php'
 ADDITIONAL_CATEGORIES = ['Uploaded with UploadWizard via delists']
+REDIS_HOST = "localhost"
 REDIS_CACHE_PREFIX = ""
 
 
@@ -43,7 +44,7 @@ def setup_instances():
     mapper.load_mapping("config/commonscat_mapping.json")
     g.page_information_collector = PageInformationCollector(checker, mapper)
     if app.config["REDIS_CACHE_PREFIX"]:
-        g.campaign_cache = RedisCache(key_prefix=app.config["REDIS_CACHE_PREFIX"])
+        g.campaign_cache = RedisCache(host=app.config["REDIS_HOST"], key_prefix=app.config["REDIS_CACHE_PREFIX"])
     else:
         g.campaign_cache = SimpleCache()
 
