@@ -1,3 +1,4 @@
+#!/usr/bin/php -q
 <?php
 /**
  * Monitoring script to check if the forward script is working.

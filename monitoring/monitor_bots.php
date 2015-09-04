@@ -1,4 +1,8 @@
+#!/usr/bin/php -q
 <?php
+/**
+ * Use the output of the 'qstat' tool to check if the bots are running.
+ */
 
 include __DIR__ . '/config.php';
 
