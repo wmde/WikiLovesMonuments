@@ -1,10 +1,6 @@
 <?php
 
-$checkPatterns = [
-    '/\s+commonsbot\s+/' => 'Commons Bot'
-];
-$notifyMail = 'gabriel.birke@wikimedia.de';
-$subjectPrefix = '[WLM-Monitor]';
+include __DIR__ . '/config.php';
 
 $result = exec('qstat', $output, $returnVar);
 

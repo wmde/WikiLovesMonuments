@@ -3,10 +3,7 @@
  * Monitoring script to check if the forward script is working.
  */
 
-$checkURL = 'https://tools.wmflabs.org/wlm-de-utils/redirect/Benutzer%3AGabriel+Birke+%28WMDE%29%2FDemo+Liste+Baudenkmale+Bad+Wiessee/wlm-de-by?id=D-1-82-111-30&lat=11.70699&lon=47.73638';
-$expectedLocation = 'https://commons.wikimedia.org/wiki/Special:UploadWizard';
-$notifyMail = 'gabriel.birke@wikimedia.de';
-$subjectPrefix = '[WLM-Monitor]';
+include __DIR__ . '/config.php';
 
 $ch = curl_init( $checkURL );
 
