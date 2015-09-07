@@ -4,7 +4,7 @@ This repo is a collection of code enabling easier image uploads on the German Wi
 
 The code consists of two parts:
 1. Bots that analyze the monument pages and insert images from Commons in the monument lists. See the [bots README](update-bot/README.md) for detailed documentation on the bots.
-2. A PHP script that forwards from Wikipedia links to the Commons Uploader, adding URL parameters. See the [forward script README](forward_script/README.md) for detailed documentation on the forward script.
+2. A Python script that forwards from Wikipedia links to the Commons Uploader, adding URL parameters. See the [forward script README](forward_script_python/README.md) for detailed documentation on the forward script.
 
 ## Deployment on Tool Labs
 The tool name is `wlm-de-utils`. All following commands must be carried out with the tool account, *not* your personal Tool Labs account. To switch to the tool account, run the following command after logging in with your personal Tool Labs account:
@@ -14,27 +14,19 @@ The tool name is `wlm-de-utils`. All following commands must be carried out with
 Generally, the [`WikiLovesMonuments`][wlmrepo] repository is checked out in the tool home directory.
 Whenever you want to deploy a new version, just do a `git pull` in the repository directory. However, there are some things that must be done afterwards:
 
-1. Update the `wlmbots` module:
+1. Restart the web service:
 
  ```bash
- cd WikiLovesMonuments/update-bot
- pip install --update -e .
+ webservice stop
+ webservice --release trusty uwsgi-plain start
  ```
 
-   If the installer displays a message that the module doesn't need to be updated, make sure that there were no changes in the Python code. If there were changes, change the version in `update-bot/setup.py`, commit, pull and install again.
 2. Restart the commons bot:
 
  ```bash
  cd WikiLovesMonuments/update-bot
  jstop commonsbot
  jstart -N commonsbot -l release=trusty -wd /data/project/wlm-de-utils/WikiLovesMonuments/update-bot/ /data/project/wlm-de-utils/WikiLovesMonuments/update-bot/run_commonsbot.sh
- ```
-
- 3. Update PHP libraries/autoloader
-
- ```bash
- cd WikiLovesMonuments/forward_script
- php ~/bin/composer.phar install --no-dev -o
  ```
 
 ### First-time initialization
@@ -68,24 +60,18 @@ Add the following line to the user-config.py:
 
     password_file = "secretsfile"
 
-#### Set up the web server
-1. Set up composer like described at https://getcomposer.org/ and do a `composer install` in the `forward_script` directory.
-2. Create a symbolic link:
+#### Install the python modules
+Make sure that the Python virtual environment (see above) is activated. Then follow the install instructions from [README file for the forward script](forward_script_python/README.md).
 
-    ```bash
-    rm -r public_html
-    ln -s WikiLovesMonuments/forward_script/web public_html
-    ```
+#### Set up the forward script
+Copy the configuration file [uwsgi.ini](wlm-de-utils/uwsgi.ini) to the home directory.
 
-3. Copy the file [`.lighttpd.conf`](wlm-de-utils/.lighttpd.conf) to the home directory.
-4. Start the web server with the command
+Start the web service with the command
 
-    ```bash
-    webservice start
-    ```
+    webservice --release trusty uwsgi-plain start
 
-5. Copy the file `WikiLovesMonuments/forward_script/app_settings.local.php.dist` to `WikiLovesMonuments/forward_script/app_settings.local.php` and edit the file to accommodate for the local environment. In case of Tool Labs, this means uncommenting the line for the pageinfo script.
-
+You can monitor the file `uwsgi.log` in the home directory to check if the web server is running. When a line containing `spawned uWSGI worker` shows up, the script is ready. Test with the link
+`https://tools.wmflabs.org/wlm-de-utils/redirect/Liste_der_Baudenkmäler_in_Abtswind/wlm-de-by?id=D-6-75-111-5&lat=49.77168&lon=10.37051` to check if the redirect works.
 
 [wlmrepo]: https://github.com/wmde/WikiLovesMonuments/
 [virtualenv]: https://virtualenv.pypa.io/en/latest/
