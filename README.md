@@ -64,11 +64,19 @@ Add the following line to the user-config.py:
 Make sure that the Python virtual environment (see above) is activated. Then follow the install instructions from [README file for the forward script](forward_script_python/README.md).
 
 #### Set up the forward script
-Copy the configuration file [uwsgi.ini](wlm-de-utils/uwsgi.ini) to the home directory.
+1. Copy the configuration file [uwsgi.ini](wlm-de-utils/uwsgi.ini) to the home directory.
 
-Start the web service with the command
+2. Create the file `settings.py` in the home directory. You can use the [template](wlm-de-utils/settings.py.dist) from the `wlm-de-utils directory. You must fill the variable `REDIS_CACHE_PREFIX` with a random string, for example one generated with the command
 
-    webservice --release trusty uwsgi-plain start
+ ```bash
+ openssl rand -base64 32
+ ```
+
+3. Start the web service with the command
+
+ ```bash
+ webservice --release trusty uwsgi-plain start
+ ```
 
 You can monitor the file `uwsgi.log` in the home directory to check if the web server is running. When a line containing `spawned uWSGI worker` shows up, the script is ready. Test with the link
 `https://tools.wmflabs.org/wlm-de-utils/redirect/Liste_der_Baudenkmäler_in_Abtswind/wlm-de-by?id=D-6-75-111-5&lat=49.77168&lon=10.37051` to check if the redirect works.

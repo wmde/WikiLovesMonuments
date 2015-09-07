@@ -1,0 +1,3 @@
+# Run 'openssl rand -base64 32' to generate a random string and put in in here
+REDIS_CACHE_PREFIX=""
+REDIS_HOST="tools-redis"
