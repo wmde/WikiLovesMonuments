@@ -3,6 +3,7 @@
 This repo is a collection of code enabling easier image uploads on the German Wikipedia for Wiki Loves Monuments competition.
 
 The code consists of two parts:
+
 1. Bots that analyze the monument pages and insert images from Commons in the monument lists. See the [bots README](update-bot/README.md) for detailed documentation on the bots.
 2. A Python script that forwards from Wikipedia links to the Commons Uploader, adding URL parameters. See the [forward script README](forward_script_python/README.md) for detailed documentation on the forward script.
 
