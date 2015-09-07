@@ -12,3 +12,6 @@ $expectedLocation = 'https://commons.wikimedia.org/wiki/Special:UploadWizard';
 $checkPatterns = [
 	'/\s+commonsbot\s+/' => 'Commons Bot'
 ];
+
+// How often should the notification mail be sent in case an error occurs
+$notificationInterval = 1800; // Notify every 30 minutes (60 * 30)

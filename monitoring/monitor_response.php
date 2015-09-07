@@ -6,21 +6,58 @@
 
 include __DIR__ . '/config.php';
 
+/**
+ * Send notification mail if notification interval is exceeded.
+ *
+ * @param string $email
+ * @param string $subject
+ * @param string $body
+ * @param int $notificationInterval Number of seconds between notifications
+ */
+function notifyConditionally( $email, $subject, $body, $notificationInterval ) {
+	$lastNotify = __DIR__ . '/monitor_response.lastnotify.txt';
+	if ( mustNotify( $lastNotify, $notificationInterval ) ) {
+		$lines = [$email, $subject, $body];
+		file_put_contents( $lastNotify, implode( "\n", $lines ) );
+		mail( $email, $subject, $body );
+	}
+}
+
+/**
+ * Check if the notification mail should be sent by examining the modification date of the file.
+ *
+ * @param string $filename
+ * @param int $notificationInterval
+ * @return bool
+ */
+function mustNotify( $filename, $notificationInterval ) {
+	if ( !file_exists( $filename ) ) {
+		return true;
+	}
+	$currentInterval = time() - filemtime( $filename );
+	return $currentInterval > $notificationInterval;
+}
+
+
 $ch = curl_init( $checkURL );
 
 curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 curl_setopt( $ch, CURLOPT_HEADER, true );
 curl_setopt( $ch, CURLOPT_NOBODY, true );
-curl_setopt( $ch, CURLOPT_USERAGENT, "WLM monitoring script" ); // Tool labs refuses connections without UA
+curl_setopt( $ch, CURLOPT_USERAGENT, 'WLM monitoring script' ); // Tool labs refuses connections without UA
 
 $response = curl_exec( $ch );
 
-// TODO check for timeout
-
 $httpCode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-if ( $httpCode !== 301 || stripos( $response, "Location: $expectedLocation" ) === false ) {
-    $errmsg = "Got the following result back:\n\n$response";
-    mail( $notifyMail, "$subjectPrefix Forward script check failed", $errmsg );
+if ( $httpCode !== 301 || $response === false || stripos( $response, "Location: $expectedLocation" ) === false ) {
+    $errorMessage = "Got the following result back:\n\n$response";
+	$errorMessage .= 'CURL error: ' . curl_error( $ch );
+    notifyConditionally(
+		$notifyMail,
+		"$subjectPrefix Forward script check failed",
+		$errorMessage,
+		$notificationInterval
+	);
 }
 
 curl_close( $ch );
