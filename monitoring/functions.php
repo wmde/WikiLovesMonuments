@@ -35,7 +35,7 @@ function mustNotify( $filename, $notificationInterval ) {
 /**
  * Check if the HTTP code is a redirect and if the response headers contain the expected location
  * @param int $httpCode
- * @param string $response
+ * @param string|bool $response
  * @param string $expectedLocation
  * @return bool
  */
