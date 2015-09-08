@@ -8,8 +8,6 @@ update-bot/Denkmallistenliste.txt
 update-bot/local_family.py
 **/pywikibot.lwp
 */user-config.py
-forward_script/vendor
-forward_script/cache
-forward_script/app_settings.local.php
+**/vendor
 **/monitor_response.lastnotify.txt
 **/*.log
