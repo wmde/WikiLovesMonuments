@@ -10,6 +10,6 @@ update-bot/local_family.py
 */user-config.py
 forward_script/vendor
 forward_script/cache
-*/app_errors.log
 forward_script/app_settings.local.php
 **/monitor_response.lastnotify.txt
+**/*.log

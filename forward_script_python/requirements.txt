@@ -1,3 +1,4 @@
 httplib2
 mwparserfromhell
 pywikibot>=2.0.dev0
+wsgi-request-logger

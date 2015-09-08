@@ -13,6 +13,7 @@ setup(name='forward_script',
         'httplib2',
         'mwparserfromhell',
         'wlmbots',
-        'pywikibot'
+        'pywikibot',
+        'wsgi-request-logger'
       ],
       zip_safe=False)

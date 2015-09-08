@@ -2,8 +2,10 @@ import pywikibot
 
 from flask import Flask, request, g, redirect, render_template_string
 from werkzeug.contrib.cache import SimpleCache, RedisCache
+from requestlogger import WSGILogger, ApacheFormatter
 
 import logging
+from logging.handlers import RotatingFileHandler
 
 from lib.campaign_validator import CampaignValidator
 from lib.page_information import PageInformationCollector
@@ -28,7 +30,7 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 app.config.from_envvar('FORWARD_SCRIPT_SETTINGS', True)
 
-# Set up Logging
+# Set up error logging
 file_handler = logging.FileHandler("app_errors.log", encoding="utf-8")
 file_handler.setLevel(logging.WARNING)
 app.logger.addHandler(file_handler)
@@ -85,6 +87,9 @@ def redirect_to_commons(page_name, campaign_name):
                                     coordinates, app.config["ADDITIONAL_CATEGORIES"])
     return redirect(app.config["COMMONS_UPLOAD_URL"] + query[1:])
 
+# Set up access log
+access_log_handlers = [RotatingFileHandler('access.log', maxBytes=512000000, encoding='utf-8')]
+app.wsgi_app = WSGILogger(app.wsgi_app, access_log_handlers, ApacheFormatter())
 
 # This variable can later be used by wsgi
 app_without_prefix = PrefixRemover(app)
