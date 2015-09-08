@@ -40,7 +40,10 @@ function mustNotify( $filename, $notificationInterval ) {
  * @return bool
  */
 function resultHasErrors( $httpCode, $response, $expectedLocation ) {
-	if ( $httpCode !== 301 || $response === false ) {
+	if ( !in_array( $httpCode, [301, 302] ) ){
+		return true;
+	}
+	if ( $response === false ) {
 		return true;
 	}
 	if ( !preg_match( '/Location:\s*([^\n]+)/i', $response, $matches ) ) {
@@ -62,6 +65,9 @@ function getQueryArray( $urlData ) {
 	if ( empty( $urlData['query'] ) ) {
 		return [];
 	}
-	parse_str( $urlData['query'], $queryData );
+	parse_str( $urlData['query'], $queryData );#
+	if ( !empty( $queryData['fields'] ) && is_array( $queryData['fields'] ) ) {
+		$queryData['fields'] = implode( ",", $queryData['fields'] );
+	}
 	return $queryData;
 }
