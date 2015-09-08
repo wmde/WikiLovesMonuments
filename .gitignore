@@ -7,9 +7,9 @@ update-bot/throttle.ctrl
 update-bot/Denkmallistenliste.txt
 update-bot/local_family.py
 update-bot/user-config.py
-**pywikibot.lwp
+**/pywikibot.lwp
 forward_script/vendor
 forward_script/cache
 forward_script/app_errors.log
 forward_script/app_settings.local.php
-
+**/monitor_response.lastnotify.txt

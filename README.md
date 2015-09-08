@@ -26,8 +26,8 @@ Whenever you want to deploy a new version, just do a `git pull` in the repositor
 
  ```bash
  cd WikiLovesMonuments/update-bot
- jstop commons_bot
- jstart -l release=trusty -N commons_bot -cwd python -m wlmbots.commons_bot
+ jstop commonsbot
+ jstart -N commonsbot -l release=trusty -wd /data/project/wlm-de-utils/WikiLovesMonuments/update-bot/ /data/project/wlm-de-utils/WikiLovesMonuments/update-bot/run_commonsbot.sh
  ```
 
  3. Update PHP libraries/autoloader
