@@ -1,1 +1,1 @@
-jstart -N commonsbot -mem 512m -l release=trusty -wd /data/project/wlm-de-utils/WikiLovesMonuments/update-bot/ /data/project/wlm-de-utils/env/bin/pthon -m wlmbots.commons_bot
+jstart -N commonsbot -mem 512m -l release=trusty -wd /data/project/wlm-de-utils/WikiLovesMonuments/update-bot/ /data/project/wlm-de-utils/WikiLovesMonuments/update-bot/run_commonsbot.sh
