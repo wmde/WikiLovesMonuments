@@ -18,6 +18,10 @@ class PageInformation(object):
 
     @property
     def has_usable_id(self):
+        """
+        Check if the object has an id and if the id is unique
+        :return: bool
+        """
         return self.id and not self.has_duplicate_ids
 
 
@@ -25,16 +29,24 @@ class PageInformationCollector(object):
 
     def __init__(self, template_checker, commonscat_mapper):
         """
-
         :param template_checker:
         :type template_checker: wlmbots.lib.template_checker.TemplateChecker
-        :param commonscat_mapper: wlmbots.lib.commonscat_mapper.CommonscatMapper
-        :return:
+        :param commonscat_mapper:
+        :type commonscat_mapper: wlmbots.lib.commonscat_mapper.CommonscatMapper
         """
         self.template_checker = template_checker
         self.commonscat_mapper = commonscat_mapper
 
     def get_information(self, article, monument_id):
+        """
+        Create PageInformation instance from data in Wikipedia article.
+
+        :param article: A Wikipedia monument list article
+        :type article: pywikibot.Article
+        :param monument_id: Monument ID to search for in the article text. Can be empty to
+            just fill in the category
+        :return: PageInformation
+        """
         info = PageInformation()
         if not article.exists():
             info.meta["article_not_found"] = True
@@ -65,6 +77,20 @@ class PageInformationCollector(object):
         return info
 
     def get_most_specific_category(self, text, template=None):
+        """
+        Get the most specific category from various sources.
+
+        The categories are searched fro in the following order:
+        1. The Commonscat parameter of the template
+        2. The Weblinks section of the text, looking for the "Commonscat" template
+        3. The article category, mapping counties
+
+        :param text: article text
+        :type text: unicode
+        :param template: table row template
+        :type template: mwparserfromhell.nodes.Template
+        :return:
+        """
         try:
             if template:
                 return self.commonscat_mapper.get_commonscat(text, template)
@@ -77,6 +103,13 @@ class PageInformationCollector(object):
 
     @staticmethod
     def image_exists(template):
+        """
+        Check if the "Bild" parameter of the template is filled.
+
+        :param template: A table row template
+        :type template: mwparserfromhell.nodes.Template
+        :return: bool
+        """
         try:
             return template.get("Bild").value.strip() != ""
         except ValueError:
