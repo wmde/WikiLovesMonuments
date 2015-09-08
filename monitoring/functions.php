@@ -40,7 +40,28 @@ function mustNotify( $filename, $notificationInterval ) {
  * @return bool
  */
 function resultHasErrors( $httpCode, $response, $expectedLocation ) {
-	return $httpCode !== 301 ||
-	$response === false ||
-	stripos( $response, "Location: $expectedLocation" ) === false;
+	if ( $httpCode !== 301 || $response === false ) {
+		return true;
+	}
+	if ( !preg_match( '/Location:\s*([^\n]+)/i', $response, $matches ) ) {
+		return true;
+	}
+	$expectedLocationParsed = parse_url( $expectedLocation );
+	$responseLocationParsed = parse_url( $matches[1] );
+	$expectedQuery = getQueryArray( $expectedLocationParsed );
+	$responseQuery = getQueryArray( $responseLocationParsed );
+	unset( $expectedLocationParsed['query'] );
+	unset( $responseLocationParsed['query'] );
+	if ( array_diff( $expectedLocationParsed, $responseLocationParsed ) != [] ) {
+		return true;
+	}
+	return array_diff( $expectedQuery, $responseQuery ) != [];
+}
+
+function getQueryArray( $urlData ) {
+	if ( empty( $urlData['query'] ) ) {
+		return [];
+	}
+	parse_str( $urlData['query'], $queryData );
+	return $queryData;
 }
