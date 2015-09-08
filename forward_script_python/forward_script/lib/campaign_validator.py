@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class CampaignValidator(object):
 
     CAMPAIGN_NAMESPACE = 460
@@ -7,7 +8,7 @@ class CampaignValidator(object):
         self.site = site
 
     def is_valid_campaign(self, campaign_name):
-        page = self.pywikibot.Page(self. site, campaign_name, self.CAMPAIGN_NAMESPACE)
+        page = self.pywikibot.Page(self.site, campaign_name, self.CAMPAIGN_NAMESPACE)
         return self._page_is_valid(page)
 
     @staticmethod
