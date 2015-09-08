@@ -58,6 +58,7 @@ class PageInformationCollector(object):
             info.category = self.get_most_specific_category(text, template)
             info.id = monument_id
             info.has_valid_id = self.template_checker.has_valid_id(template)
+            info.has_image = self.image_exists(template)
         info.meta["template_count"] = template_count
         if info.id:
             info.has_duplicate_ids = id_count > 1
