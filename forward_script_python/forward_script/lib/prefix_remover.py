@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from werkzeug.wsgi import pop_path_info
 
 

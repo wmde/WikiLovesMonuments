@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pywikibot
 
 from flask import Flask, request, g, redirect, render_template_string
