@@ -38,6 +38,18 @@ function mustNotify( $filename, $notificationInterval ) {
 	return $currentInterval > $notificationInterval;
 }
 
+/**
+ * Check if the HTTP code is a redirect and if the response headers contain the expected location
+ * @param int $httpCode
+ * @param string $response
+ * @param string $expectedLocation
+ * @return bool
+ */
+function resultHasErrors( $httpCode, $response, $expectedLocation ) {
+	return $httpCode !== 301 ||
+		$response === false ||
+		stripos( $response, "Location: $expectedLocation" ) === false;
+}
 
 $ch = curl_init( $checkURL );
 
@@ -49,7 +61,7 @@ curl_setopt( $ch, CURLOPT_USERAGENT, 'WLM monitoring script' ); // Tool labs ref
 $response = curl_exec( $ch );
 
 $httpCode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-if ( $httpCode !== 301 || $response === false || stripos( $response, "Location: $expectedLocation" ) === false ) {
+if ( resultHasErrors( $httpCode, $response, $expectedLocation ) ) {
     $errorMessage = "Got the following result back:\n\n$response";
 	$errorMessage .= 'CURL error: ' . curl_error( $ch );
     notifyConditionally(
