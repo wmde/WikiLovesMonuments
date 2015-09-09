@@ -24,6 +24,7 @@ from __future__ import unicode_literals
 import time
 import datetime
 import re
+import collections
 import pywikibot
 import mwparserfromhell
 
@@ -37,9 +38,9 @@ class CommonsBot(object):
     comment_pattern = re.compile(r"<!-- WIKIPAGE_UPDATE_PARAMS (.+?)-->\n\n")
     prefix_pattern = re.compile(r"^(?:File|Datei):")
 
-    def __init__(self, wikipedia_site, template_checker):
+    def __init__(self, wikipedia_site, image_inserter):
         self.wikipedia_site = wikipedia_site
-        self.template_checker = template_checker
+        self.image_inserter = image_inserter
         self.sleep_seconds = 30
         self.logger = pywikibot
 
@@ -71,44 +72,21 @@ class CommonsBot(object):
             return
         try:
             params = wikipage_update_params.group(1).strip()
-            _, pagename, image_id = params.strip().split("|", 2)
+            _, pagename, monument_id = params.strip().split("|", 2)
         except ValueError:
             self.logger.error(u"Invalid list callback param: '{}'".format(params))
             return
+        wikipedia_article = self.fetch_page(pagename)
+        images = [{"commons_article": article, "monument_id": monument_id.strip()}]
         try:
-            self.insert_image(article, pagename.strip(), image_id.strip())
+            if self.image_inserter.insert_images(wikipedia_article, images):
+                wikipedia_article.save(summary=u"Bot: Bild aus Commons eingefügt")
         except CommonsBotException as err:
             self.logger.error(err)
             return
         # remove comment from commons_page
         article.text = text.replace(wikipage_update_params.group(0), '')
         article.save("Bot: Removed comment after inserting image in Wikipedia article")
-
-    def insert_image(self, commons_article, pagename, image_id):
-        """ Insert image from page in Wikipedia """
-        article = self.fetch_page(pagename)
-        if not article.exists():
-            raise CommonsBotException(u"Article is missing: '{}'".format(pagename))
-        text = article.get()
-        code = mwparserfromhell.parse(text)
-        for template in code.filter_templates():
-            if not self.template_checker.is_allowed_template(template):
-                continue
-            if self.template_checker.get_id(template) != image_id:
-                continue
-            if template.get("Bild").value.strip() != "":
-                self.logger.log("Image is already filled for id '{}' on page '{}', skipping ...".format(image_id, pagename))
-                return False
-            file_name = self.prefix_pattern.sub('', commons_article.title())
-            commons_user = commons_article.userName()
-            original_template = unicode(template)
-            replacer = TemplateReplacer(template)
-            replacer.set_value("Bild", file_name)
-            article.text = text.replace(original_template, unicode(replacer))
-            summary_text = u"Bot: Bild [[commons:File:{}|{}]] von Benutzer [[commons:User:{}|{}]] aus Commons eingefügt"
-            article.save(summary=summary_text.format(file_name, file_name, commons_user, commons_user))
-            return True
-        raise CommonsBotException(u"No template found with id '{}' on page '{}'".format(image_id, pagename))
 
     def fetch_page(self, pagename):
         """
@@ -117,6 +95,54 @@ class CommonsBot(object):
         This function mainly to make mocking and testing easier.
         """
         return pywikibot.Page(self.wikipedia_site, pagename)
+
+
+class ImageInserter(object):
+    """
+    Insert images in monument list templates on a wikipedia article page
+    """
+
+    prefix_pattern = re.compile(r"^(?:File|Datei):")
+
+    def __init__(self, template_checker, logger):
+        self.insert_count = 0
+        self.user_count = collections.defaultdict(int)
+        self.template_checker = template_checker
+        self.logger = logger
+
+    def insert_images(self, article, image_data):
+        if not article.exists():
+            raise CommonsBotException(u"Article is missing: '{}'".format(article.title()))
+        text = article.get()
+        code = mwparserfromhell.parse(text)
+        page_name = article.title()
+        for template in code.filter_templates():
+            if not self.template_checker.is_allowed_template(template):
+                continue
+            for image in image_data:
+                original_template = unicode(template)
+                new_template = self.insert_image_in_template(template, image, page_name)
+                if new_template:
+                    text = text.replace(original_template, unicode(new_template))
+                    self.insert_count += 1
+                    self.user_count[image["commons_article"].userName()] += 1
+        if self.insert_count > 0:
+            article.text = text
+            return True
+        else:
+            return False
+
+    def insert_image_in_template(self, template, edit, page_name):
+        monument_id = edit["monument_id"]
+        if self.template_checker.get_id(template) != monument_id:
+            return False
+        if template.get("Bild").value.strip() != "":
+            log_message = "Image is already filled for id '{}' on page '{}', skipping ..."
+            self.logger.log(log_message.format(monument_id, page_name))
+            return False
+        replacer = TemplateReplacer(template)
+        replacer.set_value("Bild", self.prefix_pattern.sub('', edit["commons_article"].title()))
+        return replacer
 
 
 class CommonsBotException(Exception):
@@ -134,7 +160,8 @@ def main(*args):
     commons_site = pywikibot.Site("commons", "commons")
     checker = TemplateChecker()
     checker.load_config("config/templates.json")
-    commons_bot = CommonsBot(wikipedia_site, checker)
+    inserter = ImageInserter(checker, pywikibot.log)
+    commons_bot = CommonsBot(wikipedia_site, inserter)
     callbacks = ArticleIteratorCallbacks(
         logging_callback=pywikibot.log,
         article_callback=commons_bot.cb_check_article
