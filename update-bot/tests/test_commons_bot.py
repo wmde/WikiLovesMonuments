@@ -25,6 +25,9 @@ class TestCommonsBot(unittest.TestCase):
         self.template_checker = Mock()
         self.commons_bot = commons_bot.CommonsBot(self.wikipedia_site, self.template_checker)
         self.commons_bot.logger = Mock()
+        self.commons_article = Mock()
+        self.commons_article.title.return_value = u"File:Test Image.jpg"
+        self.commons_article.userName.return_value = u"Test User"
 
     def test_check_article_does_nothing_if_params_comment_is_missing(self):
         article = Mock()
@@ -47,7 +50,7 @@ class TestCommonsBot(unittest.TestCase):
         article.get.return_value = u"Test text <!-- WIKIPAGE_UPDATE_PARAMS de|Test Page|123 -->\n\n"
         self.commons_bot.insert_image = Mock()
         self.commons_bot.cb_check_article(article)
-        self.commons_bot.insert_image.assert_called_once_with(u"File:Test Image.jpg", u"Test Page", "123")
+        self.commons_bot.insert_image.assert_called_once_with(article, u"Test Page", "123")
 
     def test_check_article_removes_comment_from_commons(self):
         article = Mock()
@@ -63,7 +66,7 @@ class TestCommonsBot(unittest.TestCase):
         page.exists.return_value = False
         self.commons_bot.fetch_page = Mock(return_value=page)
         with self.assertRaises(commons_bot.CommonsBotException):
-            self.commons_bot.insert_image("File:Test Image.jpg", "", "123")
+            self.commons_bot.insert_image(self.commons_article, "", "123")
 
     def test_insert_image_checks_if_id_exists(self):
         page = Mock()
@@ -72,7 +75,7 @@ class TestCommonsBot(unittest.TestCase):
         self.template_checker.get_id.return_value = "77"
         self.commons_bot.fetch_page = Mock(return_value=page)
         with self.assertRaises(commons_bot.CommonsBotException):
-            self.commons_bot.insert_image("File:Test Image.jpg", "Test Page", "123")
+            self.commons_bot.insert_image(self.commons_article, "Test Page", "123")
 
     def test_insert_image_inserts_image_name_without_prefix_and_saves(self):
         page = Mock()
@@ -81,7 +84,7 @@ class TestCommonsBot(unittest.TestCase):
         self.template_checker.get_id.return_value = "123"
         self.template_checker.get_id_name.return_value = "Nummer"
         self.commons_bot.fetch_page = Mock(return_value=page)
-        self.assertTrue(self.commons_bot.insert_image("File:Test Image.jpg", "Test Page", "123"))
+        self.assertTrue(self.commons_bot.insert_image(self.commons_article, "Test Page", "123"))
         self.assertEqual(page.text, "{{Denkmalliste Bayern Tabellenzeile|Bild=Test Image.jpg|Nummer=123}}")
         page.save.assert_called_once()
 
@@ -92,10 +95,20 @@ class TestCommonsBot(unittest.TestCase):
         self.template_checker.get_id.return_value = "123"
         self.template_checker.get_id_name.return_value = "Nummer"
         self.commons_bot.fetch_page = Mock(return_value=page)
-        self.assertFalse(self.commons_bot.insert_image("File:Test Image.jpg", "Test Page", "123"))
+        self.assertFalse(self.commons_bot.insert_image(self.commons_article, "Test Page", "123"))
         page.save.assert_not_called()
         self.commons_bot.logger.log.assert_called_once()
 
+    def test_insert_image_has_informative_summary(self):
+        page = Mock()
+        page.exists.return_value = True
+        page.get.return_value = "{{Denkmalliste Bayern Tabellenzeile|Bild=|Nummer=123}}"
+        self.template_checker.get_id.return_value = "123"
+        self.template_checker.get_id_name.return_value = "Nummer"
+        self.commons_bot.fetch_page = Mock(return_value=page)
+        self.assertTrue(self.commons_bot.insert_image(self.commons_article, "Test Page", "123"))
+        expected_summary = u"Bot: Bild [[commons:File:Test Image.jpg|Test Image.jpg]] von Benutzer [[commons:User:Test User|Test User]] aus Commons eingefügt"
+        page.save.assert_called_once_with(summary=expected_summary)
 
 
 if __name__ == '__main__':
