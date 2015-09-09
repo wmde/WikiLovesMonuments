@@ -1,7 +1,7 @@
 <?php
 
 // Notification settings
-$notifyMail = 'gabriel.birke@wikimedia.de';
+$notifyMail = 'wlm-de-utils.monitoring@tools.wmflabs.org';
 $subjectPrefix = '[WLM-Monitor]';
 
 // Forward script settings
