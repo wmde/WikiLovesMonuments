@@ -54,6 +54,18 @@ class TestCommonsBot(unittest.TestCase):
         self.article_inserter.insert_images.assert_called_once_with(wiki_article, [
             {"commons_article": article, "monument_id": u"123"}
         ])
+        article.save.assert_called_once()
+
+    def test_check_article_logs_error_if_inserter_returns_false(self):
+        article = Mock()
+        article.title.return_value = u"File:Test Image.jpg"
+        article.get.return_value = u"Test text <!-- WIKIPAGE_UPDATE_PARAMS de|Test Page|123 -->\n\n"
+        wiki_article = Mock()
+        self.commons_bot.fetch_page = Mock(return_value=wiki_article)
+        self.commons_bot.cb_check_article(article)
+        self.article_inserter.insert_images.return_value = False
+        self.commons_bot.logger.assert_called_once()
+        article.save.assert_not_called()
 
     def test_check_article_removes_comment_from_commons(self):
         article = Mock()
@@ -72,6 +84,13 @@ class TestImageInserter(unittest.TestCase):
         self.template_checker = Mock()
         self.logger = Mock()
         self.inserter = commons_bot.ImageInserter(self.template_checker, self.logger)
+
+    def test_insert_images_checks_if_article_exists(self):
+        article = Mock()
+        article.title.return_value = u"Missing article"
+        article.exists.return_value = False
+        with self.assertRaises(commons_bot.CommonsBotException):
+            self.inserter.insert_images(article, [])
 
     def test_insert_images_inserts_image_name_without_prefix(self):
         article = Mock()
