@@ -76,7 +76,7 @@ class CommonsBot(object):
             self.logger.error(u"Invalid list callback param: '{}'".format(params))
             return
         try:
-            self.insert_image(article.title(), pagename.strip(), image_id.strip())
+            self.insert_image(article, pagename.strip(), image_id.strip())
         except CommonsBotException as err:
             self.logger.error(err)
             return
@@ -84,7 +84,7 @@ class CommonsBot(object):
         article.text = text.replace(wikipage_update_params.group(0), '')
         article.save("Bot: Removed comment after inserting image in Wikipedia article")
 
-    def insert_image(self, commons_name, pagename, image_id):
+    def insert_image(self, commons_article, pagename, image_id):
         """ Insert image from page in Wikipedia """
         article = self.fetch_page(pagename)
         if not article.exists():
@@ -99,11 +99,14 @@ class CommonsBot(object):
             if template.get("Bild").value.strip() != "":
                 self.logger.log("Image is already filled for id '{}' on page '{}', skipping ...".format(image_id, pagename))
                 return False
+            file_name = self.prefix_pattern.sub('', commons_article.title())
+            commons_user = commons_article.userName()
             original_template = unicode(template)
             replacer = TemplateReplacer(template)
-            replacer.set_value("Bild", self.prefix_pattern.sub('', commons_name))
+            replacer.set_value("Bild", file_name)
             article.text = text.replace(original_template, unicode(replacer))
-            article.save(summary=u"Bot: Bild aus Commons eingefügt")
+            summary_text = u"Bot: Bild [[commons:File:{}|{}]] von Benutzer [[commons:User:{}|{}]] aus Commons eingefügt"
+            article.save(summary=summary_text.format(file_name, file_name, commons_user, commons_user))
             return True
         raise CommonsBotException(u"No template found with id '{}' on page '{}'".format(image_id, pagename))
 
