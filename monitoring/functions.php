@@ -49,25 +49,28 @@ function resultHasErrors( $httpCode, $response, $expectedLocation ) {
 	if ( !preg_match( '/Location:\s*([^\n]+)/i', $response, $matches ) ) {
 		return true;
 	}
-	$expectedLocationParsed = parse_url( $expectedLocation );
-	$responseLocationParsed = parse_url( $matches[1] );
-	$expectedQuery = getQueryArray( $expectedLocationParsed );
-	$responseQuery = getQueryArray( $responseLocationParsed );
-	unset( $expectedLocationParsed['query'] );
-	unset( $responseLocationParsed['query'] );
+	list( $expectedLocationParsed, $expectedQuery ) = getUrlElementsAndQueryArray( $expectedLocation );
+	list( $responseLocationParsed, $responseQuery ) = getUrlElementsAndQueryArray( $matches[1] );
 	if ( array_diff( $expectedLocationParsed, $responseLocationParsed ) != [] ) {
 		return true;
 	}
 	return array_diff( $expectedQuery, $responseQuery ) != [];
 }
 
+function getUrlElementsAndQueryArray( $url ) {
+	$urlElements = parse_url( $url );
+	$queryArray = getQueryArray( $urlElements );
+	unset( $urlElements['query'] );
+	return [$urlElements, $queryArray];
+}
+
 function getQueryArray( $urlData ) {
 	if ( empty( $urlData['query'] ) ) {
 		return [];
 	}
-	parse_str( $urlData['query'], $queryData );#
+	parse_str( $urlData['query'], $queryData );
 	if ( !empty( $queryData['fields'] ) && is_array( $queryData['fields'] ) ) {
-		$queryData['fields'] = implode( ",", $queryData['fields'] );
+		$queryData['fields'] = implode( ',', $queryData['fields'] );
 	}
 	return $queryData;
 }

@@ -27,7 +27,7 @@ class TestFunctions extends PHPUnit_Framework_TestCase {
 		$this->assertFalse( resultHasErrors( 301, $response, "http://example.com/?bar=2&foo=1" ) );
 	}
 
-	public function testResultHasErrorsHanldlesFieldArrayParam() {
+	public function testResultHasErrorsHandlesFieldArrayParam() {
 		$response = "X-Test: Foo\nLocation: http://example.com/?fields[]=1\n";
 		$this->assertFalse( resultHasErrors( 301, $response, "http://example.com/?fields[]=1" ) );
 		$this->assertTrue( resultHasErrors( 301, $response, "http://example.com/?fields[]=7" ) );
