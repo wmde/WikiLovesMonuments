@@ -3,6 +3,8 @@ import unittest
 from mock import Mock  # unittest.mock for Python >= 3.3
 
 from wlmbots import commons_bot
+from wlmbots.lib.template_checker import TemplateChecker
+import collections
 
 
 class TestCommonsBotFunctions(unittest.TestCase):
@@ -32,47 +34,64 @@ class TestCommonsBot(unittest.TestCase):
     def test_check_article_does_nothing_if_params_comment_is_missing(self):
         article = Mock()
         article.get.return_value = "Test text"
-        self.commons_bot.insert_image = Mock()
         self.commons_bot.cb_check_article(article)
-        self.commons_bot.insert_image.assert_not_called()
+        self.assertEqual(self.commons_bot.images, {})
 
     def test_check_article_does_nothing_if_params_comment_has_wrong_format(self):
         article = Mock()
         article.get.return_value = u"Test text <!-- WIKIPAGE_UPDATE_PARAMS de|Test Page -->\n\n"
-        self.commons_bot.insert_image = Mock()
         self.commons_bot.cb_check_article(article)
-        self.commons_bot.insert_image.assert_not_called()
+        self.assertEqual(self.commons_bot.images, {})
         self.commons_bot.logger.error.assert_called_once()
 
-    def test_check_article_calls_article_inserter(self):
+    def test_check_article_appends_image_data(self):
         article = Mock()
         article.title.return_value = u"File:Test Image.jpg"
         article.get.return_value = u"Test text <!-- WIKIPAGE_UPDATE_PARAMS de|Test Page|123 -->\n\n"
-        wiki_article = Mock()
-        self.commons_bot.fetch_page = Mock(return_value=wiki_article)
         self.commons_bot.cb_check_article(article)
-        self.article_inserter.insert_images.assert_called_once_with(wiki_article, [
-            {"commons_article": article, "monument_id": u"123"}
-        ])
-        article.save.assert_called_once()
+        expected_image_data = collections.defaultdict(list)
+        expected_image_data[u"Test Page"] = [{
+            "commons_article": article,
+            "monument_id": u"123",
+            "update_params_comment": u"<!-- WIKIPAGE_UPDATE_PARAMS de|Test Page|123 -->\n\n"
+        }]
+        self.assertEqual(self.commons_bot.images, expected_image_data)
 
-    def test_check_article_logs_error_if_inserter_returns_false(self):
+    def test_insert_accumulated_edits_calls_image_inserter(self):
         article = Mock()
         article.title.return_value = u"File:Test Image.jpg"
         article.get.return_value = u"Test text <!-- WIKIPAGE_UPDATE_PARAMS de|Test Page|123 -->\n\n"
-        wiki_article = Mock()
-        self.commons_bot.fetch_page = Mock(return_value=wiki_article)
-        self.commons_bot.cb_check_article(article)
-        self.article_inserter.insert_images.return_value = False
-        self.commons_bot.logger.assert_called_once()
-        article.save.assert_not_called()
+        wikipedia_article = Mock()
+        test_page_edits = [
+            {
+                "commons_article": article,
+                "monument_id": u"123",
+                "update_params_comment": u"<!-- WIKIPAGE_UPDATE_PARAMS de|Test Page|123 -->\n\n"
+            }
+        ]
+        self.commons_bot.fetch_page = Mock(return_value=wikipedia_article)
+        self.commons_bot.images = {
+            "Test Page": test_page_edits
+        }
+        self.commons_bot.insert_accumulated_edits()
+        self.commons_bot.fetch_page.assert_called_once_with(u"Test Page")
+        self.article_inserter.insert_images.assert_called_once_with(wikipedia_article, test_page_edits)
 
     def test_check_article_removes_comment_from_commons(self):
         article = Mock()
         article.title.return_value = u"File:Test Image.jpg"
         article.get.return_value = u"Test text <!-- WIKIPAGE_UPDATE_PARAMS de|Test Page|123 -->\n\n"
         self.commons_bot.fetch_page = Mock()
-        self.commons_bot.cb_check_article(article)
+        self.commons_bot.images = {
+            "Test Page": [
+                {
+                    "commons_article": article,
+                    "monument_id": u"123",
+                    "update_params_comment": u"<!-- WIKIPAGE_UPDATE_PARAMS de|Test Page|123 -->\n\n"
+                }
+            ]
+        }
+        self.commons_bot.insert_accumulated_edits()
         self.article_inserter.insert_images.return_value = True
         self.assertEquals(article.text, u"Test text ")
         article.save.assert_called_once()

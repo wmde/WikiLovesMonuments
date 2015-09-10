@@ -43,6 +43,7 @@ class CommonsBot(object):
         self.image_inserter = image_inserter
         self.sleep_seconds = 30
         self.logger = pywikibot
+        self.images = collections.defaultdict(list)
 
     def run_once(self, article_iterator, start_time, category):
         article_args = {
@@ -50,6 +51,7 @@ class CommonsBot(object):
             "starttime": start_time
         }
         article_iterator.iterate_articles(category, article_arguments=article_args)
+        self.insert_accumulated_edits()
 
     def run_continuously(self, article_iterator, start_time, category):
         article_args = {
@@ -60,10 +62,35 @@ class CommonsBot(object):
         while True:
             now = pywikibot.Timestamp.now()
             counter = article_iterator.iterate_articles(category, counter, article_args)
+            self.insert_accumulated_edits()
+            self.images = collections.defaultdict(list)  # Reset edit list for next run
             article_args["starttime"] = now
             if article_iterator.limit_reached(counter, 0):
                 break
             time.sleep(self.sleep_seconds)
+
+    def insert_accumulated_edits(self):
+        for page_name in self.images:
+            wikipedia_article = self.fetch_page(page_name)
+            try:
+                if self.image_inserter.insert_images(wikipedia_article, self.images[page_name]):
+                    summary_text = u"Bot: {} Bild(er) von {} Benutzer(n) aus Commons eingefügt".format(
+                        self.image_inserter.insert_count,
+                        self.image_inserter.user_count
+                    )
+                    wikipedia_article.save(summary=summary_text)
+            except CommonsBotException as err:
+                self.logger.error(err)
+                return
+            self.remove_comments_from_commons_articles(self.images[page_name])
+
+    def remove_comments_from_commons_articles(self, images):
+        for image in images:
+            text = image["commons_article"].get()
+            text = text.replace(image["update_params_comment"], '')
+            if image["commons_article"].text != text:
+                image["commons_article"].text = text
+                image["commons_article"].save("Bot: Removed comment after inserting image in Wikipedia article")
 
     def cb_check_article(self, article, **kwargs):
         text = article.get()
@@ -72,21 +99,15 @@ class CommonsBot(object):
             return
         try:
             params = wikipage_update_params.group(1).strip()
-            _, pagename, monument_id = params.strip().split("|", 2)
+            _, page_name, monument_id = params.strip().split("|", 2)
         except ValueError:
             self.logger.error(u"Invalid list callback param: '{}'".format(params))
             return
-        wikipedia_article = self.fetch_page(pagename)
-        images = [{"commons_article": article, "monument_id": monument_id.strip()}]
-        try:
-            if self.image_inserter.insert_images(wikipedia_article, images):
-                wikipedia_article.save(summary=u"Bot: Bild aus Commons eingefügt")
-        except CommonsBotException as err:
-            self.logger.error(err)
-            return
-        # remove comment from commons_page
-        article.text = text.replace(wikipage_update_params.group(0), '')
-        article.save("Bot: Removed comment after inserting image in Wikipedia article")
+        self.images[page_name].append({
+            "commons_article": article,
+            "monument_id": monument_id.strip(),
+            "update_params_comment": wikipage_update_params.group(0)
+        })
 
     def fetch_page(self, pagename):
         """
