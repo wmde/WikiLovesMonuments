@@ -105,12 +105,30 @@ class ImageInserter(object):
     prefix_pattern = re.compile(r"^(?:File|Datei):")
 
     def __init__(self, template_checker, logger):
+        """
+        :param template_checker: Class to analyze the monument list templates
+        :type template_checker: TemplateChecker
+        :param logger: A logging class that supports .log and .error methods, e.g. pywikibot.logging
+        """
         self.insert_count = 0
         self.user_count = collections.defaultdict(int)
         self.template_checker = template_checker
         self.logger = logger
 
     def insert_images(self, article, image_data):
+        """
+        Insert image names in the monument list templates of the article text.
+
+        Has the side effect of storing how many images by how many different users were inserted.
+        The values are stored in insert_count and user_count
+        :param article: A Wikipedia monument list article
+        :type article: pywikibot.Page
+        :param image_data: Contains dictionary with the commons article and the monument id.
+        :type image_data: list
+        :return: True if the article data was changed, otherwise False
+        """
+        self.insert_count = 0
+        self.user_count = collections.defaultdict(int)
         if not article.exists():
             raise CommonsBotException(u"Article is missing: '{}'".format(article.title()))
         text = article.get()
