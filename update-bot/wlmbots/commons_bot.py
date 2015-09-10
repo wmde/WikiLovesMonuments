@@ -155,17 +155,21 @@ class ImageInserter(object):
         text = article.get()
         code = mwparserfromhell.parse(text)
         page_name = article.title()
+        image_data_copy = list(image_data)
         for template in code.filter_templates():
             if not self.template_checker.is_allowed_template(template):
                 continue
-            for image in image_data:
+            for image in image_data_copy:
                 original_template = unicode(template)
                 new_template = self.insert_image_in_template(template, image, page_name)
                 if new_template:
                     text = text.replace(original_template, unicode(new_template))
                     self.insert_count += 1
                     self.user_count[image["commons_article"].userName()] += 1
+                    image_data_copy.remove(image)
                     break
+            if not image_data_copy:
+                break
         if self.insert_count > 0:
             article.text = text
             return True
