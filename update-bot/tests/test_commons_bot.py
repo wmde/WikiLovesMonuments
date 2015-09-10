@@ -157,6 +157,22 @@ class TestImageInserter(unittest.TestCase):
         self.assertFalse(self.inserter.insert_images(article, edits))
         self.logger.log.assert_called_once()
 
+    def test_insert_images_logs_error_if_not_all_images_can_be_inserted(self):
+        article = Mock()
+        article.exists.return_value = True
+        article.get.return_value = u"{{Denkmalliste Bayern Tabellenzeile|Bild=|Nummer=123}}"
+        commons_article1 = Mock()
+        commons_article1.title.return_value = u"File:Test Image.jpg"
+        commons_article2 = Mock()
+        commons_article2.title.return_value = u"File:Another Test Image.jpg"
+        edits = [
+            {"commons_article": commons_article1, "monument_id": u"123"},
+            {"commons_article": commons_article2, "monument_id": u"124"}
+        ]
+        self.assertTrue(self.inserter.insert_images(article, edits))
+        expected_error = "1 image(s) could not be inserted, probably because of removed table rows"
+        self.logger.error.assert_called_once_with(expected_error)
+
 
 if __name__ == '__main__':
     unittest.main()

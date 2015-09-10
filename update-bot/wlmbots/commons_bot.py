@@ -170,6 +170,9 @@ class ImageInserter(object):
                     break
             if not image_data_copy:
                 break
+        if len(image_data_copy):
+            error_message = "{} image(s) could not be inserted, probably because of removed table rows"
+            self.logger.error(error_message.format(len(image_data_copy)))
         if self.insert_count > 0:
             article.text = text
             return True
