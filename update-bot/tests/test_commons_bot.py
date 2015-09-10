@@ -81,7 +81,12 @@ class TestCommonsBot(unittest.TestCase):
 class TestImageInserter(unittest.TestCase):
 
     def setUp(self):
-        self.template_checker = Mock()
+        self.template_checker = TemplateChecker({
+            u"Denkmalliste Bayern Tabellenzeile": {
+                "id": u"Nummer",
+                "id_check": r".+"
+            }
+        })
         self.logger = Mock()
         self.inserter = commons_bot.ImageInserter(self.template_checker, self.logger)
 
@@ -96,8 +101,6 @@ class TestImageInserter(unittest.TestCase):
         article = Mock()
         article.exists.return_value = True
         article.get.return_value = u"{{Denkmalliste Bayern Tabellenzeile|Bild=|Nummer=123}}"
-        self.template_checker.get_id.return_value = u"123"
-        self.template_checker.get_id_name.return_value = u"Nummer"
         commons_article = Mock()
         commons_article.title.return_value = u"File:Test Image.jpg"
         edits = [
@@ -106,12 +109,28 @@ class TestImageInserter(unittest.TestCase):
         self.assertTrue(self.inserter.insert_images(article, edits))
         self.assertEqual(article.text, u"{{Denkmalliste Bayern Tabellenzeile|Bild=Test Image.jpg|Nummer=123}}")
 
+    def test_insert_images_can_insert_multiple_images(self):
+        article = Mock()
+        article.exists.return_value = True
+        article.get.return_value = u"{{Denkmalliste Bayern Tabellenzeile|Bild=|Nummer=123}}\n" + \
+                                   u"{{Denkmalliste Bayern Tabellenzeile|Bild=|Nummer=124}}"
+        commons_article1 = Mock()
+        commons_article1.title.return_value = u"File:Test Image.jpg"
+        commons_article2 = Mock()
+        commons_article2.title.return_value = u"File:Another Test Image.jpg"
+        edits = [
+            {"commons_article": commons_article1, "monument_id": u"123"},
+            {"commons_article": commons_article2, "monument_id": u"124"}
+        ]
+        self.assertTrue(self.inserter.insert_images(article, edits))
+        self.assertEqual(article.text,
+                         u"{{Denkmalliste Bayern Tabellenzeile|Bild=Test Image.jpg|Nummer=123}}\n" +
+                         u"{{Denkmalliste Bayern Tabellenzeile|Bild=Another Test Image.jpg|Nummer=124}}")
+
     def test_insert_images_skips_image_if_image_is_not_empty(self):
         article = Mock()
         article.exists.return_value = True
         article.get.return_value = u"{{Denkmalliste Bayern Tabellenzeile|Bild=File:Test Image 2.jpg|Nummer=123}}"
-        self.template_checker.get_id.return_value = u"123"
-        self.template_checker.get_id_name.return_value = u"Nummer"
         commons_article = Mock()
         edits = [
             {"commons_article": commons_article, "monument_id": u"123"}

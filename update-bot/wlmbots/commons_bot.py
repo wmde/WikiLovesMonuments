@@ -144,6 +144,7 @@ class ImageInserter(object):
                     text = text.replace(original_template, unicode(new_template))
                     self.insert_count += 1
                     self.user_count[image["commons_article"].userName()] += 1
+                    break
         if self.insert_count > 0:
             article.text = text
             return True
