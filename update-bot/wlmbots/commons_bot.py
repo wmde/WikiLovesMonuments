@@ -132,7 +132,7 @@ class ImageInserter(object):
         :param logger: A logging class that supports .log and .error methods, e.g. pywikibot.logging
         """
         self.insert_count = 0
-        self.user_count = collections.defaultdict(int)
+        self.user_count = 0
         self.template_checker = template_checker
         self.logger = logger
 
@@ -149,7 +149,8 @@ class ImageInserter(object):
         :return: True if the article data was changed, otherwise False
         """
         self.insert_count = 0
-        self.user_count = collections.defaultdict(int)
+        self.user_count = 0
+        single_user_count = collections.defaultdict(int)
         if not article.exists():
             raise CommonsBotException(u"Article is missing: '{}'".format(article.title()))
         text = article.get()
@@ -165,7 +166,7 @@ class ImageInserter(object):
                 if new_template:
                     text = text.replace(original_template, unicode(new_template))
                     self.insert_count += 1
-                    self.user_count[image["commons_article"].userName()] += 1
+                    single_user_count[image["commons_article"].userName()] += 1
                     image_data_copy.remove(image)
                     break
             if not image_data_copy:
@@ -174,6 +175,7 @@ class ImageInserter(object):
             error_message = "{} image(s) could not be inserted, probably because of removed table rows"
             self.logger.error(error_message.format(len(image_data_copy)))
         if self.insert_count > 0:
+            self.user_count = len(single_user_count)
             article.text = text
             return True
         else:
