@@ -219,12 +219,12 @@ def summary_page_is_needed(article_iterator, all_categories):
 
 def main(*args):
     site = pywikibot.Site()
-    fetcher = CategoryFetcher(site)
+    pagelister = Pagelist(site)
     checker = TemplateChecker()
     checker.load_config("config/templates.json")
     checker_bot = CheckerBot(checker, site)
-    all_categories = fetcher.get_categories()
-    commandline_arguments = pywikibot.handle_args(list(args))
+    all_categories = pagelister.get_county_categories()
+    commandline_arguments = pywikibot.handle_args(args)
     article_iterator, unhandled_arguments = get_article_iterator(checker_bot, all_categories, commandline_arguments, pagelister)
     for argument in unhandled_arguments:
         if argument.find("-outputpage:") == 0:
