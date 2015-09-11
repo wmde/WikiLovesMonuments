@@ -26,6 +26,7 @@ WIKIPEDIA_API_URL = 'https://de.wikipedia.org/w/api.php'
 ADDITIONAL_CATEGORIES = ['Uploaded with UploadWizard via delists']
 REDIS_HOST = "localhost"
 REDIS_CACHE_PREFIX = ""
+ACCESS_LOG = "access.log"
 
 
 app = Flask(__name__)
@@ -90,7 +91,7 @@ def redirect_to_commons(page_name, campaign_name):
     return redirect(app.config["COMMONS_UPLOAD_URL"] + query[1:])
 
 # Set up access log
-access_log_handlers = [RotatingFileHandler('access.log', maxBytes=512000000, encoding='utf-8')]
+access_log_handlers = [RotatingFileHandler(app.config["ACCESS_LOG"], maxBytes=512000000, encoding='utf-8')]
 app.wsgi_app = WSGILogger(app.wsgi_app, access_log_handlers, ApacheFormatter())
 
 # This variable can later be used by wsgi
