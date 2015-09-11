@@ -41,20 +41,27 @@ function mustNotify( $filename, $notificationInterval ) {
  */
 function resultHasErrors( $httpCode, $response, $expectedLocation ) {
 	if ( !in_array( $httpCode, [301, 302] ) ){
-		return true;
+		return [true, "Wrong HTTP response code: $httpCode"];
 	}
 	if ( $response === false ) {
-		return true;
+		return [true, "CURL encountered an error."];
 	}
-	if ( !preg_match( '/Location:\s*([^\n]+)/i', $response, $matches ) ) {
-		return true;
+	if ( !preg_match( '/Location:\s*([^\r\n]+)/i', $response, $matches ) ) {
+		return [true, "Location header is missing."];
 	}
 	list( $expectedLocationParsed, $expectedQuery ) = getUrlElementsAndQueryArray( $expectedLocation );
 	list( $responseLocationParsed, $responseQuery ) = getUrlElementsAndQueryArray( $matches[1] );
-	if ( array_diff( $expectedLocationParsed, $responseLocationParsed ) != [] ) {
-		return true;
+	$urlDifference = array_diff( $responseLocationParsed, $expectedLocationParsed );
+	if ( $urlDifference != [] ) {
+		$errorReason = "Unexpected URL part difference: " . var_export( $urlDifference, true );
+		return [true, $errorReason];
 	}
-	return array_diff( $expectedQuery, $responseQuery ) != [];
+	$queryDifference = array_diff( $responseQuery, $expectedQuery );
+	if ( $queryDifference != [] ) {
+		$errorReason = "Unexpected query string difference: " . var_export( $queryDifference, true );
+		return [true, $errorReason];
+	}
+	return [false, ""];
 }
 
 function getUrlElementsAndQueryArray( $url ) {

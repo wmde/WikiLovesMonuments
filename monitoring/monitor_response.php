@@ -17,9 +17,14 @@ curl_setopt( $ch, CURLOPT_USERAGENT, 'WLM monitoring script' ); // Tool labs ref
 $response = curl_exec( $ch );
 
 $httpCode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-if ( resultHasErrors( $httpCode, $response, $expectedLocation ) ) {
-	$errorMessage = "Got the following result back:\n\n$response";
-	$errorMessage .= 'CURL error: ' . curl_error( $ch );
+list( $resultHasError, $errorReason ) = resultHasErrors( $httpCode, $response, $expectedLocation );
+if ( $resultHasError ) {
+	$errorMessage = "Error: $errorReason\n\n";
+	$errorMessage .= "Got the following result back:\n\n$response";
+	$curlError = curl_error( $ch );
+	if ( $curlError ) {
+		$errorMessage .= "\nCURL error: $curlError\n";
+	}
 	notifyConditionally(
 		$notifyMail,
 		"$subjectPrefix Forward script check failed",
