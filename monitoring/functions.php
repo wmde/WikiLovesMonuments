@@ -53,12 +53,12 @@ function resultHasErrors( $httpCode, $response, $expectedLocation ) {
 	list( $responseLocationParsed, $responseQuery ) = getUrlElementsAndQueryArray( $matches[1] );
 	$urlDifference = array_diff( $responseLocationParsed, $expectedLocationParsed );
 	if ( $urlDifference != [] ) {
-		$errorReason = "Unexpected URL part difference: ".var_export( $urlDifference, true );
-		return [true, $errorReason ];
+		$errorReason = "Unexpected URL part difference: " . var_export( $urlDifference, true );
+		return [true, $errorReason];
 	}
 	$queryDifference = array_diff( $responseQuery, $expectedQuery );
 	if ( $queryDifference != [] ) {
-		$errorReason = "Unexpected query string difference: ".var_export( $queryDifference, true );
+		$errorReason = "Unexpected query string difference: " . var_export( $queryDifference, true );
 		return [true, $errorReason];
 	}
 	return [false, ""];
