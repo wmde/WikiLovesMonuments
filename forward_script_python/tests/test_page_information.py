@@ -28,14 +28,14 @@ class TestPageInformationCollector(unittest.TestCase):
         self.checker.filter_allowed_templates = Mock(side_effect=lambda x: x)
         self.checker.get_id.return_value = u"1"
         self.mapper.get_commonscat_list_from_links.return_value = [u"Weblink Category"]
-        self.article.get.return_value = u"{{Denkmalliste Sachsen Tabellenzeile|ID=1}}"
+        self.article.text.return_value = u"{{Denkmalliste Sachsen Tabellenzeile|ID=1}}"
         info = self.collector.get_information(self.article, u"123")
         self.assertFalse(info.has_usable_id)
 
     def test_get_info_accepts_empty_id(self):
         self.checker.filter_allowed_templates = Mock(side_effect=lambda x: x)
         self.mapper.get_commonscat_list_from_links.return_value = [u"Weblink Category"]
-        self.article.get.return_value = u"{{Denkmalliste Sachsen Tabellenzeile|ID=1}}"
+        self.article.text.return_value = u"{{Denkmalliste Sachsen Tabellenzeile|ID=1}}"
         info = self.collector.get_information(self.article, u"")
         self.assertFalse(info.has_usable_id)
         self.assertTrue(info.meta["no_monument_id"])
@@ -46,7 +46,7 @@ class TestPageInformationCollector(unittest.TestCase):
         self.checker.has_valid_id.return_value = True
         self.mapper.get_commonscat_list_from_links.return_value = [u"Weblink Category"]
         self.mapper.get_commonscat.return_value = u"Category:Cultural heritage ensembles in Saxony"
-        self.article.get.return_value = u" Test text {{Denkmalliste Sachsen Tabellenzeile|ID=1}} more text"
+        self.article.text.return_value = u" Test text {{Denkmalliste Sachsen Tabellenzeile|ID=1}} more text"
         info = self.collector.get_information(self.article, u"1")
         self.assertTrue(info.has_usable_id)
         self.assertTrue(info.has_valid_id)
@@ -61,7 +61,7 @@ class TestPageInformationCollector(unittest.TestCase):
         self.checker.has_valid_id.return_value = False
         self.mapper.get_commonscat_list_from_links.return_value = [u"Weblink Category"]
         self.mapper.get_commonscat.return_value = u"Category:Cultural heritage ensembles in Saxony"
-        self.article.get.return_value = u" Test text {{Denkmalliste Sachsen Tabellenzeile|ID=1}} more text"
+        self.article.text.return_value = u" Test text {{Denkmalliste Sachsen Tabellenzeile|ID=1}} more text"
         info = self.collector.get_information(self.article, u"1")
         self.assertTrue(info.has_usable_id)
         self.assertFalse(info.has_valid_id)
@@ -72,7 +72,7 @@ class TestPageInformationCollector(unittest.TestCase):
         self.checker.has_valid_id.return_value = True
         self.mapper.get_commonscat_list_from_links.return_value = [u"Weblink Category"]
         self.mapper.get_commonscat.return_value = u"Category:Cultural heritage ensembles in Saxony"
-        self.article.get.return_value = u" Test text {{Denkmalliste Sachsen Tabellenzeile|ID=1}} more text" * 3
+        self.article.text.return_value = u" Test text {{Denkmalliste Sachsen Tabellenzeile|ID=1}} more text" * 3
         info = self.collector.get_information(self.article, u"1")
         self.assertFalse(info.has_usable_id)
         self.assertEqual(info.meta["template_count"], 3)
@@ -93,7 +93,7 @@ class TestPageInformationCollector(unittest.TestCase):
         self.checker.has_valid_id.return_value = True
         self.mapper.get_commonscat_list_from_links.return_value = [u"Weblink Category"]
         self.mapper.get_commonscat.return_value = u"Category:Cultural heritage ensembles in Saxony"
-        self.article.get.return_value = u"{{Denkmalliste Sachsen Tabellenzeile|ID=1|Bild=Denkmal.jpg}}"
+        self.article.text.return_value = u"{{Denkmalliste Sachsen Tabellenzeile|ID=1|Bild=Denkmal.jpg}}"
         info = self.collector.get_information(self.article, u"1")
         self.assertTrue(info.has_image)
 

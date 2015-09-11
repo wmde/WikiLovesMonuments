@@ -10,10 +10,9 @@ setup(name='forward_script',
       packages=['forward_script'],
       install_requires=[
         'flask',
-        'httplib2',
         'mwparserfromhell',
         'wlmbots',
-        'pywikibot',
+        'mwclient',
         'wsgi-request-logger'
       ],
       zip_safe=False)
