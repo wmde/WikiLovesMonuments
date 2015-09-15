@@ -15,6 +15,11 @@ class TestQueryBuilder(unittest.TestCase):
         query = query_builder.get_query('', self._page_info, 'Test_Page')
         self.assertTrue('&categories=Test' in query)
 
+    def test_category_prefix_is_removed(self):
+        self._page_info.category = 'Category:Test'
+        query = query_builder.get_query('', self._page_info, 'Test_Page')
+        self.assertTrue('&categories=Test' in query)
+
     def test_additional_categories_are_added(self):
         self._page_info.category = 'Test'
         query = query_builder.get_query('', self._page_info, 'Test Page', '', None, ['Foo', 'Bar'])

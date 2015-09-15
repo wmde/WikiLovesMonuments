@@ -21,7 +21,8 @@ def get_query(campaign, info, page_name, object_id='', coordinates=None, additio
     query = {
         "campaign": campaign
     }
-    categories = '|' . join([info.category] + additional_categories)
+    clean_category = info.category.replace("Category:", "")
+    categories = '|' . join([clean_category] + additional_categories)
     query['categories'] = categories
     if 'lat' in coordinates and coordinates['lat'] and 'lon' in coordinates and coordinates['lon']:
         query['lat'] = coordinates['lat']

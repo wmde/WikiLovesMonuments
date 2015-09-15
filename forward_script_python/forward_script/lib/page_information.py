@@ -48,10 +48,10 @@ class PageInformationCollector(object):
         :return: PageInformation
         """
         info = PageInformation()
-        if not article.exists():
+        if not article.exists:
             info.meta["article_not_found"] = True
             return info
-        text = article.get()
+        text = article.text()
         info.category = self.get_most_specific_category(text)
         if not monument_id:
             info.meta["no_monument_id"] = True
