@@ -28,7 +28,7 @@ def get_query(campaign, info, page_name, object_id='', coordinates=None, additio
         query['lat'] = coordinates['lat']
         query['lon'] = coordinates['lon']
     if info.has_usable_id:
-        query['objref'] = '|' . join(['de', page_name, object_id])
+        query['objref'] = '|' . join(['de', page_name.replace(" ", "_"), object_id])
     if info.has_valid_id:
         query['fields[]'] = object_id
     if not info.has_image and info.has_usable_id:
