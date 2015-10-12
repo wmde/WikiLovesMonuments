@@ -56,12 +56,32 @@ function resultHasErrors( $httpCode, $response, $expectedLocation ) {
 		$errorReason = "Unexpected URL part difference: " . var_export( $urlDifference, true );
 		return [true, $errorReason];
 	}
-	$queryDifference = array_diff( $responseQuery, $expectedQuery );
-	if ( $queryDifference != [] ) {
-		$errorReason = "Unexpected query string difference: " . var_export( $queryDifference, true );
-		return [true, $errorReason];
+	$queryDifference = getQueryDiffText( $responseQuery, $expectedQuery );
+	if ( $queryDifference ) {
+		return [true, $queryDifference];
 	}
 	return [false, ""];
+}
+
+function getQueryDiffText( $responseQuery, $expectedQuery ) {
+	$missingKeys = array_diff( array_keys( $responseQuery ), array_keys( $expectedQuery ) );
+	if ( $missingKeys ) {
+		return "Missing response query parameters: ".implode( ", ", $missingKeys) . "\n";
+	}
+	$queryDifference = array_diff( $responseQuery, $expectedQuery );
+	if ( $queryDifference ) {
+		$errorText = "Unexpected query string difference: ";
+		foreach ( $expectedQuery as $key => $value ) {
+			if ( $value != $responseQuery[$key] ) {
+				$errorText .= sprintf(
+					"Query Param: %s\nExpected: %s\nActual:   %s\n\n",
+					$key, $value, $responseQuery[$key]
+				);
+			}
+		}
+		return $errorText;
+	}
+	return "";
 }
 
 function getUrlElementsAndQueryArray( $url ) {
