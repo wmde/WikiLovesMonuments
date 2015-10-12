@@ -86,7 +86,7 @@ def redirect_to_commons(page_name, campaign_name):
         "lat": request.args.get('lat', ''),
         "lon": request.args.get('lon', ''),
     }
-    query = query_builder.get_query(campaign_name, page_information, page_name, monument_id,
+    query = query_builder.get_query(campaign_name, page_information, page_name_decoded, monument_id,
                                     coordinates, app.config["ADDITIONAL_CATEGORIES"])
     return redirect(app.config["COMMONS_UPLOAD_URL"] + query[1:])
 
@@ -99,4 +99,3 @@ app_without_prefix = PrefixRemover(app)
 
 if __name__ == '__main__':
     app.run(debug=True)
-
